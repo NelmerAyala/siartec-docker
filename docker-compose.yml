@@ -1,0 +1,75 @@
+version: "1"
+
+services:
+  nginx-siartec:
+    build:
+      context: nginx
+    container_name: nginx-siartec
+    restart: always
+    tty: true
+    ports:
+      - "9020:80"
+    networks:
+      - siartec-network
+    depends_on:
+      - backend
+      - frontend
+
+  backend:
+    build:
+      context: siartec-backend
+    container_name: backend
+    working_dir: /usr/src/app
+    networks:
+      - siartec-network
+    volumes:
+      - ./siartec-backend:/usr/src/app
+      # - /usr/src/app/node_modules
+    tty: true
+    ports:
+      - "8020:8010"
+    command: npm run start:dev
+    depends_on:
+      - db-postgres
+
+  frontend:
+    build:
+      context: siartec-frontend
+    container_name: frontend
+    working_dir: /usr/src/app
+    networks:
+      - siartec-network
+    volumes:
+      - ./siartec-frontend:/usr/src/app
+      # - /usr/src/app/node_modules
+    tty: true
+    ports:
+      - "3020:3010"
+    command: npm run dev
+
+  db-postgres:
+    container_name: db-postgres
+    build:
+      context: ./docker-db
+    networks:
+      - siartec-network
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+      - C:\BackupDB\:/lib/postgresql/backup
+    ports:
+      - "5420:5432"
+
+volumes:
+  postgres_data:
+
+networks:
+  siartec-network:
+    name: siartec-network
+    external: false
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "192.168.20.0/24"
+          gateway: "192.168.20.1"
