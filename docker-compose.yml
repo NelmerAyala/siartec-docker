@@ -45,7 +45,8 @@ services:
     tty: true
     ports:
       - "3020:3010"
-    command: npm run dev
+    # command: sh -c "npm run build && npm run start"
+    command: sh -c "npm run dev"
 
   db-postgres:
     container_name: db-postgres
