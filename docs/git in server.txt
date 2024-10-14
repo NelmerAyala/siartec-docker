@@ -1,0 +1,22 @@
+
+-------------------------------------------------------------------------------
+instalación:
+sudo add-apt-repository ppa:git-core/ppa 
+
+git config --global user.name "informaticashyf" 
+
+git config --global user.email "shyf.infosiartec@gmail.com"
+
+-------------------------------------------------------------------------------
+clonación repos:
+
+git clone https://github.com/NelmerAyala/siartec-docker.git
+cd siartec-docker
+git clone https://github.com/NelmerAyala/siartec-frontend.git
+git clone https://github.com/NelmerAyala/siartec-backend.git
+
+
+
+-------------------------------------------------------------------------------
+fuente:
+https://www.ovhcloud.com/en/community/tutorials/how-to-install-git-ubuntu/

@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------
+Instalación:
+
+1. Debemos crear un directorio que contendrá los datos de Portainer y que de esta manera sean persistentes
+comando: mkdir ~/portainer
+
+2. Descagar e iniciar el contenedor:
+
+docker run -d -p 8000:8000 -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v ~/portainer:/data portainer/portainer-ce
+
+-------------------------------------------------------------------------
+
+Uso:
+
+Host disponible: http://101.1.1.97:9000/
+
+
+user: admin
+password: SHF.siartec2024
+
+
+-------------------------------------------------------------------------
+Fuente:
+https://blog.enmanuelmoreira.com/como-instalar-portainer-el-mejor-gestor-grafico-de-docker-en-linux/
+
+
+
+---------------------------------------------------------------------------
+abriendo console de contenedor desde portainer.io
+
+abriendo console de un contenedor
+selecciona: bash/sh
+user: root or vacío
+
+
+commands:
+su -
+
+apk update 
+
+apk install nano
