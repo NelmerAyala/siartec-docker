@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "889d99c2-3c66-4dd8-90f3-a92b9a03d63f",
+		"_postman_id": "9302cbbc-10b7-4599-90ed-d10ca072682d",
 		"name": "siartec",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "36557212"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18897788"
 	},
 	"item": [
 		{
@@ -63,7 +63,15 @@
 								}
 							}
 						},
-						"url": "{{BASE_URL_SIARTEC}}/users"
+						"url": {
+							"raw": "{{BASE_URL_SIARTEC}}/users",
+							"host": [
+								"{{BASE_URL_SIARTEC}}"
+							],
+							"path": [
+								"users"
+							]
+						}
 					},
 					"response": []
 				},
@@ -81,7 +89,16 @@
 								}
 							}
 						},
-						"url": "{{BASE_URL_SIARTEC}}/users/3"
+						"url": {
+							"raw": "{{BASE_URL_SIARTEC}}/users/3",
+							"host": [
+								"{{BASE_URL_SIARTEC}}"
+							],
+							"path": [
+								"users",
+								"3"
+							]
+						}
 					},
 					"response": []
 				},
@@ -102,7 +119,16 @@
 								}
 							}
 						},
-						"url": "{{BASE_URL_SIARTEC}}/users/3"
+						"url": {
+							"raw": "{{BASE_URL_SIARTEC}}/users/3",
+							"host": [
+								"{{BASE_URL_SIARTEC}}"
+							],
+							"path": [
+								"users",
+								"3"
+							]
+						}
 					},
 					"response": []
 				}
@@ -125,7 +151,16 @@
 										"type": "text"
 									}
 								],
-								"url": "{{BASE_URL_SIARTEC}}/auth/profile"
+								"url": {
+									"raw": "{{BASE_URL_SIARTEC}}/auth/profile",
+									"host": [
+										"{{BASE_URL_SIARTEC}}"
+									],
+									"path": [
+										"auth",
+										"profile"
+									]
+								}
 							},
 							"response": []
 						}
@@ -154,7 +189,18 @@
 														}
 													}
 												},
-												"url": "{{BASE_URL_SIARTEC}}/auth/sign-in/google/email"
+												"url": {
+													"raw": "{{BASE_URL_SIARTEC}}/auth/sign-in/google/email",
+													"host": [
+														"{{BASE_URL_SIARTEC}}"
+													],
+													"path": [
+														"auth",
+														"sign-in",
+														"google",
+														"email"
+													]
+												}
 											},
 											"response": []
 										}
@@ -174,7 +220,17 @@
 												}
 											}
 										},
-										"url": "{{BASE_URL_SIARTEC}}/auth/sign-in/google"
+										"url": {
+											"raw": "{{BASE_URL_SIARTEC}}/auth/sign-in/google",
+											"host": [
+												"{{BASE_URL_SIARTEC}}"
+											],
+											"path": [
+												"auth",
+												"sign-in",
+												"google"
+											]
+										}
 									},
 									"response": []
 								}
@@ -194,7 +250,16 @@
 										}
 									}
 								},
-								"url": "{{BASE_URL_SIARTEC}}/auth/sign-in"
+								"url": {
+									"raw": "{{BASE_URL_SIARTEC}}/auth/sign-in",
+									"host": [
+										"{{BASE_URL_SIARTEC}}"
+									],
+									"path": [
+										"auth",
+										"sign-in"
+									]
+								}
 							},
 							"response": []
 						}
@@ -210,7 +275,15 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "{{BASE_URL_SIARTEC}}/banks"
+						"url": {
+							"raw": "{{BASE_URL_SIARTEC}}/banks",
+							"host": [
+								"{{BASE_URL_SIARTEC}}"
+							],
+							"path": [
+								"banks"
+							]
+						}
 					},
 					"response": []
 				}
@@ -224,7 +297,15 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "{{BASE_URL_SIARTEC}}/municipalities"
+						"url": {
+							"raw": "{{BASE_URL_SIARTEC}}/municipalities",
+							"host": [
+								"{{BASE_URL_SIARTEC}}"
+							],
+							"path": [
+								"municipalities"
+							]
+						}
 					},
 					"response": []
 				},
@@ -233,7 +314,17 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "{{BASE_URL_SIARTEC}}/municipalities/state/7"
+						"url": {
+							"raw": "{{BASE_URL_SIARTEC}}/municipalities/state/7",
+							"host": [
+								"{{BASE_URL_SIARTEC}}"
+							],
+							"path": [
+								"municipalities",
+								"state",
+								"7"
+							]
+						}
 					},
 					"response": []
 				}
@@ -247,7 +338,17 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "{{BASE_URL_SIARTEC}}/parishes/municipality/7"
+						"url": {
+							"raw": "{{BASE_URL_SIARTEC}}/parishes/municipality/7",
+							"host": [
+								"{{BASE_URL_SIARTEC}}"
+							],
+							"path": [
+								"parishes",
+								"municipality",
+								"7"
+							]
+						}
 					},
 					"response": []
 				}
@@ -261,7 +362,16 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "{{BASE_URL_SIARTEC}}/entities/"
+						"url": {
+							"raw": "{{BASE_URL_SIARTEC}}/entities/",
+							"host": [
+								"{{BASE_URL_SIARTEC}}"
+							],
+							"path": [
+								"entities",
+								""
+							]
+						}
 					},
 					"response": []
 				}
@@ -275,7 +385,17 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "{{BASE_URL_SIARTEC}}/subentities/entity/2"
+						"url": {
+							"raw": "{{BASE_URL_SIARTEC}}/subentities/entity/2",
+							"host": [
+								"{{BASE_URL_SIARTEC}}"
+							],
+							"path": [
+								"subentities",
+								"entity",
+								"2"
+							]
+						}
 					},
 					"response": []
 				}
@@ -289,7 +409,17 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "{{BASE_URL_SIARTEC}}/procedures/entity/2"
+						"url": {
+							"raw": "{{BASE_URL_SIARTEC}}/procedures/subentity/4",
+							"host": [
+								"{{BASE_URL_SIARTEC}}"
+							],
+							"path": [
+								"procedures",
+								"subentity",
+								"4"
+							]
+						}
 					},
 					"response": []
 				}
@@ -303,7 +433,16 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "{{BASE_URL_SIARTEC}}/contributors-types/"
+						"url": {
+							"raw": "{{BASE_URL_SIARTEC}}/contributors-types/",
+							"host": [
+								"{{BASE_URL_SIARTEC}}"
+							],
+							"path": [
+								"contributors-types",
+								""
+							]
+						}
 					},
 					"response": []
 				}
@@ -317,7 +456,16 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "{{BASE_URL_SIARTEC}}/states/"
+						"url": {
+							"raw": "{{BASE_URL_SIARTEC}}/states/",
+							"host": [
+								"{{BASE_URL_SIARTEC}}"
+							],
+							"path": [
+								"states",
+								""
+							]
+						}
 					},
 					"response": []
 				}
