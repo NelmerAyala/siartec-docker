@@ -1,0 +1,327 @@
+{
+	"info": {
+		"_postman_id": "889d99c2-3c66-4dd8-90f3-a92b9a03d63f",
+		"name": "siartec",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "36557212"
+	},
+	"item": [
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "password",
+					"item": [
+						{
+							"name": ":id",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"passwordCurrent\": \"Nel24297146@1\",\r\n    \"passwordNew\": \"Nel24297146@2\",\r\n    \"passwordNewConfirm\": \"Nel24297146@2\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL_SIARTEC}}/users/password/2",
+									"host": [
+										"{{BASE_URL_SIARTEC}}"
+									],
+									"path": [
+										"users",
+										"password",
+										"2"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "/",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\": \"Nelmer \",\r\n    \"lastname\": \"Ayala \",\r\n    \"email\": \"nelmeray@gmail.com\",\r\n    \"password\": \"Nel24297146@\",\r\n    \"identity_document_letter\": \"V\",\r\n    \"identity_document\": \"24297146\",\r\n    \"birthdate\": \"2024-02-02\",\r\n    // \"constitution_date\": \"\",\r\n    \"address\": \"MARIARA\",\r\n    \"phone_number\": \"+58 414 4196314\",\r\n    \"contributor_type\":3,\r\n    \"role\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL_SIARTEC}}/users"
+					},
+					"response": []
+				},
+				{
+					"name": "/:id",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullname\": \"Ayala Seijas\",\r\n    \"identity_document_letter\": \"J\",\r\n    \"email\": \"nelmerayala@gmail.com\",\r\n    \"identity_document\": \"24297146-7\",\r\n    \"address\": \"Mariara2\",\r\n    \"phone_number\": \"+58 414 4196316\",\r\n    \"contributor_type\": 3,\r\n    \"parish\": 269\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL_SIARTEC}}/users/3"
+					},
+					"response": []
+				},
+				{
+					"name": "/:id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"lastname\": \"Ayala Seijas\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL_SIARTEC}}/users/3"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "profile",
+					"item": [
+						{
+							"name": "/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoibmVsbWVyYXlhbGFAZ21haWwuY29tIiwiaWF0IjoxNzI1MjUwNDMxLCJleHAiOjE3MjUyNTA0OTF9.vdVA5B6XqoerNICn6cihUJfnDVZIxqxfG8Jp9B6Oydc",
+										"type": "text"
+									}
+								],
+								"url": "{{BASE_URL_SIARTEC}}/auth/profile"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "sign-in",
+					"item": [
+						{
+							"name": "google",
+							"item": [
+								{
+									"name": "email",
+									"item": [
+										{
+											"name": "/",
+											"request": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n    \"email\": \"nelmerayala@gmail.com\"\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": "{{BASE_URL_SIARTEC}}/auth/sign-in/google/email"
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "/",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"googleTokenId\": \"eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg3YmJlMDgxNWIwNjRlNmQ0NDljYWM5OTlmMGU1MGU3MmEzZTQzNzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI0MTE2NDM5NjY5MTItNWlxbGNiZTQyMGZpNm5ibGJ0OHBja3RyOTQ0bXE1b3MuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI0MTE2NDM5NjY5MTItNWlxbGNiZTQyMGZpNm5ibGJ0OHBja3RyOTQ0bXE1b3MuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTA4NDI4MDk4NDI0NDE0OTM5MDUiLCJlbWFpbCI6Im5lbG1lcmF5YWxhQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJuYmYiOjE3MjA0OTQzNDEsIm5hbWUiOiJOZWxtZXIgQWxleGFuZGVyIEF5YWxhIFNlaWphcyIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NMUDN4ZlJMeUdpOVNQb20xY25oaVE2dktBZzNmM2R4M3BuMlpFajNKcmZXYlVzR19zVT1zOTYtYyIsImdpdmVuX25hbWUiOiJOZWxtZXIgQWxleGFuZGVyIiwiZmFtaWx5X25hbWUiOiJBeWFsYSBTZWlqYXMiLCJpYXQiOjE3MjA0OTQ2NDEsImV4cCI6MTcyMDQ5ODI0MSwianRpIjoiNTg4OGEwZTQ1YjhkMTZiNzBkNjE3MzBiYjk4ZWYxMjNkOGY4ODk5MiJ9.c1SqZy-d8BO1r8Y-VeUWUm-6nrs1MyFDXxUZKGn0K8AS9mZ4YGY9As3Ll50OyjX8kLe4ufF5cnikqaXETaggYVSJQ8NcZZHjq3DDuC5Skz_Q3W8y2kI_2-WY8x7K2l3eXQdSbVQZYOQ8vX2yqBaTZ-jZuQ7pIZdX4oCL9k4Gs1cHXB0uzeOX_xdR-Ym7HPEZNLMgVsZALIMwJVWLrjS0WXFF20hX-ICpPIU0epGqlt_vYMnU5_K9m9QF5Qu00D4Fx66Gs3vTmscIEfycjhjyIWn-O8t_5owZ2o3NSMb5x7MrHw8B1VzKE112k3H0bXvKWAIsT8GfSOUxSUMN3znDGw\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{BASE_URL_SIARTEC}}/auth/sign-in/google"
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "/",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"nelmerayala@gmail.com\",\r\n    \"password\": \"Nel24297146@\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{BASE_URL_SIARTEC}}/auth/sign-in"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "bank",
+			"item": [
+				{
+					"name": "/",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL_SIARTEC}}/banks"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "municipalities",
+			"item": [
+				{
+					"name": "/",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL_SIARTEC}}/municipalities"
+					},
+					"response": []
+				},
+				{
+					"name": "/:id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL_SIARTEC}}/municipalities/state/7"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "parishies",
+			"item": [
+				{
+					"name": "/",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL_SIARTEC}}/parishes/municipality/7"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "entities",
+			"item": [
+				{
+					"name": "/",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL_SIARTEC}}/entities/"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "subentities",
+			"item": [
+				{
+					"name": "/",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL_SIARTEC}}/subentities/entity/2"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "procedures",
+			"item": [
+				{
+					"name": "/",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL_SIARTEC}}/procedures/entity/2"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "contributors_types",
+			"item": [
+				{
+					"name": "/",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL_SIARTEC}}/contributors-types/"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "states",
+			"item": [
+				{
+					"name": "/",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL_SIARTEC}}/states/"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
