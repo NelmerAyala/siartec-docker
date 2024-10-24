@@ -56,7 +56,7 @@ services:
     restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-      - C:\BackupDB\:/lib/postgresql/backup
+      - /BackupDB:/lib/postgresql/backup
     ports:
       - "5420:5432"
 
