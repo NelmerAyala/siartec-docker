@@ -1355,7 +1355,8 @@ CREATE TABLE public.users (
     "roleId" integer,
     "contributorTypeId" integer,
     "parishId" integer,
-    fullname character varying(256) NOT NULL
+    fullname character varying(256) NOT NULL,
+    "refreshToken" character varying
 );
 
 
@@ -1686,7 +1687,7 @@ COPY public.branch (id, code, description, created_at, updated_at, deleted_at, "
 --
 
 COPY public.calculation_factor (id, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "coinId", amount, date) FROM stdin;
-19	2024-10-25 00:57:58.958538	2024-10-25 00:57:58.958538	\N	\N	\N	\N	\N	\N	44.14704477	2024-10-25
+45	2024-10-26 22:54:18.663568	2024-10-26 22:54:18.663568	\N	\N	\N	\N	\N	3	44.42319324	2024-10-26
 \.
 
 
@@ -3688,11 +3689,11 @@ COPY public.types_external_request (id, code, description, created_at, updated_a
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.users (id, email, password, identity_document_letter, identity_document, birthdate, constitution_date, address, phone_number, last_connection, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "roleId", "contributorTypeId", "parishId", fullname) FROM stdin;
-1	shyf.infosiartec@gmail.com	$2b$10$EnHiFgWDchGadUAoZDSFZepstWg//JTpdfAFrVus0uZZMrNZCRW5m	G	20000152-6	\N	1900-01-01	Av. Michelena a 100 Mts. del elevado La Quizanda detrás de las oficinas del IVEC Sede Sec. Hacienda y Finanzas – Valencia - Edo. Carabobo.	+58 241 8743470	\N	2024-06-25 21:49:14.69	2024-06-26 22:11:38.979	\N	1	\N	\N	\N	1	\N	\N	SUPER ADMIN
-2	nelmerayala@gmail.com	$2b$10$A72NMmuYRUKqbNCspniXFu9tzHTdEv89/74wPNem0t3PSSfyvaYU.	C	24297146-6	1996-02-02	\N	Los tamarindos	+58 414 4196316	\N	2024-06-26 23:02:27.391	2024-10-21 23:27:37.129	\N	1	1	1	\N	3	3	153	Ayala Seijas
-3	jennyaray98@gmail.com	$2a$10$OQsz9Gj2Xw4J.hsWbUo2gOtcA.FdXXHtPMgyYp1cCA9gjSiYFKxN.	V	26306715	1998-01-22	\N	San Judas Tadeo I	+58 424 4571298	\N	2024-10-17 19:17:42.11	2024-10-17 19:17:42.11	\N	\N	\N	\N	\N	3	1	285	Jennyreth Cristina Aray Andrade
-4	broook.hum04@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465203	1999-08-04	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085730	\N	2024-10-14 14:54:09.9	2024-10-22 19:55:40.223	\N	\N	\N	\N	\N	3	1	285	Carlos Arnaldo Cárdenas Sosa
+COPY public.users (id, email, password, identity_document_letter, identity_document, birthdate, constitution_date, address, phone_number, last_connection, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "roleId", "contributorTypeId", "parishId", fullname, "refreshToken") FROM stdin;
+1	shyf.infosiartec@gmail.com	$2b$10$EnHiFgWDchGadUAoZDSFZepstWg//JTpdfAFrVus0uZZMrNZCRW5m	G	20000152-6	\N	1900-01-01	Av. Michelena a 100 Mts. del elevado La Quizanda detrás de las oficinas del IVEC Sede Sec. Hacienda y Finanzas – Valencia - Edo. Carabobo.	+58 241 8743470	\N	2024-06-25 21:49:14.69	2024-06-26 22:11:38.979	\N	1	\N	\N	\N	1	\N	\N	SUPER ADMIN	\N
+3	jennyaray98@gmail.com	$2a$10$OQsz9Gj2Xw4J.hsWbUo2gOtcA.FdXXHtPMgyYp1cCA9gjSiYFKxN.	V	26306715	1998-01-22	\N	San Judas Tadeo I	+58 424 4571298	\N	2024-10-17 19:17:42.11	2024-10-17 19:17:42.11	\N	\N	\N	\N	\N	3	1	285	Jennyreth Cristina Aray Andrade	\N
+4	broook.hum04@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465203	1999-08-04	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085730	\N	2024-10-14 14:54:09.9	2024-10-22 19:55:40.223	\N	\N	\N	\N	\N	3	1	285	Carlos Arnaldo Cárdenas Sosa	\N
+2	nelmerayala@gmail.com	$2b$10$A72NMmuYRUKqbNCspniXFu9tzHTdEv89/74wPNem0t3PSSfyvaYU.	C	24297146-6	1996-02-02	\N	Los tamarindos	+58 414 4196316	\N	2024-06-26 23:02:27.391	2024-10-27 21:04:55.026307	\N	1	1	1	\N	3	3	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$OZ7nIZkDt5HMaT+BfbT7tg$Sx4vC8vd2jWlo0EHWs34WWZHxkPMYsUFyF7YYPmzBwo
 \.
 
 
@@ -3742,7 +3743,7 @@ SELECT pg_catalog.setval('public.branch_id_seq', 1, false);
 -- Name: calculation_factor_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.calculation_factor_id_seq', 19, true);
+SELECT pg_catalog.setval('public.calculation_factor_id_seq', 45, true);
 
 
 --
