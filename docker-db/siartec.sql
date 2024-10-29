@@ -470,7 +470,6 @@ ALTER SEQUENCE public.country_id_seq OWNED BY public.country.id;
 
 CREATE TABLE public.entities (
     id integer NOT NULL,
-    code character varying(20) NOT NULL,
     description character varying NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
@@ -478,7 +477,8 @@ CREATE TABLE public.entities (
     "statusId" integer,
     "createdById" integer,
     "updatedById" integer,
-    "deletedById" integer
+    "deletedById" integer,
+    code character varying(4) NOT NULL
 );
 
 
@@ -861,7 +861,6 @@ ALTER SEQUENCE public.privilege_id_seq OWNED BY public.privilege.id;
 
 CREATE TABLE public.procedure (
     id integer NOT NULL,
-    code character varying(20) NOT NULL,
     description character varying NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
@@ -872,7 +871,8 @@ CREATE TABLE public.procedure (
     "deletedById" integer,
     "subentityId" integer,
     is_specific_value boolean DEFAULT false NOT NULL,
-    value numeric
+    value numeric,
+    code character varying(4) NOT NULL
 );
 
 
@@ -1076,7 +1076,6 @@ ALTER SEQUENCE public.status_id_seq OWNED BY public.status.id;
 
 CREATE TABLE public.subentity (
     id integer NOT NULL,
-    code character varying(20) NOT NULL,
     description character varying NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
@@ -1085,7 +1084,8 @@ CREATE TABLE public.subentity (
     "createdById" integer,
     "updatedById" integer,
     "deletedById" integer,
-    "entityId" integer
+    "entityId" integer,
+    code character varying(4) NOT NULL
 );
 
 
@@ -1130,7 +1130,9 @@ CREATE TABLE public.tax_stamp (
     "deletedById" integer,
     "userId" integer,
     "procedureId" integer,
-    "calculationFactorId" integer
+    "calculationFactorId" integer,
+    number_folios integer NOT NULL,
+    year character varying(4) NOT NULL
 );
 
 
@@ -1688,6 +1690,8 @@ COPY public.branch (id, code, description, created_at, updated_at, deleted_at, "
 
 COPY public.calculation_factor (id, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "coinId", amount, date) FROM stdin;
 45	2024-10-26 22:54:18.663568	2024-10-26 22:54:18.663568	\N	\N	\N	\N	\N	3	44.42319324	2024-10-26
+46	2024-10-28 20:58:50.11217	2024-10-28 20:58:50.11217	\N	\N	\N	\N	\N	3	45.17849352	2024-10-28
+47	2024-10-29 00:00:36.156533	2024-10-29 00:00:36.156533	\N	\N	\N	\N	\N	3	45.17849352	2024-10-29
 \.
 
 
@@ -1967,10 +1971,10 @@ COPY public.country (id, code, description, created_at, updated_at, deleted_at, 
 -- Data for Name: entities; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.entities (id, code, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById") FROM stdin;
-1	001	Sotar	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N
-2	002	Registros-Notarias	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N
-3	003	Procuradoria	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N
+COPY public.entities (id, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", code) FROM stdin;
+1	Sotar	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	0001
+2	Registros-Notarias	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	0002
+3	Procuradoria	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	0003
 \.
 
 
@@ -3519,27 +3523,26 @@ COPY public.privilege (id, code, description, created_at, updated_at, deleted_at
 -- Data for Name: procedure; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.procedure (id, code, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "subentityId", is_specific_value, value) FROM stdin;
-1	00000000000000000001	Solicitudes de actividad de Explotación	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	1	f	\N
-2	00000000000000000002	Autorizaciòn	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	1	f	\N
-3	00000000000000000003	Renuncias	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	1	f	\N
-4	00000000000000000004	Otorgamientos	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	1	f	\N
-5	00000000000000000005	Solicitudes	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N
-6	00000000000000000006	Autorizaciòn	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N
-7	00000000000000000007	Renuncias	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N
-8	00000000000000000008	Otorgamientos	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N
-9	00000000000000000009	Testamentos	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N
-10	00000000000000000010	Actas de Remate	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N
-11	00000000000000000011	Certificados	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N
-12	00000000000000000012	Inscripciones	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N
-13	00000000000000000013	Cierre de titularidad	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N
-14	00000000000000000014	Consultas	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N
-15	00000000000000000015	Contratos	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N
-16	00000000000000000016	Expedición	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N
-17	00000000000000000017	Consultas / Solicitudes	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	3	f	\N
-18	00000000000000000018	Contratos con los Ingresos Estadales Públicos	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	3	f	\N
-19	00000000000000000019	Contratos Relativos a Inmuebles	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	3	f	\N
-20	00000000000000000020	Expedición de Copias Certificadas	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	3	f	\N
+COPY public.procedure (id, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "subentityId", is_specific_value, value, code) FROM stdin;
+2	Autorizaciòn	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	1	f	\N	0002
+3	Renuncias	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	1	t	20	0003
+4	Otorgamientos	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	1	f	\N	0004
+5	Solicitudes	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0005
+6	Autorizaciòn	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0006
+7	Renuncias	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0007
+8	Otorgamientos	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0008
+9	Testamentos	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0009
+10	Actas de Remate	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0010
+12	Inscripciones	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0011
+13	Cierre de titularidad	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0012
+14	Consultas	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0013
+15	Contratos	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0014
+16	Expedición	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0015
+17	Consultas / Solicitudes	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	3	f	\N	0016
+18	Contratos con los Ingresos Estadales Públicos	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	3	f	\N	0017
+19	Contratos Relativos a Inmuebles	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	3	f	\N	0018
+20	Expedición de Copias Certificadas	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	3	f	\N	0019
+11	Certificados	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0020
 \.
 
 
@@ -3630,17 +3633,17 @@ COPY public.status (id, code, description, apply_to, created_at, updated_at, del
 -- Data for Name: subentity; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.subentity (id, code, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "entityId") FROM stdin;
-1	001	No Aplica	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	1
-2	002	No Aplica	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2
-3	003	Primer Registo Inmobiliario	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2
-4	004	Segundo Registo Inmobiliario	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2
-5	005	Municipios Guacara, San Joaquín y Diego Ibarra	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2
-6	006	Municipios Naguanagua y San Diego	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2
-7	007	Municipio Montalban	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2
-8	008	Funciones Notariales de Carlos Arvelo	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2
-9	009	Municipio Bejuma	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2
-10	010	No Aplica	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	3
+COPY public.subentity (id, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "entityId", code) FROM stdin;
+1	No Aplica	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	1	0001
+2	No Aplica	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	0002
+3	Primer Registo Inmobiliario	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	0003
+4	Segundo Registo Inmobiliario	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	0004
+5	Municipios Guacara, San Joaquín y Diego Ibarra	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	0005
+6	Municipios Naguanagua y San Diego	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	0006
+7	Municipio Montalban	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	0007
+8	Funciones Notariales de Carlos Arvelo	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	0008
+9	Municipio Bejuma	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	0009
+10	No Aplica	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	3	0010
 \.
 
 
@@ -3648,7 +3651,11 @@ COPY public.subentity (id, code, description, created_at, updated_at, deleted_at
 -- Data for Name: tax_stamp; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.tax_stamp (id, code, amount, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "userId", "procedureId", "calculationFactorId") FROM stdin;
+COPY public.tax_stamp (id, code, amount, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "userId", "procedureId", "calculationFactorId", number_folios, year) FROM stdin;
+71	00010001000320240001	903.5698704000001	2024-10-29 00:18:04.131271	2024-10-29 00:18:04.131271	\N	\N	\N	\N	\N	2	3	\N	1	2024
+72	00010001000220240002	2258.924676	2024-10-29 00:18:04.177663	2024-10-29 00:18:04.177663	\N	\N	\N	\N	\N	2	2	\N	1	2024
+73	00010001000320240003	903.5698704000001	2024-10-29 00:18:05.916355	2024-10-29 00:18:05.916355	\N	\N	\N	\N	\N	2	3	\N	1	2024
+74	00010001000220240003	2258.924676	2024-10-29 00:18:05.917956	2024-10-29 00:18:05.917956	\N	\N	\N	\N	\N	2	2	\N	1	2024
 \.
 
 
@@ -3693,7 +3700,7 @@ COPY public.users (id, email, password, identity_document_letter, identity_docum
 1	shyf.infosiartec@gmail.com	$2b$10$EnHiFgWDchGadUAoZDSFZepstWg//JTpdfAFrVus0uZZMrNZCRW5m	G	20000152-6	\N	1900-01-01	Av. Michelena a 100 Mts. del elevado La Quizanda detrás de las oficinas del IVEC Sede Sec. Hacienda y Finanzas – Valencia - Edo. Carabobo.	+58 241 8743470	\N	2024-06-25 21:49:14.69	2024-06-26 22:11:38.979	\N	1	\N	\N	\N	1	\N	\N	SUPER ADMIN	\N
 3	jennyaray98@gmail.com	$2a$10$OQsz9Gj2Xw4J.hsWbUo2gOtcA.FdXXHtPMgyYp1cCA9gjSiYFKxN.	V	26306715	1998-01-22	\N	San Judas Tadeo I	+58 424 4571298	\N	2024-10-17 19:17:42.11	2024-10-17 19:17:42.11	\N	\N	\N	\N	\N	3	1	285	Jennyreth Cristina Aray Andrade	\N
 4	broook.hum04@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465203	1999-08-04	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085730	\N	2024-10-14 14:54:09.9	2024-10-22 19:55:40.223	\N	\N	\N	\N	\N	3	1	285	Carlos Arnaldo Cárdenas Sosa	\N
-2	nelmerayala@gmail.com	$2b$10$A72NMmuYRUKqbNCspniXFu9tzHTdEv89/74wPNem0t3PSSfyvaYU.	C	24297146-6	1996-02-02	\N	Los tamarindos	+58 414 4196316	\N	2024-06-26 23:02:27.391	2024-10-27 21:04:55.026307	\N	1	1	1	\N	3	3	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$OZ7nIZkDt5HMaT+BfbT7tg$Sx4vC8vd2jWlo0EHWs34WWZHxkPMYsUFyF7YYPmzBwo
+2	nelmerayala@gmail.com	$2b$10$A72NMmuYRUKqbNCspniXFu9tzHTdEv89/74wPNem0t3PSSfyvaYU.	C	24297146-6	1996-02-02	\N	Los tamarindos	+58 414 4196316	\N	2024-06-26 23:02:27.391	2024-10-28 20:58:18.059514	\N	1	1	1	\N	3	3	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$9V2Q1sY6adnwyyECbSJmtA$dHKo75VsXJGuLMfdqkUQgOugVBJjI1sS0ERt7f080cw
 \.
 
 
@@ -3743,7 +3750,7 @@ SELECT pg_catalog.setval('public.branch_id_seq', 1, false);
 -- Name: calculation_factor_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.calculation_factor_id_seq', 45, true);
+SELECT pg_catalog.setval('public.calculation_factor_id_seq', 47, true);
 
 
 --
@@ -3876,7 +3883,7 @@ SELECT pg_catalog.setval('public.subentity_id_seq', 10, true);
 -- Name: tax_stamp_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tax_stamp_id_seq', 1, false);
+SELECT pg_catalog.setval('public.tax_stamp_id_seq', 74, true);
 
 
 --
