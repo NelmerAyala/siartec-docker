@@ -465,6 +465,51 @@ ALTER SEQUENCE public.country_id_seq OWNED BY public.country.id;
 
 
 --
+-- Name: document; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.document (
+    id integer NOT NULL,
+    path character varying(150) NOT NULL,
+    description character varying(256) NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    deleted_at timestamp without time zone,
+    "statusId" integer,
+    "createdById" integer,
+    "updatedById" integer,
+    "deletedById" integer,
+    number character varying(100) NOT NULL,
+    publication_date date NOT NULL,
+    file_name character varying(256) NOT NULL
+);
+
+
+ALTER TABLE public.document OWNER TO postgres;
+
+--
+-- Name: document_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.document_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.document_id_seq OWNER TO postgres;
+
+--
+-- Name: document_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.document_id_seq OWNED BY public.document.id;
+
+
+--
 -- Name: entities; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -1457,6 +1502,13 @@ ALTER TABLE ONLY public.country ALTER COLUMN id SET DEFAULT nextval('public.coun
 
 
 --
+-- Name: document id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.document ALTER COLUMN id SET DEFAULT nextval('public.document_id_seq'::regclass);
+
+
+--
 -- Name: entities id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1964,6 +2016,15 @@ COPY public.country (id, code, description, created_at, updated_at, deleted_at, 
 238	DJ	Yibuti	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	\N	\N	\N
 239	ZM	Zambia	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	\N	\N	\N
 240	ZW	Zimbabue	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	\N	\N	\N
+\.
+
+
+--
+-- Data for Name: document; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.document (id, path, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", number, publication_date, file_name) FROM stdin;
+1	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465156	2024-10-29 22:24:45.465156	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
 \.
 
 
@@ -3652,10 +3713,12 @@ COPY public.subentity (id, description, created_at, updated_at, deleted_at, "sta
 --
 
 COPY public.tax_stamp (id, code, amount, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "userId", "procedureId", "calculationFactorId", number_folios, year) FROM stdin;
-71	00010001000320240001	903.5698704000001	2024-10-29 00:18:04.131271	2024-10-29 00:18:04.131271	\N	\N	\N	\N	\N	2	3	\N	1	2024
-72	00010001000220240002	2258.924676	2024-10-29 00:18:04.177663	2024-10-29 00:18:04.177663	\N	\N	\N	\N	\N	2	2	\N	1	2024
-73	00010001000320240003	903.5698704000001	2024-10-29 00:18:05.916355	2024-10-29 00:18:05.916355	\N	\N	\N	\N	\N	2	3	\N	1	2024
-74	00010001000220240003	2258.924676	2024-10-29 00:18:05.917956	2024-10-29 00:18:05.917956	\N	\N	\N	\N	\N	2	2	\N	1	2024
+98	00010001000320240001	903.5698704000001	2024-10-29 22:41:33.560913	2024-10-29 22:41:33.560913	\N	\N	\N	\N	\N	2	3	\N	1	2024
+99	00010001000320240002	903.5698704000001	2024-10-29 22:41:33.573428	2024-10-29 22:41:33.573428	\N	\N	\N	\N	\N	2	3	\N	1	2024
+100	00010001000220240003	2258.924676	2024-10-29 22:41:33.606725	2024-10-29 22:41:33.606725	\N	\N	\N	\N	\N	2	2	\N	1	2024
+103	00010001000220240006	2258.924676	2024-10-29 22:41:33.623469	2024-10-29 22:41:33.623469	\N	\N	\N	\N	\N	2	2	\N	1	2024
+101	00010001000420240004	2258.924676	2024-10-29 22:41:33.611575	2024-10-29 22:41:33.611575	\N	\N	\N	\N	\N	2	4	\N	1	2024
+102	00010001000220240005	2258.924676	2024-10-29 22:41:33.618193	2024-10-29 22:41:33.618193	\N	\N	\N	\N	\N	2	2	\N	1	2024
 \.
 
 
@@ -3700,7 +3763,7 @@ COPY public.users (id, email, password, identity_document_letter, identity_docum
 1	shyf.infosiartec@gmail.com	$2b$10$EnHiFgWDchGadUAoZDSFZepstWg//JTpdfAFrVus0uZZMrNZCRW5m	G	20000152-6	\N	1900-01-01	Av. Michelena a 100 Mts. del elevado La Quizanda detrás de las oficinas del IVEC Sede Sec. Hacienda y Finanzas – Valencia - Edo. Carabobo.	+58 241 8743470	\N	2024-06-25 21:49:14.69	2024-06-26 22:11:38.979	\N	1	\N	\N	\N	1	\N	\N	SUPER ADMIN	\N
 3	jennyaray98@gmail.com	$2a$10$OQsz9Gj2Xw4J.hsWbUo2gOtcA.FdXXHtPMgyYp1cCA9gjSiYFKxN.	V	26306715	1998-01-22	\N	San Judas Tadeo I	+58 424 4571298	\N	2024-10-17 19:17:42.11	2024-10-17 19:17:42.11	\N	\N	\N	\N	\N	3	1	285	Jennyreth Cristina Aray Andrade	\N
 4	broook.hum04@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465203	1999-08-04	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085730	\N	2024-10-14 14:54:09.9	2024-10-22 19:55:40.223	\N	\N	\N	\N	\N	3	1	285	Carlos Arnaldo Cárdenas Sosa	\N
-2	nelmerayala@gmail.com	$2b$10$A72NMmuYRUKqbNCspniXFu9tzHTdEv89/74wPNem0t3PSSfyvaYU.	C	24297146-6	1996-02-02	\N	Los tamarindos	+58 414 4196316	\N	2024-06-26 23:02:27.391	2024-10-28 20:58:18.059514	\N	1	1	1	\N	3	3	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$9V2Q1sY6adnwyyECbSJmtA$dHKo75VsXJGuLMfdqkUQgOugVBJjI1sS0ERt7f080cw
+2	nelmerayala@gmail.com	$2b$10$A72NMmuYRUKqbNCspniXFu9tzHTdEv89/74wPNem0t3PSSfyvaYU.	C	24297146-6	1996-02-02	\N	Los tamarindos	+58 414 4196316	\N	2024-06-26 23:02:27.391	2024-10-29 22:36:55.40313	\N	1	1	1	\N	3	3	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$3L0JcKiHZ4QT+q3t3/Habg$ID0iB4XlH/BtXBZ907cqRCm86mDLI/GCK8xfp7H6hpI
 \.
 
 
@@ -3772,6 +3835,13 @@ SELECT pg_catalog.setval('public.contributors_type_id_seq', 5, true);
 --
 
 SELECT pg_catalog.setval('public.country_id_seq', 240, true);
+
+
+--
+-- Name: document_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.document_id_seq', 3, true);
 
 
 --
@@ -3883,7 +3953,7 @@ SELECT pg_catalog.setval('public.subentity_id_seq', 10, true);
 -- Name: tax_stamp_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tax_stamp_id_seq', 74, true);
+SELECT pg_catalog.setval('public.tax_stamp_id_seq', 103, true);
 
 
 --
@@ -4154,6 +4224,14 @@ ALTER TABLE ONLY public.status
 
 
 --
+-- Name: document PK_e57d3357f83f3cdc0acffc3d777; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.document
+    ADD CONSTRAINT "PK_e57d3357f83f3cdc0acffc3d777" PRIMARY KEY (id);
+
+
+--
 -- Name: bank_account PK_f3246deb6b79123482c6adb9745; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4386,6 +4464,14 @@ ALTER TABLE ONLY public.state
 
 
 --
+-- Name: document FK_1d567174352a451d458eb9ebd46; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.document
+    ADD CONSTRAINT "FK_1d567174352a451d458eb9ebd46" FOREIGN KEY ("statusId") REFERENCES public.status(id);
+
+
+--
 -- Name: country FK_1e58299162002560831eba42907; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4527,6 +4613,14 @@ ALTER TABLE ONLY public.lockers_point_of_sale
 
 ALTER TABLE ONLY public.subentity
     ADD CONSTRAINT "FK_3cae16563f3a467a93ffbd5753b" FOREIGN KEY ("statusId") REFERENCES public.status(id);
+
+
+--
+-- Name: document FK_3d0038df8ca900f5fda2ff896a7; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.document
+    ADD CONSTRAINT "FK_3d0038df8ca900f5fda2ff896a7" FOREIGN KEY ("updatedById") REFERENCES public.users(id);
 
 
 --
@@ -4970,6 +5064,14 @@ ALTER TABLE ONLY public.auditable_process
 
 
 --
+-- Name: document FK_9eac3612452020c976207f37b03; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.document
+    ADD CONSTRAINT "FK_9eac3612452020c976207f37b03" FOREIGN KEY ("createdById") REFERENCES public.users(id);
+
+
+--
 -- Name: contributors_type FK_a0155936de3ab846e5a4f6cb399; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4991,6 +5093,14 @@ ALTER TABLE ONLY public.parishes
 
 ALTER TABLE ONLY public.transaction
     ADD CONSTRAINT "FK_a6c02973b42994798ae4f305993" FOREIGN KEY ("deletedById") REFERENCES public.users(id);
+
+
+--
+-- Name: document FK_a7783cf6b7037a607846dc80f67; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.document
+    ADD CONSTRAINT "FK_a7783cf6b7037a607846dc80f67" FOREIGN KEY ("deletedById") REFERENCES public.users(id);
 
 
 --
