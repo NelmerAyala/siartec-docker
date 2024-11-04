@@ -786,7 +786,8 @@ CREATE TABLE public.payment (
     "createdById" integer,
     "updatedById" integer,
     "deletedById" integer,
-    "lockerId" integer
+    "lockerId" integer,
+    "paymentTypeId" integer
 );
 
 
@@ -812,6 +813,48 @@ ALTER SEQUENCE public.payment_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.payment_id_seq OWNED BY public.payment.id;
+
+
+--
+-- Name: payments_type; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.payments_type (
+    id integer NOT NULL,
+    code character varying(20) NOT NULL,
+    description character varying NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    deleted_at timestamp without time zone,
+    "statusId" integer,
+    "createdById" integer,
+    "updatedById" integer,
+    "deletedById" integer
+);
+
+
+ALTER TABLE public.payments_type OWNER TO postgres;
+
+--
+-- Name: payments_type_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.payments_type_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.payments_type_id_seq OWNER TO postgres;
+
+--
+-- Name: payments_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.payments_type_id_seq OWNED BY public.payments_type.id;
 
 
 --
@@ -1558,6 +1601,13 @@ ALTER TABLE ONLY public.payment ALTER COLUMN id SET DEFAULT nextval('public.paym
 
 
 --
+-- Name: payments_type id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.payments_type ALTER COLUMN id SET DEFAULT nextval('public.payments_type_id_seq'::regclass);
+
+
+--
 -- Name: point_of_sale id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1753,8 +1803,8 @@ COPY public.calculation_factor (id, created_at, updated_at, deleted_at, "statusI
 
 COPY public.coin (id, code, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById") FROM stdin;
 1	VES	Bolivares Soberanos	2024-10-24 14:34:04.553321	2024-10-24 14:34:04.553321	\N	1	1	1	\N
-2	DOLLAR	Dolares	2024-10-24 22:31:54.92722	2024-10-24 22:31:54.92722	\N	1	1	1	\N
-3	EURO	Euros	2024-10-24 22:31:54.931116	2024-10-24 22:31:54.931116	\N	1	1	1	\N
+2	USD	Dolares	2024-10-24 22:31:54.92722	2024-10-24 22:31:54.92722	\N	1	1	1	\N
+3	EUR	Euros	2024-10-24 22:31:54.931116	2024-10-24 22:31:54.931116	\N	1	1	1	\N
 \.
 
 
@@ -2024,7 +2074,31 @@ COPY public.country (id, code, description, created_at, updated_at, deleted_at, 
 --
 
 COPY public.document (id, path, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", number, publication_date, file_name) FROM stdin;
-1	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465156	2024-10-29 22:24:45.465156	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+6	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+7	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+8	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+9	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+10	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+11	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+12	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+13	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+14	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+15	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+16	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+17	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+18	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+19	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+20	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+21	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+22	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+23	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+24	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+25	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
+1	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+2	GACETAS	Gaceta N 2 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-2.pdf
+3	GACETAS	Gaceta N 3 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-3.pdf
+4	GACETAS	Gaceta N 4 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-4.pdf
+5	GACETAS	Gaceta N 5 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-5.pdf
 \.
 
 
@@ -3552,7 +3626,18 @@ COPY public.parishes (id, code, description, created_at, updated_at, deleted_at,
 -- Data for Name: payment; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.payment (id, code, amount, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "lockerId") FROM stdin;
+COPY public.payment (id, code, amount, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "lockerId", "paymentTypeId") FROM stdin;
+\.
+
+
+--
+-- Data for Name: payments_type; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.payments_type (id, code, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById") FROM stdin;
+1	ONLINE	Boton de Pago 100% banco	2024-11-03 11:45:32.3193	2024-11-03 11:45:32.3193	\N	1	1	1	\N
+2	TRANFERENCIA	Transferencia Bancaria	2024-11-03 11:46:23.180249	2024-11-03 11:46:23.180249	\N	1	1	1	\N
+3	PAGOMOVIL	Pago Móvil	2024-11-03 11:46:23.18436	2024-11-03 11:46:23.18436	\N	1	1	1	\N
 \.
 
 
@@ -3763,7 +3848,7 @@ COPY public.users (id, email, password, identity_document_letter, identity_docum
 1	shyf.infosiartec@gmail.com	$2b$10$EnHiFgWDchGadUAoZDSFZepstWg//JTpdfAFrVus0uZZMrNZCRW5m	G	20000152-6	\N	1900-01-01	Av. Michelena a 100 Mts. del elevado La Quizanda detrás de las oficinas del IVEC Sede Sec. Hacienda y Finanzas – Valencia - Edo. Carabobo.	+58 241 8743470	\N	2024-06-25 21:49:14.69	2024-06-26 22:11:38.979	\N	1	\N	\N	\N	1	\N	\N	SUPER ADMIN	\N
 3	jennyaray98@gmail.com	$2a$10$OQsz9Gj2Xw4J.hsWbUo2gOtcA.FdXXHtPMgyYp1cCA9gjSiYFKxN.	V	26306715	1998-01-22	\N	San Judas Tadeo I	+58 424 4571298	\N	2024-10-17 19:17:42.11	2024-10-17 19:17:42.11	\N	\N	\N	\N	\N	3	1	285	Jennyreth Cristina Aray Andrade	\N
 4	broook.hum04@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465203	1999-08-04	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085730	\N	2024-10-14 14:54:09.9	2024-10-22 19:55:40.223	\N	\N	\N	\N	\N	3	1	285	Carlos Arnaldo Cárdenas Sosa	\N
-2	nelmerayala@gmail.com	$2b$10$A72NMmuYRUKqbNCspniXFu9tzHTdEv89/74wPNem0t3PSSfyvaYU.	C	24297146-6	1996-02-02	\N	Los tamarindos	+58 414 4196316	\N	2024-06-26 23:02:27.391	2024-10-29 22:36:55.40313	\N	1	1	1	\N	3	3	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$3L0JcKiHZ4QT+q3t3/Habg$ID0iB4XlH/BtXBZ907cqRCm86mDLI/GCK8xfp7H6hpI
+2	nelmerayala@gmail.com	$2a$10$PG1UH3TyqY9pS1c972/vSOM3w.Hj/N3D0XxpaNJ3ereTA4CnADY2K	C	24297146-6	1996-02-02	\N	Los tamarindos manzana a-9	+58 414 4196316	\N	2024-06-26 23:02:27.391	2024-11-02 17:48:11.790308	\N	1	1	1	\N	3	3	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$FSXc+iR3GyHbKIfrBLXDkQ$Ig8AcaQWRwSdsrsygXOSlZM1NsypMBLSMQ66ICXC418
 \.
 
 
@@ -3841,7 +3926,7 @@ SELECT pg_catalog.setval('public.country_id_seq', 240, true);
 -- Name: document_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.document_id_seq', 3, true);
+SELECT pg_catalog.setval('public.document_id_seq', 25, false);
 
 
 --
@@ -3891,6 +3976,13 @@ SELECT pg_catalog.setval('public.parishes_id_seq', 1134, true);
 --
 
 SELECT pg_catalog.setval('public.payment_id_seq', 1, false);
+
+
+--
+-- Name: payments_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.payments_type_id_seq', 3, true);
 
 
 --
@@ -4093,6 +4185,14 @@ ALTER TABLE ONLY public.bank
 
 ALTER TABLE ONLY public.subentity
     ADD CONSTRAINT "PK_7ea4ded3743bb8beff83f0fb869" PRIMARY KEY (id);
+
+
+--
+-- Name: payments_type PK_80b6adf73186fa5164199b890cd; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.payments_type
+    ADD CONSTRAINT "PK_80b6adf73186fa5164199b890cd" PRIMARY KEY (id);
 
 
 --
@@ -4408,6 +4508,14 @@ ALTER TABLE ONLY public.transaction
 
 
 --
+-- Name: payments_type FK_0e849b4c5cf0d707e3623c61a89; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.payments_type
+    ADD CONSTRAINT "FK_0e849b4c5cf0d707e3623c61a89" FOREIGN KEY ("statusId") REFERENCES public.status(id);
+
+
+--
 -- Name: calculation_factor FK_0f129a044f25bbfa21b54494eb2; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4445,6 +4553,14 @@ ALTER TABLE ONLY public.municipalities
 
 ALTER TABLE ONLY public.parishes
     ADD CONSTRAINT "FK_169dba658436e72c6259eea01c2" FOREIGN KEY ("municipalityId") REFERENCES public.municipalities(id);
+
+
+--
+-- Name: payments_type FK_16dd4efb0c89e300bced8b7a1a1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.payments_type
+    ADD CONSTRAINT "FK_16dd4efb0c89e300bced8b7a1a1" FOREIGN KEY ("createdById") REFERENCES public.users(id);
 
 
 --
@@ -4872,6 +4988,14 @@ ALTER TABLE ONLY public.role
 
 
 --
+-- Name: payments_type FK_69a73824c342592ec40c667784b; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.payments_type
+    ADD CONSTRAINT "FK_69a73824c342592ec40c667784b" FOREIGN KEY ("updatedById") REFERENCES public.users(id);
+
+
+--
 -- Name: audit FK_6e25d726a45f53f3563a34586a4; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4893,6 +5017,14 @@ ALTER TABLE ONLY public.audits_detail
 
 ALTER TABLE ONLY public.types_external_request
     ADD CONSTRAINT "FK_6f0e1bdb064bc21b1d643f12f61" FOREIGN KEY ("deletedById") REFERENCES public.users(id);
+
+
+--
+-- Name: payment FK_7275d1212ed427833ef3630adfb; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.payment
+    ADD CONSTRAINT "FK_7275d1212ed427833ef3630adfb" FOREIGN KEY ("paymentTypeId") REFERENCES public.payments_type(id);
 
 
 --
@@ -5485,6 +5617,14 @@ ALTER TABLE ONLY public.roles_privilege
 
 ALTER TABLE ONLY public.tax_stamp
     ADD CONSTRAINT "FK_f4286785d364f39e97a220c7aab" FOREIGN KEY ("statusId") REFERENCES public.status(id);
+
+
+--
+-- Name: payments_type FK_f70b724ff4a783aabc03dfcbfec; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.payments_type
+    ADD CONSTRAINT "FK_f70b724ff4a783aabc03dfcbfec" FOREIGN KEY ("deletedById") REFERENCES public.users(id);
 
 
 --
