@@ -23,7 +23,9 @@ SET row_security = off;
 CREATE TYPE public.status_apply_to_enum AS ENUM (
     'all',
     'stamps',
-    'payments'
+    'payments',
+    'transactions',
+    'external_requests'
 );
 
 
@@ -193,7 +195,6 @@ ALTER TABLE public.bank OWNER TO postgres;
 CREATE TABLE public.bank_account (
     id integer NOT NULL,
     code character varying(20) NOT NULL,
-    account_number integer NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
     deleted_at timestamp without time zone,
@@ -201,7 +202,8 @@ CREATE TABLE public.bank_account (
     "createdById" integer,
     "updatedById" integer,
     "deletedById" integer,
-    "bankId" integer
+    "bankId" integer NOT NULL,
+    account_number character varying(20) NOT NULL
 );
 
 
@@ -777,7 +779,6 @@ ALTER SEQUENCE public.parishes_id_seq OWNED BY public.parishes.id;
 
 CREATE TABLE public.payment (
     id integer NOT NULL,
-    code character varying(20) NOT NULL,
     amount numeric NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
@@ -1774,7 +1775,8 @@ COPY public.bank (id, created_at, updated_at, deleted_at, "statusId", "createdBy
 -- Data for Name: bank_account; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.bank_account (id, code, account_number, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "bankId") FROM stdin;
+COPY public.bank_account (id, code, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "bankId", account_number) FROM stdin;
+1	01561234	2024-11-06 22:57:43.089708	2024-11-06 22:57:43.089708	\N	\N	1	1	\N	12	01560000000000001234
 \.
 
 
@@ -1794,6 +1796,9 @@ COPY public.calculation_factor (id, created_at, updated_at, deleted_at, "statusI
 45	2024-10-26 22:54:18.663568	2024-10-26 22:54:18.663568	\N	\N	\N	\N	\N	3	44.42319324	2024-10-26
 46	2024-10-28 20:58:50.11217	2024-10-28 20:58:50.11217	\N	\N	\N	\N	\N	3	45.17849352	2024-10-28
 47	2024-10-29 00:00:36.156533	2024-10-29 00:00:36.156533	\N	\N	\N	\N	\N	3	45.17849352	2024-10-29
+50	2024-11-05 20:54:42.442276	2024-11-05 20:54:42.442276	\N	\N	\N	\N	\N	3	47.4013772	2024-11-05
+51	2024-11-05 20:54:42.442276	2024-11-05 20:54:42.442276	\N	\N	\N	\N	\N	3	47.4013772	2024-11-06
+52	2024-11-05 20:54:42.442276	2024-11-05 20:54:42.442276	\N	\N	\N	\N	\N	3	47.4013772	2024-11-07
 \.
 
 
@@ -2110,6 +2115,10 @@ COPY public.entities (id, description, created_at, updated_at, deleted_at, "stat
 1	Sotar	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	0001
 2	Registros-Notarias	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	0002
 3	Procuradoria	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	0003
+4	SERVICIO AUTONOMO DE REGISTROS Y NOTARIAS	2024-11-04 13:50:40.473	2024-11-04 13:50:40.473	\N	\N	\N	\N	\N	0001
+5	PROCURADURIA DEL ESTADO CARABOBO	2024-11-04 13:50:40.473	2024-11-04 13:50:40.473	\N	\N	\N	\N	\N	0002
+6	SENIAT	2024-11-04 13:50:40.473	2024-11-04 13:50:40.473	\N	\N	\N	\N	\N	0003
+7	GOBIERNO DE CARABOBO	2024-11-04 13:50:40.473	2024-11-04 13:50:40.473	\N	\N	\N	\N	\N	0004
 \.
 
 
@@ -2118,6 +2127,7 @@ COPY public.entities (id, description, created_at, updated_at, deleted_at, "stat
 --
 
 COPY public.external_request (id, code, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "typeExternalRequestId", request_url, request_json, response_json, "transactionId") FROM stdin;
+1	2024110700000001	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2024-11-07 00:30:30.65699	2024-11-07 00:30:30.65699	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2pCert/api/v1/PagoDBI	{"sMerchantId":"341433","sTrxId":"2024110700000001","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V24297146","sPhoneNumber":"584144196314","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"userc2p"}		2
 \.
 
 
@@ -3626,7 +3636,11 @@ COPY public.parishes (id, code, description, created_at, updated_at, deleted_at,
 -- Data for Name: payment; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.payment (id, code, amount, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "lockerId", "paymentTypeId") FROM stdin;
+COPY public.payment (id, amount, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "lockerId", "paymentTypeId") FROM stdin;
+7	11376.330528	2024-11-06 23:32:49.764804	2024-11-06 23:32:49.764804	\N	3	\N	\N	\N	\N	1
+8	11376.330527999999	2024-11-06 23:36:24.83899	2024-11-06 23:36:24.83899	\N	3	\N	\N	\N	\N	1
+9	11376.330527999999	2024-11-06 23:40:42.37988	2024-11-06 23:40:42.37988	\N	3	\N	\N	\N	\N	1
+10	11376.330527999999	2024-11-07 00:30:30.507582	2024-11-07 00:30:30.507582	\N	3	\N	\N	\N	\N	1
 \.
 
 
@@ -3770,8 +3784,15 @@ COPY public.state (id, code, description, created_at, updated_at, deleted_at, "s
 --
 
 COPY public.status (id, code, description, apply_to, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById") FROM stdin;
-2	INACTIVE	logical state of deleted registers	all	2024-07-15 13:44:30.197311	2024-07-15 13:44:30.197311	\N	\N	\N	\N	\N
-1	ACTIVE	logical state of active registers	all	2024-07-15 13:42:34.889805	2024-07-15 13:42:34.889805	\N	\N	\N	\N	\N
+2	INACTIVE	logical state of deleted registers	all	2024-07-15 13:44:30.197311	2024-07-15 13:44:30.197311	\N	1	1	1	\N
+1	ACTIVE	logical state of active registers	all	2024-07-15 13:42:34.889805	2024-07-15 13:42:34.889805	\N	1	1	1	\N
+3	UNCONFIRMED	status for unconfirmed payments\r\n	payments	2024-11-05 21:19:06.172716	2024-11-05 21:19:06.172716	\N	1	1	1	\N
+4	CONFIRMED	status for confirmed payments\r\n	payments	2024-11-05 21:19:54.240486	2024-11-05 21:19:54.240486	\N	1	1	1	\N
+5	REQUESTED	status of requested transactions\r\n	transactions	2024-11-06 22:41:12.312778	2024-11-06 22:41:12.312778	\N	1	1	1	\N
+6	VERIFIED	verified transaction status	transactions	2024-11-06 22:41:12.316804	2024-11-06 22:41:12.316804	\N	1	1	1	\N
+8	SUCCESS_REQUEST	status of external requests with successful response.	external_requests	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N
+9	ERROR_REQUEST	Status of external requests with error in response.	external_requests	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N
+7	WAITING_RESPONSE	status of external requests waiting for a response	external_requests	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N
 \.
 
 
@@ -3798,12 +3819,30 @@ COPY public.subentity (id, description, created_at, updated_at, deleted_at, "sta
 --
 
 COPY public.tax_stamp (id, code, amount, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "userId", "procedureId", "calculationFactorId", number_folios, year) FROM stdin;
-98	00010001000320240001	903.5698704000001	2024-10-29 22:41:33.560913	2024-10-29 22:41:33.560913	\N	\N	\N	\N	\N	2	3	\N	1	2024
-99	00010001000320240002	903.5698704000001	2024-10-29 22:41:33.573428	2024-10-29 22:41:33.573428	\N	\N	\N	\N	\N	2	3	\N	1	2024
-100	00010001000220240003	2258.924676	2024-10-29 22:41:33.606725	2024-10-29 22:41:33.606725	\N	\N	\N	\N	\N	2	2	\N	1	2024
-103	00010001000220240006	2258.924676	2024-10-29 22:41:33.623469	2024-10-29 22:41:33.623469	\N	\N	\N	\N	\N	2	2	\N	1	2024
-101	00010001000420240004	2258.924676	2024-10-29 22:41:33.611575	2024-10-29 22:41:33.611575	\N	\N	\N	\N	\N	2	4	\N	1	2024
-102	00010001000220240005	2258.924676	2024-10-29 22:41:33.618193	2024-10-29 22:41:33.618193	\N	\N	\N	\N	\N	2	2	\N	1	2024
+176	00010001000320240001	948.027544	2024-11-06 23:32:49.620377	2024-11-06 23:32:49.620377	\N	\N	\N	\N	\N	2	3	\N	1	2024
+177	00010001000320240002	948.027544	2024-11-06 23:32:49.639993	2024-11-06 23:32:49.639993	\N	\N	\N	\N	\N	2	3	\N	1	2024
+178	00010001000420240003	2370.06886	2024-11-06 23:32:49.691878	2024-11-06 23:32:49.691878	\N	\N	\N	\N	\N	2	4	\N	1	2024
+179	00010001000220240003	2370.06886	2024-11-06 23:32:49.699401	2024-11-06 23:32:49.699401	\N	\N	\N	\N	\N	2	2	\N	1	2024
+180	00010001000220240005	2370.06886	2024-11-06 23:32:49.720456	2024-11-06 23:32:49.720456	\N	\N	\N	\N	\N	2	2	\N	1	2024
+181	00010001000220240006	2370.06886	2024-11-06 23:32:49.734632	2024-11-06 23:32:49.734632	\N	\N	\N	\N	\N	2	2	\N	1	2024
+182	00010001000320240007	948.027544	2024-11-06 23:36:24.761183	2024-11-06 23:36:24.761183	\N	\N	\N	\N	\N	2	3	\N	1	2024
+183	00010001000320240008	948.027544	2024-11-06 23:36:24.776994	2024-11-06 23:36:24.776994	\N	\N	\N	\N	\N	2	3	\N	1	2024
+184	00010001000220240009	2370.06886	2024-11-06 23:36:24.808036	2024-11-06 23:36:24.808036	\N	\N	\N	\N	\N	2	2	\N	1	2024
+185	00010001000420240009	2370.06886	2024-11-06 23:36:24.811566	2024-11-06 23:36:24.811566	\N	\N	\N	\N	\N	2	4	\N	1	2024
+186	00010001000220240010	2370.06886	2024-11-06 23:36:24.820338	2024-11-06 23:36:24.820338	\N	\N	\N	\N	\N	2	2	\N	1	2024
+187	00010001000220240012	2370.06886	2024-11-06 23:36:24.826708	2024-11-06 23:36:24.826708	\N	\N	\N	\N	\N	2	2	\N	1	2024
+188	00010001000320240013	948.027544	2024-11-06 23:40:42.292866	2024-11-06 23:40:42.292866	\N	\N	\N	\N	\N	2	3	\N	1	2024
+189	00010001000320240014	948.027544	2024-11-06 23:40:42.315494	2024-11-06 23:40:42.315494	\N	\N	\N	\N	\N	2	3	\N	1	2024
+190	00010001000220240015	2370.06886	2024-11-06 23:40:42.346254	2024-11-06 23:40:42.346254	\N	\N	\N	\N	\N	2	2	\N	1	2024
+191	00010001000420240015	2370.06886	2024-11-06 23:40:42.351563	2024-11-06 23:40:42.351563	\N	\N	\N	\N	\N	2	4	\N	1	2024
+192	00010001000220240016	2370.06886	2024-11-06 23:40:42.360763	2024-11-06 23:40:42.360763	\N	\N	\N	\N	\N	2	2	\N	1	2024
+193	00010001000220240018	2370.06886	2024-11-06 23:40:42.366786	2024-11-06 23:40:42.366786	\N	\N	\N	\N	\N	2	2	\N	1	2024
+194	00010001000320240019	948.027544	2024-11-07 00:30:30.402	2024-11-07 00:30:30.402	\N	\N	\N	\N	\N	2	3	\N	1	2024
+195	00010001000320240020	948.027544	2024-11-07 00:30:30.420358	2024-11-07 00:30:30.420358	\N	\N	\N	\N	\N	2	3	\N	1	2024
+196	00010001000220240021	2370.06886	2024-11-07 00:30:30.455621	2024-11-07 00:30:30.455621	\N	\N	\N	\N	\N	2	2	\N	1	2024
+197	00010001000420240021	2370.06886	2024-11-07 00:30:30.461967	2024-11-07 00:30:30.461967	\N	\N	\N	\N	\N	2	4	\N	1	2024
+198	00010001000220240022	2370.06886	2024-11-07 00:30:30.474952	2024-11-07 00:30:30.474952	\N	\N	\N	\N	\N	2	2	\N	1	2024
+199	00010001000220240024	2370.06886	2024-11-07 00:30:30.491412	2024-11-07 00:30:30.491412	\N	\N	\N	\N	\N	2	2	\N	1	2024
 \.
 
 
@@ -3812,6 +3851,30 @@ COPY public.tax_stamp (id, code, amount, created_at, updated_at, deleted_at, "st
 --
 
 COPY public.tax_stamps_payment (id, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "taxStampId", "paymentId") FROM stdin;
+19	2024-11-06 23:32:49.781887	2024-11-06 23:32:49.781887	\N	\N	\N	\N	\N	176	7
+20	2024-11-06 23:32:49.782923	2024-11-06 23:32:49.782923	\N	\N	\N	\N	\N	177	7
+21	2024-11-06 23:32:49.784884	2024-11-06 23:32:49.784884	\N	\N	\N	\N	\N	178	7
+22	2024-11-06 23:32:49.835772	2024-11-06 23:32:49.835772	\N	\N	\N	\N	\N	180	7
+23	2024-11-06 23:32:49.839299	2024-11-06 23:32:49.839299	\N	\N	\N	\N	\N	179	7
+24	2024-11-06 23:32:49.849182	2024-11-06 23:32:49.849182	\N	\N	\N	\N	\N	181	7
+25	2024-11-06 23:36:24.847864	2024-11-06 23:36:24.847864	\N	\N	\N	\N	\N	182	8
+26	2024-11-06 23:36:24.848338	2024-11-06 23:36:24.848338	\N	\N	\N	\N	\N	183	8
+27	2024-11-06 23:36:24.848732	2024-11-06 23:36:24.848732	\N	\N	\N	\N	\N	184	8
+28	2024-11-06 23:36:24.891981	2024-11-06 23:36:24.891981	\N	\N	\N	\N	\N	185	8
+29	2024-11-06 23:36:24.898585	2024-11-06 23:36:24.898585	\N	\N	\N	\N	\N	186	8
+30	2024-11-06 23:36:24.903033	2024-11-06 23:36:24.903033	\N	\N	\N	\N	\N	187	8
+31	2024-11-06 23:40:42.389596	2024-11-06 23:40:42.389596	\N	\N	\N	\N	\N	188	9
+32	2024-11-06 23:40:42.390258	2024-11-06 23:40:42.390258	\N	\N	\N	\N	\N	189	9
+33	2024-11-06 23:40:42.390816	2024-11-06 23:40:42.390816	\N	\N	\N	\N	\N	190	9
+34	2024-11-06 23:40:42.437071	2024-11-06 23:40:42.437071	\N	\N	\N	\N	\N	191	9
+35	2024-11-06 23:40:42.441345	2024-11-06 23:40:42.441345	\N	\N	\N	\N	\N	192	9
+36	2024-11-06 23:40:42.446665	2024-11-06 23:40:42.446665	\N	\N	\N	\N	\N	193	9
+37	2024-11-07 00:30:30.52096	2024-11-07 00:30:30.52096	\N	\N	\N	\N	\N	194	10
+38	2024-11-07 00:30:30.52153	2024-11-07 00:30:30.52153	\N	\N	\N	\N	\N	195	10
+39	2024-11-07 00:30:30.522309	2024-11-07 00:30:30.522309	\N	\N	\N	\N	\N	196	10
+40	2024-11-07 00:30:30.572528	2024-11-07 00:30:30.572528	\N	\N	\N	\N	\N	198	10
+41	2024-11-07 00:30:30.575391	2024-11-07 00:30:30.575391	\N	\N	\N	\N	\N	197	10
+42	2024-11-07 00:30:30.580969	2024-11-07 00:30:30.580969	\N	\N	\N	\N	\N	199	10
 \.
 
 
@@ -3820,6 +3883,8 @@ COPY public.tax_stamps_payment (id, created_at, updated_at, deleted_at, "statusI
 --
 
 COPY public.transaction (id, reference, amount, date, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "transactionTypeId", "bankAccountId", "paymentId") FROM stdin;
+1	2024110600000001	11376.330527999999	2024-11-06 23:40:42.453-04	2024-11-06 23:40:42.467123	2024-11-06 23:40:42.467123	\N	5	\N	\N	\N	1	1	9
+2	2024110700000001	11376.330527999999	2024-11-07 00:30:30.588-04	2024-11-07 00:30:30.606882	2024-11-07 00:30:30.606882	\N	5	\N	\N	\N	1	1	10
 \.
 
 
@@ -3828,6 +3893,8 @@ COPY public.transaction (id, reference, amount, date, created_at, updated_at, de
 --
 
 COPY public.transactions_type (id, code, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById") FROM stdin;
+2	DEBIT	Type of debit banking transactions	2024-11-06 22:48:24.089182	2024-11-06 22:48:24.089182	\N	1	1	1	\N
+1	CREDIT	Type of credit banking transactions	2024-11-06 22:48:24.089182	2024-11-06 22:48:24.089182	\N	1	1	1	\N
 \.
 
 
@@ -3848,7 +3915,7 @@ COPY public.users (id, email, password, identity_document_letter, identity_docum
 1	shyf.infosiartec@gmail.com	$2b$10$EnHiFgWDchGadUAoZDSFZepstWg//JTpdfAFrVus0uZZMrNZCRW5m	G	20000152-6	\N	1900-01-01	Av. Michelena a 100 Mts. del elevado La Quizanda detrás de las oficinas del IVEC Sede Sec. Hacienda y Finanzas – Valencia - Edo. Carabobo.	+58 241 8743470	\N	2024-06-25 21:49:14.69	2024-06-26 22:11:38.979	\N	1	\N	\N	\N	1	\N	\N	SUPER ADMIN	\N
 3	jennyaray98@gmail.com	$2a$10$OQsz9Gj2Xw4J.hsWbUo2gOtcA.FdXXHtPMgyYp1cCA9gjSiYFKxN.	V	26306715	1998-01-22	\N	San Judas Tadeo I	+58 424 4571298	\N	2024-10-17 19:17:42.11	2024-10-17 19:17:42.11	\N	\N	\N	\N	\N	3	1	285	Jennyreth Cristina Aray Andrade	\N
 4	broook.hum04@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465203	1999-08-04	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085730	\N	2024-10-14 14:54:09.9	2024-10-22 19:55:40.223	\N	\N	\N	\N	\N	3	1	285	Carlos Arnaldo Cárdenas Sosa	\N
-2	nelmerayala@gmail.com	$2a$10$PG1UH3TyqY9pS1c972/vSOM3w.Hj/N3D0XxpaNJ3ereTA4CnADY2K	C	24297146-6	1996-02-02	\N	Los tamarindos manzana a-9	+58 414 4196316	\N	2024-06-26 23:02:27.391	2024-11-02 17:48:11.790308	\N	1	1	1	\N	3	3	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$FSXc+iR3GyHbKIfrBLXDkQ$Ig8AcaQWRwSdsrsygXOSlZM1NsypMBLSMQ66ICXC418
+2	nelmerayala@gmail.com	$2a$10$PG1UH3TyqY9pS1c972/vSOM3w.Hj/N3D0XxpaNJ3ereTA4CnADY2K	C	24297146-6	1996-02-02	\N	Los tamarindos manzana a-9	+58 414 4196316	\N	2024-06-26 23:02:27.391	2024-11-06 20:32:30.222464	\N	1	1	1	\N	3	3	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$7r6zSlIboBKlUU++Ql3EWQ$uyVnfeHiNI0LszUXKoXI842JYrbqR7kiPBOVnWjDNbE
 \.
 
 
@@ -3877,7 +3944,7 @@ SELECT pg_catalog.setval('public.audits_detail_id_seq', 1, false);
 -- Name: bank_account_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.bank_account_id_seq', 1, false);
+SELECT pg_catalog.setval('public.bank_account_id_seq', 1, true);
 
 
 --
@@ -3898,7 +3965,7 @@ SELECT pg_catalog.setval('public.branch_id_seq', 1, false);
 -- Name: calculation_factor_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.calculation_factor_id_seq', 47, true);
+SELECT pg_catalog.setval('public.calculation_factor_id_seq', 52, true);
 
 
 --
@@ -3933,14 +4000,14 @@ SELECT pg_catalog.setval('public.document_id_seq', 25, false);
 -- Name: entities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.entities_id_seq', 3, true);
+SELECT pg_catalog.setval('public.entities_id_seq', 1, false);
 
 
 --
 -- Name: external_request_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.external_request_id_seq', 1, false);
+SELECT pg_catalog.setval('public.external_request_id_seq', 1, true);
 
 
 --
@@ -3975,7 +4042,7 @@ SELECT pg_catalog.setval('public.parishes_id_seq', 1134, true);
 -- Name: payment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.payment_id_seq', 1, false);
+SELECT pg_catalog.setval('public.payment_id_seq', 10, true);
 
 
 --
@@ -4031,7 +4098,7 @@ SELECT pg_catalog.setval('public.state_id_seq', 24, true);
 -- Name: status_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.status_id_seq', 2, true);
+SELECT pg_catalog.setval('public.status_id_seq', 9, true);
 
 
 --
@@ -4045,28 +4112,28 @@ SELECT pg_catalog.setval('public.subentity_id_seq', 10, true);
 -- Name: tax_stamp_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tax_stamp_id_seq', 103, true);
+SELECT pg_catalog.setval('public.tax_stamp_id_seq', 199, true);
 
 
 --
 -- Name: tax_stamps_payment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tax_stamps_payment_id_seq', 1, false);
+SELECT pg_catalog.setval('public.tax_stamps_payment_id_seq', 42, true);
 
 
 --
 -- Name: transaction_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.transaction_id_seq', 1, false);
+SELECT pg_catalog.setval('public.transaction_id_seq', 2, true);
 
 
 --
 -- Name: transactions_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.transactions_type_id_seq', 1, false);
+SELECT pg_catalog.setval('public.transactions_type_id_seq', 2, true);
 
 
 --
