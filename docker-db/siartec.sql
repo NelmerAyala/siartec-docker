@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 16.4
--- Dumped by pg_dump version 16.4
+-- Dumped from database version 15.2
+-- Dumped by pg_dump version 15.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -67,7 +67,7 @@ CREATE SEQUENCE public.audit_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.audit_id_seq OWNER TO postgres;
+ALTER TABLE public.audit_id_seq OWNER TO postgres;
 
 --
 -- Name: audit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -110,7 +110,7 @@ CREATE SEQUENCE public.auditable_process_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.auditable_process_id_seq OWNER TO postgres;
+ALTER TABLE public.auditable_process_id_seq OWNER TO postgres;
 
 --
 -- Name: auditable_process_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -157,7 +157,7 @@ CREATE SEQUENCE public.audits_detail_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.audits_detail_id_seq OWNER TO postgres;
+ALTER TABLE public.audits_detail_id_seq OWNER TO postgres;
 
 --
 -- Name: audits_detail_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -222,7 +222,7 @@ CREATE SEQUENCE public.bank_account_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.bank_account_id_seq OWNER TO postgres;
+ALTER TABLE public.bank_account_id_seq OWNER TO postgres;
 
 --
 -- Name: bank_account_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -244,7 +244,7 @@ CREATE SEQUENCE public.bank_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.bank_id_seq OWNER TO postgres;
+ALTER TABLE public.bank_id_seq OWNER TO postgres;
 
 --
 -- Name: bank_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -286,7 +286,7 @@ CREATE SEQUENCE public.branch_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.branch_id_seq OWNER TO postgres;
+ALTER TABLE public.branch_id_seq OWNER TO postgres;
 
 --
 -- Name: branch_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -329,7 +329,7 @@ CREATE SEQUENCE public.calculation_factor_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.calculation_factor_id_seq OWNER TO postgres;
+ALTER TABLE public.calculation_factor_id_seq OWNER TO postgres;
 
 --
 -- Name: calculation_factor_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -371,7 +371,7 @@ CREATE SEQUENCE public.coin_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.coin_id_seq OWNER TO postgres;
+ALTER TABLE public.coin_id_seq OWNER TO postgres;
 
 --
 -- Name: coin_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -415,7 +415,7 @@ CREATE SEQUENCE public.contributors_type_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.contributors_type_id_seq OWNER TO postgres;
+ALTER TABLE public.contributors_type_id_seq OWNER TO postgres;
 
 --
 -- Name: contributors_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -457,7 +457,7 @@ CREATE SEQUENCE public.country_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.country_id_seq OWNER TO postgres;
+ALTER TABLE public.country_id_seq OWNER TO postgres;
 
 --
 -- Name: country_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -502,7 +502,7 @@ CREATE SEQUENCE public.document_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.document_id_seq OWNER TO postgres;
+ALTER TABLE public.document_id_seq OWNER TO postgres;
 
 --
 -- Name: document_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -544,7 +544,7 @@ CREATE SEQUENCE public.entities_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.entities_id_seq OWNER TO postgres;
+ALTER TABLE public.entities_id_seq OWNER TO postgres;
 
 --
 -- Name: entities_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -591,7 +591,7 @@ CREATE SEQUENCE public.external_request_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.external_request_id_seq OWNER TO postgres;
+ALTER TABLE public.external_request_id_seq OWNER TO postgres;
 
 --
 -- Name: external_request_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -634,7 +634,7 @@ CREATE SEQUENCE public.locker_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.locker_id_seq OWNER TO postgres;
+ALTER TABLE public.locker_id_seq OWNER TO postgres;
 
 --
 -- Name: locker_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -678,7 +678,7 @@ CREATE SEQUENCE public.lockers_point_of_sale_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.lockers_point_of_sale_id_seq OWNER TO postgres;
+ALTER TABLE public.lockers_point_of_sale_id_seq OWNER TO postgres;
 
 --
 -- Name: lockers_point_of_sale_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -721,7 +721,7 @@ CREATE SEQUENCE public.municipalities_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.municipalities_id_seq OWNER TO postgres;
+ALTER TABLE public.municipalities_id_seq OWNER TO postgres;
 
 --
 -- Name: municipalities_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -764,7 +764,7 @@ CREATE SEQUENCE public.parishes_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.parishes_id_seq OWNER TO postgres;
+ALTER TABLE public.parishes_id_seq OWNER TO postgres;
 
 --
 -- Name: parishes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -807,7 +807,7 @@ CREATE SEQUENCE public.payment_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.payment_id_seq OWNER TO postgres;
+ALTER TABLE public.payment_id_seq OWNER TO postgres;
 
 --
 -- Name: payment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -849,7 +849,7 @@ CREATE SEQUENCE public.payments_type_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.payments_type_id_seq OWNER TO postgres;
+ALTER TABLE public.payments_type_id_seq OWNER TO postgres;
 
 --
 -- Name: payments_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -893,7 +893,7 @@ CREATE SEQUENCE public.point_of_sale_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.point_of_sale_id_seq OWNER TO postgres;
+ALTER TABLE public.point_of_sale_id_seq OWNER TO postgres;
 
 --
 -- Name: point_of_sale_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -935,7 +935,7 @@ CREATE SEQUENCE public.privilege_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.privilege_id_seq OWNER TO postgres;
+ALTER TABLE public.privilege_id_seq OWNER TO postgres;
 
 --
 -- Name: privilege_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -980,7 +980,7 @@ CREATE SEQUENCE public.procedure_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.procedure_id_seq OWNER TO postgres;
+ALTER TABLE public.procedure_id_seq OWNER TO postgres;
 
 --
 -- Name: procedure_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1022,7 +1022,7 @@ CREATE SEQUENCE public.role_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.role_id_seq OWNER TO postgres;
+ALTER TABLE public.role_id_seq OWNER TO postgres;
 
 --
 -- Name: role_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1064,7 +1064,7 @@ CREATE SEQUENCE public.roles_privilege_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.roles_privilege_id_seq OWNER TO postgres;
+ALTER TABLE public.roles_privilege_id_seq OWNER TO postgres;
 
 --
 -- Name: roles_privilege_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1107,7 +1107,7 @@ CREATE SEQUENCE public.state_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.state_id_seq OWNER TO postgres;
+ALTER TABLE public.state_id_seq OWNER TO postgres;
 
 --
 -- Name: state_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1150,7 +1150,7 @@ CREATE SEQUENCE public.status_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.status_id_seq OWNER TO postgres;
+ALTER TABLE public.status_id_seq OWNER TO postgres;
 
 --
 -- Name: status_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1193,7 +1193,7 @@ CREATE SEQUENCE public.subentity_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.subentity_id_seq OWNER TO postgres;
+ALTER TABLE public.subentity_id_seq OWNER TO postgres;
 
 --
 -- Name: subentity_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1240,7 +1240,7 @@ CREATE SEQUENCE public.tax_stamp_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.tax_stamp_id_seq OWNER TO postgres;
+ALTER TABLE public.tax_stamp_id_seq OWNER TO postgres;
 
 --
 -- Name: tax_stamp_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1282,7 +1282,7 @@ CREATE SEQUENCE public.tax_stamps_payment_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.tax_stamps_payment_id_seq OWNER TO postgres;
+ALTER TABLE public.tax_stamps_payment_id_seq OWNER TO postgres;
 
 --
 -- Name: tax_stamps_payment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1328,7 +1328,7 @@ CREATE SEQUENCE public.transaction_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.transaction_id_seq OWNER TO postgres;
+ALTER TABLE public.transaction_id_seq OWNER TO postgres;
 
 --
 -- Name: transaction_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1370,7 +1370,7 @@ CREATE SEQUENCE public.transactions_type_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.transactions_type_id_seq OWNER TO postgres;
+ALTER TABLE public.transactions_type_id_seq OWNER TO postgres;
 
 --
 -- Name: transactions_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1412,7 +1412,7 @@ CREATE SEQUENCE public.types_external_request_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.types_external_request_id_seq OWNER TO postgres;
+ALTER TABLE public.types_external_request_id_seq OWNER TO postgres;
 
 --
 -- Name: types_external_request_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1466,7 +1466,7 @@ CREATE SEQUENCE public.users_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.users_id_seq OWNER TO postgres;
+ALTER TABLE public.users_id_seq OWNER TO postgres;
 
 --
 -- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -2112,13 +2112,10 @@ COPY public.document (id, path, description, created_at, updated_at, deleted_at,
 --
 
 COPY public.entities (id, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", code) FROM stdin;
-1	Sotar	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	0001
-2	Registros-Notarias	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	0002
-3	Procuradoria	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	0003
-4	SERVICIO AUTONOMO DE REGISTROS Y NOTARIAS	2024-11-04 13:50:40.473	2024-11-04 13:50:40.473	\N	\N	\N	\N	\N	0001
-5	PROCURADURIA DEL ESTADO CARABOBO	2024-11-04 13:50:40.473	2024-11-04 13:50:40.473	\N	\N	\N	\N	\N	0002
-6	SENIAT	2024-11-04 13:50:40.473	2024-11-04 13:50:40.473	\N	\N	\N	\N	\N	0003
-7	GOBIERNO DE CARABOBO	2024-11-04 13:50:40.473	2024-11-04 13:50:40.473	\N	\N	\N	\N	\N	0004
+1	SERVICIO AUTONOMO DE REGISTROS Y NOTARIAS	2024-11-07 14:49:53.595993	2024-11-07 14:49:53.595993	\N	1	1	1	\N	1
+2	PROCURADURIA DEL ESTADO CARABOBO	2024-11-07 14:49:53.595993	2024-11-07 14:49:53.595993	\N	1	1	1	\N	2
+3	SENIAT	2024-11-07 14:49:53.595993	2024-11-07 14:49:53.595993	\N	1	1	1	\N	3
+4	GOBIERNO DE CARABOBO	2024-11-07 14:49:53.595993	2024-11-07 14:49:53.595993	\N	1	1	1	\N	4
 \.
 
 
@@ -2127,7 +2124,6 @@ COPY public.entities (id, description, created_at, updated_at, deleted_at, "stat
 --
 
 COPY public.external_request (id, code, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "typeExternalRequestId", request_url, request_json, response_json, "transactionId") FROM stdin;
-1	2024110700000001	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2024-11-07 00:30:30.65699	2024-11-07 00:30:30.65699	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2pCert/api/v1/PagoDBI	{"sMerchantId":"341433","sTrxId":"2024110700000001","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V24297146","sPhoneNumber":"584144196314","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"userc2p"}		2
 \.
 
 
@@ -3637,10 +3633,6 @@ COPY public.parishes (id, code, description, created_at, updated_at, deleted_at,
 --
 
 COPY public.payment (id, amount, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "lockerId", "paymentTypeId") FROM stdin;
-7	11376.330528	2024-11-06 23:32:49.764804	2024-11-06 23:32:49.764804	\N	3	\N	\N	\N	\N	1
-8	11376.330527999999	2024-11-06 23:36:24.83899	2024-11-06 23:36:24.83899	\N	3	\N	\N	\N	\N	1
-9	11376.330527999999	2024-11-06 23:40:42.37988	2024-11-06 23:40:42.37988	\N	3	\N	\N	\N	\N	1
-10	11376.330527999999	2024-11-07 00:30:30.507582	2024-11-07 00:30:30.507582	\N	3	\N	\N	\N	\N	1
 \.
 
 
@@ -3684,25 +3676,367 @@ COPY public.privilege (id, code, description, created_at, updated_at, deleted_at
 --
 
 COPY public.procedure (id, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "subentityId", is_specific_value, value, code) FROM stdin;
-2	Autorizaciòn	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	1	f	\N	0002
-3	Renuncias	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	1	t	20	0003
-4	Otorgamientos	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	1	f	\N	0004
-5	Solicitudes	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0005
-6	Autorizaciòn	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0006
-7	Renuncias	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0007
-8	Otorgamientos	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0008
-9	Testamentos	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0009
-10	Actas de Remate	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0010
-12	Inscripciones	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0011
-13	Cierre de titularidad	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0012
-14	Consultas	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0013
-15	Contratos	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0014
-16	Expedición	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0015
-17	Consultas / Solicitudes	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	3	f	\N	0016
-18	Contratos con los Ingresos Estadales Públicos	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	3	f	\N	0017
-19	Contratos Relativos a Inmuebles	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	3	f	\N	0018
-20	Expedición de Copias Certificadas	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	3	f	\N	0019
-11	Certificados	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	f	\N	0020
+2	Inscripcion de sentencia de separacion de cuerpos, donde no se adjudiquen bienes inmuebles	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0002
+8	Inscripcion de ttulos o certificados  de profesionalizacion	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0008
+9	Copias certificadas de documentos inscritos.	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0009
+10	Copias o reproducciones simples de los documentos inscritos.	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0010
+11	Inscripcion de asociaciones y sociedades civiles de caracter privado.	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0011
+12	Inscripcion de testamentos abiertos o cerrados	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0012
+13	Actas de remate.	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0013
+15	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto, renuncias o gravamenes de la propiedad.	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0015
+16	Decretos de interdiccion o inhabilitacion civil	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0016
+17	Certificacion de gravamenes	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0017
+18	Copias certificadas de actos o instrumentos  que reposen en los archivos de los Registros	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0018
+19	Actos traslativos de la propiedad de  inmuebles	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0019
+20	Inscripcion de capitulaciones matrimoniales	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0020
+21	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0021
+22	Documento de particiones de herencias	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0022
+23	Cierre de titularidad.-	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0023
+24	Documento de parcelamiento	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0024
+25	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0025
+26	Inscripcion de mejoras en bienhechurias y sentencias de titulo supletorio	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0026
+27	Por cualquier otro tipo de documento que se presente para su protocolizacion.	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0027
+28	Inscripcion de testamentos abiertos o cerrados	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0012
+29	Actas de remate.	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0013
+30	Otorgamiento de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0014
+31	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto, renuncias o gravamenes de la propiedad.	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0015
+32	Decretos de interdiccion o inhabilitacion civil	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0016
+33	Certificacion de gravamenes	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0017
+34	Copias certificadas de actos o instrumentos  que reposen en los archivos de los Registros	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0018
+35	Actos traslativos de la propiedad de  inmuebles	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0019
+36	Inscripcion de capitulaciones matrimoniales	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0020
+37	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0021
+38	Documento de particiones de herencias	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0022
+39	Cierre de titularidad.-	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0023
+40	Documento de parcelamiento	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0024
+41	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0025
+42	Inscripcion de mejoras en bienhechurias y sentencias de titulo supletorio	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0026
+43	Por cualquier otro tipo de documento que se presente para su protocolizacion.	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0027
+44	Inscripcion de testamentos abiertos o cerrados	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0012
+45	Actas de remate.	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0013
+46	Otorgamiento de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0014
+1	Inscripcion de sentencias de divorcio, donde no se adjudiquen bienes inmuebles	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0001
+3	Inscripcion de sentencia de  nulidad de matrimonio, donde no se adjudiquen bienes inmuebles	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0003
+4	Estampar notas marginales de sentencias de divorcio, separaciones de cuerpos, nulidad de matrimono	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0004
+5	Legalizacion de firmas. 	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0005
+6	Declaraciones juradas de caracter academico permitidas por la Ley	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0006
+7	Inscripcion de ttulos o certificados academicos de profesionalizacion	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0007
+14	Otorgamiento de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0014
+49	Certificacion de gravamenes	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0017
+50	Copias certificadas de actos o instrumentos  que reposen en los archivos de los Registros	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0018
+51	Actos traslativos de la propiedad de  inmuebles	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0019
+52	Inscripcion de capitulaciones matrimoniales	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0020
+53	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0021
+54	Documento de particiones de herencias	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0022
+55	Cierre de titularidad.-	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0023
+56	Documento de parcelamiento	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0024
+57	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0025
+58	Inscripcion de mejoras en bienhechurias y sentencias de titulo supletorio	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0026
+60	Inscripcion de testamentos abiertos o cerrados	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0012
+61	Actas de remate.	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0013
+62	Otorgamiento de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0014
+64	Decretos de interdiccion o inhabilitacion civil	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0016
+65	Certificacion de gravamenes	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0017
+66	Copias certificadas de actos o instrumentos  que reposen en los archivos de los Registros	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0018
+67	Actos traslativos de la propiedad de  inmuebles	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0019
+68	Inscripcion de capitulaciones matrimoniales	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0020
+69	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0021
+70	Documento de particiones de herencias	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0022
+71	Cierre de titularidad.-	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0023
+72	Documento de parcelamiento	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0024
+73	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0025
+74	Inscripcion de mejoras en bienhechurias y sentencias de titulo supletorio	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0026
+75	Por cualquier otro tipo de documento que se presente para su protocolizacion.	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0027
+76	Inscripcion de testamentos abiertos o cerrados	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0012
+77	Actas de remate.	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0013
+78	Otorgamiento de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0014
+80	Decretos de interdiccion o inhabilitacion civil	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0016
+81	Certificacion de gravamenes	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0017
+82	Copias certificadas de actos o instrumentos  que reposen en los archivos de los Registros	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0018
+83	Actos traslativos de la propiedad de  inmuebles	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0019
+84	Inscripcion de capitulaciones matrimoniales	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0020
+85	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0021
+86	Documento de particiones de herencias	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0022
+87	Cierre de titularidad.-	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0023
+88	Documento de parcelamiento	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0024
+89	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0025
+90	Inscripcion de mejoras en bienhechurias y sentencias de titulo supletorio	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0026
+91	Por cualquier otro tipo de documento que se presente para su protocolizacion.	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0027
+92	Inscripcion de testamentos abiertos o cerrados	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0012
+93	Actas de remate.	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0013
+94	Otorgamiento de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0014
+95	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto, renuncias o gravamenes de la propiedad.	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0015
+96	Decretos de interdiccion o inhabilitacion civil	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0016
+97	Certificacion de gravamenes	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0017
+98	Copias certificadas de actos o instrumentos  que reposen en los archivos de los Registros	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0018
+99	Actos traslativos de la propiedad de  inmuebles	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0019
+100	Inscripcion de capitulaciones matrimoniales	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0020
+101	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0021
+102	Documento de particiones de herencias	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0022
+103	Cierre de titularidad.-	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0023
+104	Documento de parcelamiento	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0024
+105	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0025
+106	Inscripcion de mejoras en bienhechurias y sentencias de titulo supletorio	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0026
+48	Decretos de interdiccion o inhabilitacion civil	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0016
+111	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto, renuncias o gravamenes de la propiedad.	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0015
+112	Decretos de interdiccion o inhabilitacion civil	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0016
+113	Certificacion de gravamenes	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0017
+114	Copias certificadas de actos o instrumentos  que reposen en los archivos de los Registros	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0018
+115	Actos traslativos de la propiedad de  inmuebles	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0019
+116	Inscripcion de capitulaciones matrimoniales	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0020
+117	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0021
+118	Documento de particiones de herencias	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0022
+119	Cierre de titularidad.-	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0023
+120	Documento de parcelamiento	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0024
+121	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0025
+122	Inscripcion de mejoras en bienhechurias y sentencias de titulo supletorio	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0026
+123	Por cualquier otro tipo de documento que se presente para su protocolizacion.	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0027
+124	Inscripcion de testamentos abiertos o cerrados	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0012
+125	Actas de remate.	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0013
+126	Otorgamiento de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0014
+128	Decretos de interdiccion o inhabilitacion civil	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0016
+129	Certificacion de gravamenes	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0017
+130	Copias certificadas de actos o instrumentos  que reposen en los archivos de los Registros	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0018
+131	Actos traslativos de la propiedad de  inmuebles	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0019
+132	Inscripcion de capitulaciones matrimoniales	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0020
+133	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0021
+134	Documento de particiones de herencias	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0022
+135	Cierre de titularidad.-	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0023
+136	Documento de parcelamiento	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0024
+137	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0025
+138	Inscripcion de mejoras en bienhechurias y sentencias de titulo supletorio	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0026
+139	Por cualquier otro tipo de documento que se presente para su protocolizacion.	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0027
+140	Inscripcion de cualquier tipo de sociedades, firmas personales y asociaciones de cuentas en participacion	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0028
+142	Actas en las cuales se declare  disolucion, liquidacion, extincion o prorroga de  la duracion de cualquier tipo de sociedades	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0030
+143	Inscripcion de sociedades extranjeras, domiciliaciones o establecimientos de agencias, representaciones, o sucursales de las mismas	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0031
+144	Inscripcion de documentos de ventas de cuotas de participacion, de fondos de comercio, cesion de firmas personales	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0032
+145	Inscripcion de poderes, factores mercantiles, sentencias emanada de cualquier organismo o autoridad.	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0033
+146	Por agregar documentos y anexos a los expedientes	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0034
+147	Por estampar cada nota marginal	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0035
+148	Sellado de libros y cualquier tipo de papeles mercantiles.	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0036
+149	Por cualquier otro tipo de documento no incluido anteriormente.	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0037
+150	Inscripcion de cualquier tipo de sociedades, firmas personales y asociaciones de cuentas en participacion	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0028
+152	Actas en las cuales se declare  disolucion, liquidacion, extincion o prorroga de  la duracion de cualquier tipo de sociedades	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0030
+153	Inscripcion de sociedades extranjeras, domiciliaciones o establecimientos de agencias, representaciones, o sucursales de las mismas	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0031
+154	Inscripcion de documentos de ventas de cuotas de participacion, de fondos de comercio, cesion de firmas personales	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0032
+155	Inscripcion de poderes, factores mercantiles, sentencias emanada de cualquier organismo o autoridad.	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0033
+156	Por agregar documentos y anexos a los expedientes	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0034
+157	Por estampar cada nota marginal	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0035
+158	Sellado de libros y cualquier tipo de papeles mercantiles.	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0036
+159	Por cualquier otro tipo de documento no incluido anteriormente.	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0037
+160	Inscripcion de cualquier tipo de sociedades, firmas personales y asociaciones de cuentas en participacion	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0028
+161	Inscripcion de  Acta de asamblea o junta directiva; modificaciones al documento constitutivo de firmas personales o de cuentas de participacion y 	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0029
+344	Solvencia Sucesoral	2024-11-04 15:32:10.352	2024-11-04 15:32:10.352	\N	1	1	1	\N	25	f	\N	0062
+109	Actas de remate.	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0013
+164	Inscripcion de documentos de ventas de cuotas de participacion, de fondos de comercio, cesion de firmas personales	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0032
+165	Inscripcion de poderes, factores mercantiles, sentencias emanada de cualquier organismo o autoridad.	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0033
+166	Por agregar documentos y anexos a los expedientes	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0034
+167	Por estampar cada nota marginal	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0035
+168	Sellado de libros y cualquier tipo de papeles mercantiles.	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0036
+169	Por cualquier otro tipo de documento no incluido anteriormente.	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0037
+170	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0038
+171	Otorgamiento de autorizaciones	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0039
+172	Otorgamiento de justificativo	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0040
+173	Aprobacion de una particion	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0041
+174	Otorgamiento de poderes, revocatoria, renuncia y/o sustituciones	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0042
+175	Actuaciones para dar fecha cierta de cualquier tipo de documentos	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0043
+177	Por la trascripcion de un documento manuscrito al sistema computarizado o por su digitalizacion	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0045
+178	Por las copias certificadas de documentos autenticados	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0046
+179	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0047
+180	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0048
+181	Actas notariales	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0049
+182	Por estampar cada nota marginal.	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0050
+183	Documentos autenticados,	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0051
+184	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0052
+185	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0038
+186	Otorgamiento de autorizaciones	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0039
+187	Otorgamiento de justificativo	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0040
+188	Aprobacion de una particion	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0041
+189	Otorgamiento de poderes, revocatoria, renuncia y/o sustituciones	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0042
+190	Actuaciones para dar fecha cierta de cualquier tipo de documentos	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0043
+192	Por la trascripcion de un documento manuscrito al sistema computarizado o por su digitalizacion	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0045
+193	Por las copias certificadas de documentos autenticados	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0046
+194	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0047
+195	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0048
+196	Actas notariales	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0049
+197	Por estampar cada nota marginal.	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0050
+198	Documentos autenticados,	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0051
+199	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0052
+200	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0038
+201	Otorgamiento de autorizaciones	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0039
+202	Otorgamiento de justificativo	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0040
+203	Aprobacion de una particion	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0041
+204	Otorgamiento de poderes, revocatoria, renuncia y/o sustituciones	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0042
+205	Actuaciones para dar fecha cierta de cualquier tipo de documentos	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0043
+206	Nombramiento de curadores, salvo en los casos previstos en la Ley Organica de Proteccion de Ni���os, Ni���as y Adolescentes	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0044
+207	Por la trascripcion de un documento manuscrito al sistema computarizado o por su digitalizacion	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0045
+208	Por las copias certificadas de documentos autenticados	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0046
+209	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0047
+210	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0048
+211	Actas notariales	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0049
+212	Por estampar cada nota marginal.	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0050
+213	Documentos autenticados,	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0051
+214	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0052
+215	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0038
+216	Otorgamiento de autorizaciones	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0039
+217	Otorgamiento de justificativo	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0040
+218	Aprobacion de una particion	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0041
+219	Otorgamiento de poderes, revocatoria, renuncia y/o sustituciones	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0042
+220	Actuaciones para dar fecha cierta de cualquier tipo de documentos	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0043
+342	Inscripcion, anulacion de Registro Vivienda Principal	2024-11-04 15:32:10.352	2024-11-04 15:32:10.352	\N	1	1	1	\N	25	f	\N	0060
+223	Por las copias certificadas de documentos autenticados	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0046
+224	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0047
+225	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0048
+226	Actas notariales	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0049
+227	Por estampar cada nota marginal.	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0050
+228	Documentos autenticados,	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0051
+229	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0052
+230	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0038
+231	Otorgamiento de autorizaciones	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0039
+232	Otorgamiento de justificativo	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0040
+233	Aprobacion de una particion	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0041
+234	Otorgamiento de poderes, revocatoria, renuncia y/o sustituciones	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0042
+236	Nombramiento de curadores, salvo en los casos previstos en la Ley Organica de Proteccion de Ni���os, Ni���as y Adolescentes	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0044
+237	Por la trascripcion de un documento manuscrito al sistema computarizado o por su digitalizacion	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0045
+238	Por las copias certificadas de documentos autenticados	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0046
+239	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0047
+240	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0048
+241	Actas notariales	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0049
+242	Por estampar cada nota marginal.	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0050
+243	Documentos autenticados,	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0051
+244	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0052
+245	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0038
+246	Otorgamiento de autorizaciones	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0039
+247	Otorgamiento de justificativo	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0040
+248	Aprobacion de una particion	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0041
+249	Otorgamiento de poderes, revocatoria, renuncia y/o sustituciones	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0042
+250	Actuaciones para dar fecha cierta de cualquier tipo de documentos	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0043
+253	Por las copias certificadas de documentos autenticados	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0046
+254	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0047
+255	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0048
+256	Actas notariales	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0049
+257	Por estampar cada nota marginal.	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0050
+258	Documentos autenticados,	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0051
+259	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0052
+260	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0038
+261	Otorgamiento de autorizaciones	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0039
+262	Otorgamiento de justificativo	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0040
+263	Aprobacion de una particion	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0041
+264	Otorgamiento de poderes, revocatoria, renuncia y/o sustituciones	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0042
+265	Actuaciones para dar fecha cierta de cualquier tipo de documentos	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0043
+266	Nombramiento de curadores, salvo en los casos previstos en la Ley Organica de Proteccion de Ni���os, Ni���as y Adolescentes	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0044
+267	Por la trascripcion de un documento manuscrito al sistema computarizado o por su digitalizacion	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0045
+268	Por las copias certificadas de documentos autenticados	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0046
+269	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0047
+270	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0048
+271	Actas notariales	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0049
+272	Por estampar cada nota marginal.	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0050
+273	Documentos autenticados,	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0051
+274	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0052
+276	Otorgamiento de autorizaciones	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0039
+277	Otorgamiento de justificativo	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0040
+278	Aprobacion de una particion	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0041
+279	Otorgamiento de poderes, revocatoria, renuncia y/o sustituciones	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0042
+280	Actuaciones para dar fecha cierta de cualquier tipo de documentos	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0043
+343	Escrito de prorroga (Declaracion Sucesoral)	2024-11-04 15:32:10.352	2024-11-04 15:32:10.352	\N	1	1	1	\N	25	f	\N	0061
+222	Por la trascripcion de un documento manuscrito al sistema computarizado o por su digitalizacion	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0045
+283	Por las copias certificadas de documentos autenticados	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0046
+284	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0047
+285	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0048
+286	Actas notariales	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0049
+287	Por estampar cada nota marginal.	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0050
+288	Documentos autenticados,	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0051
+290	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0038
+291	Otorgamiento de autorizaciones	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0039
+292	Otorgamiento de justificativo	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0040
+293	Aprobacion de una particion	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0041
+294	Otorgamiento de poderes, revocatoria, renuncia y/o sustituciones	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0042
+295	Actuaciones para dar fecha cierta de cualquier tipo de documentos	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0043
+297	Por la trascripcion de un documento manuscrito al sistema computarizado o por su digitalizacion	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0045
+298	Por las copias certificadas de documentos autenticados	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0046
+299	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0047
+300	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0048
+301	Actas notariales	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0049
+302	Por estampar cada nota marginal.	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0050
+303	Documentos autenticados,	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0051
+304	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0052
+305	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0038
+306	Otorgamiento de autorizaciones	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0039
+307	Otorgamiento de justificativo	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0040
+308	Aprobacion de una particion	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0041
+309	Otorgamiento de poderes, revocatoria, renuncia y/o sustituciones	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0042
+311	Nombramiento de curadores, salvo en los casos previstos en la Ley Organica de Proteccion de Ni���os, Ni���as y Adolescentes	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0044
+312	Por la trascripcion de un documento manuscrito al sistema computarizado o por su digitalizacion	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0045
+313	Por las copias certificadas de documentos autenticados	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0046
+314	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0047
+315	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0048
+316	Actas notariales	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0049
+317	Por estampar cada nota marginal.	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0050
+318	Documentos autenticados,	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0051
+319	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0052
+320	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0038
+321	Otorgamiento de autorizaciones	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0039
+322	Otorgamiento de justificativo	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0040
+323	Aprobacion de una particion	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0041
+324	Otorgamiento de poderes, revocatoria, renuncia y/o sustituciones	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0042
+325	Actuaciones para dar fecha cierta de cualquier tipo de documentos	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0043
+327	Por la trascripcion de un documento manuscrito al sistema computarizado o por su digitalizacion	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0045
+328	Por las copias certificadas de documentos autenticados	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0046
+329	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0047
+330	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0048
+331	Actas notariales	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0049
+332	Por estampar cada nota marginal.	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0050
+333	Documentos autenticados,	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0051
+334	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0052
+335	Consultas/solicitudes  sobre la aplicacion de las normas que integran el ordenamiento juridico vigente	2024-11-04 15:28:46.921	2024-11-04 15:28:46.921	\N	1	1	1	\N	24	f	\N	0053
+336	Contratos relacionados con los ingresos publicos estadales	2024-11-04 15:28:46.921	2024-11-04 15:28:46.921	\N	1	1	1	\N	24	f	\N	0054
+337	Contratos relativos a inmuebles propiedad del estado	2024-11-04 15:28:46.921	2024-11-04 15:28:46.921	\N	1	1	1	\N	24	f	\N	0055
+338	Expedicion de copias certificadas sobre asuntos que cursen en sus archivos	2024-11-04 15:28:46.921	2024-11-04 15:28:46.921	\N	1	1	1	\N	24	f	\N	0056
+339	Solicitudes, escritos 	2024-11-04 15:32:10.352	2024-11-04 15:32:10.352	\N	1	1	1	\N	25	f	\N	0057
+340	Copias certificadas	2024-11-04 15:32:10.352	2024-11-04 15:32:10.352	\N	1	1	1	\N	25	f	\N	0058
+341	Escritos para interposicion de recursos 	2024-11-04 15:32:10.352	2024-11-04 15:32:10.352	\N	1	1	1	\N	25	f	\N	0059
+282	Por la trascripcion de un documento manuscrito al sistema computarizado o por su digitalizacion	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0045
+348	Remision por requerimiento (Correspondencia)	2024-11-05 09:15:18.972	2024-11-05 09:15:18.972	\N	1	1	1	\N	27	f	\N	0066
+349	Solicitud de Tramite de Importacion	2024-11-05 09:15:53.47	2024-11-05 09:15:53.47	\N	1	1	1	\N	27	f	\N	0067
+350	Solicitud de Tramite de Exportacion	2024-11-05 09:16:30.732	2024-11-05 09:16:30.732	\N	1	1	1	\N	27	f	\N	0068
+351	Solicitud de Tramite de Transito Aduanero	2024-11-05 09:18:39.308	2024-11-05 09:18:39.308	\N	1	1	1	\N	27	f	\N	0069
+352	Otras solicitudes dirigidas a las autoridades Aduaneras, Portuarias y de Navegacion	2024-11-05 09:23:04.759	2024-11-05 09:23:04.759	\N	1	1	1	\N	27	f	\N	0070
+353	Solicitudes  sobre actividades de minerales no metalicos.	2024-11-05 09:31:04.445	2024-11-05 09:31:04.445	\N	1	1	1	\N	28	f	\N	0071
+354	Autorizaciones eventuales o temporales sobre actividades de M.N.M.	2024-11-05 09:31:04.445	2024-11-05 09:31:04.445	\N	1	1	1	\N	28	f	\N	0072
+355	Revocatoria del derecho minero otorgado	2024-11-05 09:31:04.445	2024-11-05 09:31:04.445	\N	1	1	1	\N	28	f	\N	0073
+356	Solicitud de Ocupacion de Territorio	2024-11-05 09:31:04.445	2024-11-05 09:31:04.445	\N	1	1	1	\N	28	f	\N	0074
+357	Otorgamiento de  Autorizacion para la Ocupacion del Territorio	2024-11-05 09:31:04.445	2024-11-05 09:31:04.445	\N	1	1	1	\N	28	f	\N	0075
+358	Autorizacion para el desarrollo de actividades conexas 	2024-11-05 09:31:04.445	2024-11-05 09:31:04.445	\N	1	1	1	\N	28	f	\N	0076
+359	Otras solicitudes y consultas emitidas en el ambito de competencia	2024-11-05 09:31:04.445	2024-11-05 09:31:04.445	\N	1	1	1	\N	28	f	\N	0077
+360	Actos o documentos dirigido a Organos y Entes	2024-11-05 09:33:00.57	2024-11-05 09:33:00.57	\N	1	1	1	\N	29	f	\N	0078
+361	Sellado Libro deL Control de Extraccion de Minerales No Metalicos	2024-11-05 09:33:00.57	2024-11-05 09:33:00.57	\N	1	1	1	\N	29	f	\N	0079
+47	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto, renuncias o gravamenes de la propiedad.	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0015
+59	Por cualquier otro tipo de documento que se presente para su protocolizacion.	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0027
+63	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto, renuncias o gravamenes de la propiedad.	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0015
+79	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto, renuncias o gravamenes de la propiedad.	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0015
+107	Por cualquier otro tipo de documento que se presente para su protocolizacion.	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0027
+108	Inscripcion de testamentos abiertos o cerrados	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0012
+110	Otorgamiento de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0014
+127	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto, renuncias o gravamenes de la propiedad.	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0015
+141	Inscripcion de  Acta de asamblea o junta directiva; modificaciones al documento constitutivo de firmas personales o de cuentas de participacion y 	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0029
+151	Inscripcion de  Acta de asamblea o junta directiva; modificaciones al documento constitutivo de firmas personales o de cuentas de participacion y 	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0029
+162	Actas en las cuales se declare  disolucion, liquidacion, extincion o prorroga de  la duracion de cualquier tipo de sociedades	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0030
+163	Inscripcion de sociedades extranjeras, domiciliaciones o establecimientos de agencias, representaciones, o sucursales de las mismas	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0031
+176	Nombramiento de curadores, salvo en los casos previstos en la Ley Organica de Proteccion de Ni���os, Ni���as y Adolescentes	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0044
+191	Nombramiento de curadores, salvo en los casos previstos en la Ley Organica de Proteccion de Ni���os, Ni���as y Adolescentes	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0044
+221	Nombramiento de curadores, salvo en los casos previstos en la Ley Organica de Proteccion de Ni���os, Ni���as y Adolescentes	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0044
+235	Actuaciones para dar fecha cierta de cualquier tipo de documentos	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0043
+251	Nombramiento de curadores, salvo en los casos previstos en la Ley Organica de Proteccion de Ni���os, Ni���as y Adolescentes	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0044
+252	Por la trascripcion de un documento manuscrito al sistema computarizado o por su digitalizacion	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0045
+275	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0038
+281	Nombramiento de curadores, salvo en los casos previstos en la Ley Organica de Proteccion de Ni���os, Ni���as y Adolescentes	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0044
+289	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0052
+296	Nombramiento de curadores, salvo en los casos previstos en la Ley Organica de Proteccion de Ni���os, Ni���as y Adolescentes	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0044
+310	Actuaciones para dar fecha cierta de cualquier tipo de documentos	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0043
+326	Nombramiento de curadores, salvo en los casos previstos en la Ley Organica de Proteccion de Ni���os, Ni���as y Adolescentes	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0044
+345	Solicitud para prescripcion de Declaracion Sucesoral	2024-11-04 15:32:10.352	2024-11-04 15:32:10.352	\N	1	1	1	\N	25	f	\N	0063
+346	Solicitudes, consultas, escritos y correspondencia	2024-11-05 09:01:12.799	2024-11-05 09:01:12.799	\N	1	1	1	\N	26	f	\N	0064
+347	Bulto Postal	2024-11-05 09:01:54.096	2024-11-05 09:01:54.096	\N	1	1	1	\N	26	f	\N	0065
 \.
 
 
@@ -3801,16 +4135,35 @@ COPY public.status (id, code, description, apply_to, created_at, updated_at, del
 --
 
 COPY public.subentity (id, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "entityId", code) FROM stdin;
-1	No Aplica	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	1	0001
-2	No Aplica	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	0002
-3	Primer Registo Inmobiliario	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	0003
-4	Segundo Registo Inmobiliario	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	0004
-5	Municipios Guacara, San Joaquín y Diego Ibarra	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	0005
-6	Municipios Naguanagua y San Diego	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	0006
-7	Municipio Montalban	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	0007
-8	Funciones Notariales de Carlos Arvelo	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	0008
-9	Municipio Bejuma	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	2	0009
-10	No Aplica	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	1	1	\N	3	0010
+25	REGION CENTRAL	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	3	0025
+26	ADUANA PRINCIPAL AEREA DE VALENCIA	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	3	0026
+27	ADUANA PRINCIPAL PUERTO CABELLO	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	3	0027
+28	SOTARN	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	4	0028
+29	SECRETARIA DE HACIENDA Y FINANZAS	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	4	0029
+1	REGISTRO PRINCIPAL CIVIL 	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0001
+2	REGISTRO PUBLICO PRIMER CIRCUITO DE VALENCIA	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0002
+3	REGISTRO PUBLICO SEGUNDO CIRCUITO DE VALENCIA	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0003
+4	REGISTRO PUBLICO DE LOS MUNICIPIOS GUACARA, SAN JOAQUIN Y DIEGO�IBARRA	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0004
+5	REGISTRO PUBLICO DE LOS MUNICIPIOS NAGUANAGUA Y SAN DIEGO	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0005
+6	REGISTRO PUBLICO DEL MUNICIPIO MONTALBAN	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0006
+7	REGISTRO PUBLICO CON FUNCIONES NOTARIALES DEL MUNICIPIO CARLOS ARVELO	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0007
+8	REGISTRO PUBLICO DEL MUNICIPIO BEJUMA	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0008
+9	REGISTRO PUBLICO DEL MUNICIPIO PUERTO CABELLO	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0009
+10	REGISTRO MERCANTIL PRIMERO DE LA CIRCUNSCRIPCION JUDICIAL DEL ESTADO CARABOBO	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0010
+11	REGISTRO MERCANTIL  SEGUNDO DE LA CIRCUNSCRIPCION JUDICIAL DEL ESTADO CARABOBO	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0011
+12	REGISTRO MERCANTIL   TERCERO DE LA CIRCUNSCRIPCION JUDICIAL DEL ESTADO CARABOBO	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0012
+13	NOTARIA PRIMERA DE VALENCIA	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0013
+14	NOTARIA SEGUNDA DE VALENCIA	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0014
+15	NOTARIA TERCERA DE VALENCIA	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0015
+16	NOTARIA CUARTA DE VALENCIA	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0016
+17	NOTARIA  QUINTA DE VALENCIA	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0017
+18	NOTARIA SEXTA DE VALENCIA	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0018
+19	NOTARIA SEPTIMA DE VALENCIA	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0019
+20	NOTARIA PUBLICA PRIMERA DE PUERTO CABELLO	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0020
+21	NOTARIA PUBLICA  SEGUNDA DE PUERTO CABELLO	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0021
+22	NOTARIA PUBLICA DE GUACARA	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0022
+23	NOTARIA PUBLICA DE BEJUMA	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0023
+24	URB. GUAPARO,  AV. LOS COLEGIOS	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	2	0024
 \.
 
 
@@ -3819,30 +4172,6 @@ COPY public.subentity (id, description, created_at, updated_at, deleted_at, "sta
 --
 
 COPY public.tax_stamp (id, code, amount, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "userId", "procedureId", "calculationFactorId", number_folios, year) FROM stdin;
-176	00010001000320240001	948.027544	2024-11-06 23:32:49.620377	2024-11-06 23:32:49.620377	\N	\N	\N	\N	\N	2	3	\N	1	2024
-177	00010001000320240002	948.027544	2024-11-06 23:32:49.639993	2024-11-06 23:32:49.639993	\N	\N	\N	\N	\N	2	3	\N	1	2024
-178	00010001000420240003	2370.06886	2024-11-06 23:32:49.691878	2024-11-06 23:32:49.691878	\N	\N	\N	\N	\N	2	4	\N	1	2024
-179	00010001000220240003	2370.06886	2024-11-06 23:32:49.699401	2024-11-06 23:32:49.699401	\N	\N	\N	\N	\N	2	2	\N	1	2024
-180	00010001000220240005	2370.06886	2024-11-06 23:32:49.720456	2024-11-06 23:32:49.720456	\N	\N	\N	\N	\N	2	2	\N	1	2024
-181	00010001000220240006	2370.06886	2024-11-06 23:32:49.734632	2024-11-06 23:32:49.734632	\N	\N	\N	\N	\N	2	2	\N	1	2024
-182	00010001000320240007	948.027544	2024-11-06 23:36:24.761183	2024-11-06 23:36:24.761183	\N	\N	\N	\N	\N	2	3	\N	1	2024
-183	00010001000320240008	948.027544	2024-11-06 23:36:24.776994	2024-11-06 23:36:24.776994	\N	\N	\N	\N	\N	2	3	\N	1	2024
-184	00010001000220240009	2370.06886	2024-11-06 23:36:24.808036	2024-11-06 23:36:24.808036	\N	\N	\N	\N	\N	2	2	\N	1	2024
-185	00010001000420240009	2370.06886	2024-11-06 23:36:24.811566	2024-11-06 23:36:24.811566	\N	\N	\N	\N	\N	2	4	\N	1	2024
-186	00010001000220240010	2370.06886	2024-11-06 23:36:24.820338	2024-11-06 23:36:24.820338	\N	\N	\N	\N	\N	2	2	\N	1	2024
-187	00010001000220240012	2370.06886	2024-11-06 23:36:24.826708	2024-11-06 23:36:24.826708	\N	\N	\N	\N	\N	2	2	\N	1	2024
-188	00010001000320240013	948.027544	2024-11-06 23:40:42.292866	2024-11-06 23:40:42.292866	\N	\N	\N	\N	\N	2	3	\N	1	2024
-189	00010001000320240014	948.027544	2024-11-06 23:40:42.315494	2024-11-06 23:40:42.315494	\N	\N	\N	\N	\N	2	3	\N	1	2024
-190	00010001000220240015	2370.06886	2024-11-06 23:40:42.346254	2024-11-06 23:40:42.346254	\N	\N	\N	\N	\N	2	2	\N	1	2024
-191	00010001000420240015	2370.06886	2024-11-06 23:40:42.351563	2024-11-06 23:40:42.351563	\N	\N	\N	\N	\N	2	4	\N	1	2024
-192	00010001000220240016	2370.06886	2024-11-06 23:40:42.360763	2024-11-06 23:40:42.360763	\N	\N	\N	\N	\N	2	2	\N	1	2024
-193	00010001000220240018	2370.06886	2024-11-06 23:40:42.366786	2024-11-06 23:40:42.366786	\N	\N	\N	\N	\N	2	2	\N	1	2024
-194	00010001000320240019	948.027544	2024-11-07 00:30:30.402	2024-11-07 00:30:30.402	\N	\N	\N	\N	\N	2	3	\N	1	2024
-195	00010001000320240020	948.027544	2024-11-07 00:30:30.420358	2024-11-07 00:30:30.420358	\N	\N	\N	\N	\N	2	3	\N	1	2024
-196	00010001000220240021	2370.06886	2024-11-07 00:30:30.455621	2024-11-07 00:30:30.455621	\N	\N	\N	\N	\N	2	2	\N	1	2024
-197	00010001000420240021	2370.06886	2024-11-07 00:30:30.461967	2024-11-07 00:30:30.461967	\N	\N	\N	\N	\N	2	4	\N	1	2024
-198	00010001000220240022	2370.06886	2024-11-07 00:30:30.474952	2024-11-07 00:30:30.474952	\N	\N	\N	\N	\N	2	2	\N	1	2024
-199	00010001000220240024	2370.06886	2024-11-07 00:30:30.491412	2024-11-07 00:30:30.491412	\N	\N	\N	\N	\N	2	2	\N	1	2024
 \.
 
 
@@ -3851,30 +4180,6 @@ COPY public.tax_stamp (id, code, amount, created_at, updated_at, deleted_at, "st
 --
 
 COPY public.tax_stamps_payment (id, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "taxStampId", "paymentId") FROM stdin;
-19	2024-11-06 23:32:49.781887	2024-11-06 23:32:49.781887	\N	\N	\N	\N	\N	176	7
-20	2024-11-06 23:32:49.782923	2024-11-06 23:32:49.782923	\N	\N	\N	\N	\N	177	7
-21	2024-11-06 23:32:49.784884	2024-11-06 23:32:49.784884	\N	\N	\N	\N	\N	178	7
-22	2024-11-06 23:32:49.835772	2024-11-06 23:32:49.835772	\N	\N	\N	\N	\N	180	7
-23	2024-11-06 23:32:49.839299	2024-11-06 23:32:49.839299	\N	\N	\N	\N	\N	179	7
-24	2024-11-06 23:32:49.849182	2024-11-06 23:32:49.849182	\N	\N	\N	\N	\N	181	7
-25	2024-11-06 23:36:24.847864	2024-11-06 23:36:24.847864	\N	\N	\N	\N	\N	182	8
-26	2024-11-06 23:36:24.848338	2024-11-06 23:36:24.848338	\N	\N	\N	\N	\N	183	8
-27	2024-11-06 23:36:24.848732	2024-11-06 23:36:24.848732	\N	\N	\N	\N	\N	184	8
-28	2024-11-06 23:36:24.891981	2024-11-06 23:36:24.891981	\N	\N	\N	\N	\N	185	8
-29	2024-11-06 23:36:24.898585	2024-11-06 23:36:24.898585	\N	\N	\N	\N	\N	186	8
-30	2024-11-06 23:36:24.903033	2024-11-06 23:36:24.903033	\N	\N	\N	\N	\N	187	8
-31	2024-11-06 23:40:42.389596	2024-11-06 23:40:42.389596	\N	\N	\N	\N	\N	188	9
-32	2024-11-06 23:40:42.390258	2024-11-06 23:40:42.390258	\N	\N	\N	\N	\N	189	9
-33	2024-11-06 23:40:42.390816	2024-11-06 23:40:42.390816	\N	\N	\N	\N	\N	190	9
-34	2024-11-06 23:40:42.437071	2024-11-06 23:40:42.437071	\N	\N	\N	\N	\N	191	9
-35	2024-11-06 23:40:42.441345	2024-11-06 23:40:42.441345	\N	\N	\N	\N	\N	192	9
-36	2024-11-06 23:40:42.446665	2024-11-06 23:40:42.446665	\N	\N	\N	\N	\N	193	9
-37	2024-11-07 00:30:30.52096	2024-11-07 00:30:30.52096	\N	\N	\N	\N	\N	194	10
-38	2024-11-07 00:30:30.52153	2024-11-07 00:30:30.52153	\N	\N	\N	\N	\N	195	10
-39	2024-11-07 00:30:30.522309	2024-11-07 00:30:30.522309	\N	\N	\N	\N	\N	196	10
-40	2024-11-07 00:30:30.572528	2024-11-07 00:30:30.572528	\N	\N	\N	\N	\N	198	10
-41	2024-11-07 00:30:30.575391	2024-11-07 00:30:30.575391	\N	\N	\N	\N	\N	197	10
-42	2024-11-07 00:30:30.580969	2024-11-07 00:30:30.580969	\N	\N	\N	\N	\N	199	10
 \.
 
 
@@ -3883,8 +4188,6 @@ COPY public.tax_stamps_payment (id, created_at, updated_at, deleted_at, "statusI
 --
 
 COPY public.transaction (id, reference, amount, date, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "transactionTypeId", "bankAccountId", "paymentId") FROM stdin;
-1	2024110600000001	11376.330527999999	2024-11-06 23:40:42.453-04	2024-11-06 23:40:42.467123	2024-11-06 23:40:42.467123	\N	5	\N	\N	\N	1	1	9
-2	2024110700000001	11376.330527999999	2024-11-07 00:30:30.588-04	2024-11-07 00:30:30.606882	2024-11-07 00:30:30.606882	\N	5	\N	\N	\N	1	1	10
 \.
 
 
@@ -4000,7 +4303,7 @@ SELECT pg_catalog.setval('public.document_id_seq', 25, false);
 -- Name: entities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.entities_id_seq', 1, false);
+SELECT pg_catalog.setval('public.entities_id_seq', 4, true);
 
 
 --
@@ -4070,7 +4373,7 @@ SELECT pg_catalog.setval('public.privilege_id_seq', 8, true);
 -- Name: procedure_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.procedure_id_seq', 20, true);
+SELECT pg_catalog.setval('public.procedure_id_seq', 1, false);
 
 
 --
@@ -4105,7 +4408,7 @@ SELECT pg_catalog.setval('public.status_id_seq', 9, true);
 -- Name: subentity_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.subentity_id_seq', 10, true);
+SELECT pg_catalog.setval('public.subentity_id_seq', 29, true);
 
 
 --
