@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 15.2
--- Dumped by pg_dump version 15.2
+-- Dumped from database version 16.4
+-- Dumped by pg_dump version 16.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -67,7 +67,7 @@ CREATE SEQUENCE public.audit_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.audit_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.audit_id_seq OWNER TO postgres;
 
 --
 -- Name: audit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -110,7 +110,7 @@ CREATE SEQUENCE public.auditable_process_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.auditable_process_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.auditable_process_id_seq OWNER TO postgres;
 
 --
 -- Name: auditable_process_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -157,7 +157,7 @@ CREATE SEQUENCE public.audits_detail_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.audits_detail_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.audits_detail_id_seq OWNER TO postgres;
 
 --
 -- Name: audits_detail_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -222,7 +222,7 @@ CREATE SEQUENCE public.bank_account_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.bank_account_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.bank_account_id_seq OWNER TO postgres;
 
 --
 -- Name: bank_account_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -244,7 +244,7 @@ CREATE SEQUENCE public.bank_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.bank_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.bank_id_seq OWNER TO postgres;
 
 --
 -- Name: bank_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -286,7 +286,7 @@ CREATE SEQUENCE public.branch_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.branch_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.branch_id_seq OWNER TO postgres;
 
 --
 -- Name: branch_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -329,7 +329,7 @@ CREATE SEQUENCE public.calculation_factor_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.calculation_factor_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.calculation_factor_id_seq OWNER TO postgres;
 
 --
 -- Name: calculation_factor_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -371,7 +371,7 @@ CREATE SEQUENCE public.coin_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.coin_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.coin_id_seq OWNER TO postgres;
 
 --
 -- Name: coin_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -415,7 +415,7 @@ CREATE SEQUENCE public.contributors_type_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.contributors_type_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.contributors_type_id_seq OWNER TO postgres;
 
 --
 -- Name: contributors_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -457,7 +457,7 @@ CREATE SEQUENCE public.country_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.country_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.country_id_seq OWNER TO postgres;
 
 --
 -- Name: country_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -502,7 +502,7 @@ CREATE SEQUENCE public.document_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.document_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.document_id_seq OWNER TO postgres;
 
 --
 -- Name: document_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -544,7 +544,7 @@ CREATE SEQUENCE public.entities_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.entities_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.entities_id_seq OWNER TO postgres;
 
 --
 -- Name: entities_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -591,7 +591,7 @@ CREATE SEQUENCE public.external_request_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.external_request_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.external_request_id_seq OWNER TO postgres;
 
 --
 -- Name: external_request_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -634,7 +634,7 @@ CREATE SEQUENCE public.locker_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.locker_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.locker_id_seq OWNER TO postgres;
 
 --
 -- Name: locker_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -678,7 +678,7 @@ CREATE SEQUENCE public.lockers_point_of_sale_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.lockers_point_of_sale_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.lockers_point_of_sale_id_seq OWNER TO postgres;
 
 --
 -- Name: lockers_point_of_sale_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -721,7 +721,7 @@ CREATE SEQUENCE public.municipalities_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.municipalities_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.municipalities_id_seq OWNER TO postgres;
 
 --
 -- Name: municipalities_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -764,7 +764,7 @@ CREATE SEQUENCE public.parishes_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.parishes_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.parishes_id_seq OWNER TO postgres;
 
 --
 -- Name: parishes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -807,7 +807,7 @@ CREATE SEQUENCE public.payment_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.payment_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.payment_id_seq OWNER TO postgres;
 
 --
 -- Name: payment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -849,7 +849,7 @@ CREATE SEQUENCE public.payments_type_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.payments_type_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.payments_type_id_seq OWNER TO postgres;
 
 --
 -- Name: payments_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -893,7 +893,7 @@ CREATE SEQUENCE public.point_of_sale_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.point_of_sale_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.point_of_sale_id_seq OWNER TO postgres;
 
 --
 -- Name: point_of_sale_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -935,7 +935,7 @@ CREATE SEQUENCE public.privilege_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.privilege_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.privilege_id_seq OWNER TO postgres;
 
 --
 -- Name: privilege_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -980,7 +980,7 @@ CREATE SEQUENCE public.procedure_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.procedure_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.procedure_id_seq OWNER TO postgres;
 
 --
 -- Name: procedure_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1022,7 +1022,7 @@ CREATE SEQUENCE public.role_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.role_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.role_id_seq OWNER TO postgres;
 
 --
 -- Name: role_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1064,7 +1064,7 @@ CREATE SEQUENCE public.roles_privilege_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.roles_privilege_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.roles_privilege_id_seq OWNER TO postgres;
 
 --
 -- Name: roles_privilege_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1107,7 +1107,7 @@ CREATE SEQUENCE public.state_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.state_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.state_id_seq OWNER TO postgres;
 
 --
 -- Name: state_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1150,7 +1150,7 @@ CREATE SEQUENCE public.status_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.status_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.status_id_seq OWNER TO postgres;
 
 --
 -- Name: status_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1193,7 +1193,7 @@ CREATE SEQUENCE public.subentity_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.subentity_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.subentity_id_seq OWNER TO postgres;
 
 --
 -- Name: subentity_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1240,7 +1240,7 @@ CREATE SEQUENCE public.tax_stamp_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.tax_stamp_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.tax_stamp_id_seq OWNER TO postgres;
 
 --
 -- Name: tax_stamp_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1282,7 +1282,7 @@ CREATE SEQUENCE public.tax_stamps_payment_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.tax_stamps_payment_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.tax_stamps_payment_id_seq OWNER TO postgres;
 
 --
 -- Name: tax_stamps_payment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1328,7 +1328,7 @@ CREATE SEQUENCE public.transaction_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.transaction_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.transaction_id_seq OWNER TO postgres;
 
 --
 -- Name: transaction_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1370,7 +1370,7 @@ CREATE SEQUENCE public.transactions_type_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.transactions_type_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.transactions_type_id_seq OWNER TO postgres;
 
 --
 -- Name: transactions_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1412,7 +1412,7 @@ CREATE SEQUENCE public.types_external_request_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.types_external_request_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.types_external_request_id_seq OWNER TO postgres;
 
 --
 -- Name: types_external_request_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1447,7 +1447,8 @@ CREATE TABLE public.users (
     "contributorTypeId" integer,
     "parishId" integer,
     fullname character varying(256) NOT NULL,
-    "refreshToken" character varying
+    "refreshToken" character varying,
+    contributor_exempt boolean DEFAULT false NOT NULL
 );
 
 
@@ -1466,7 +1467,7 @@ CREATE SEQUENCE public.users_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.users_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.users_id_seq OWNER TO postgres;
 
 --
 -- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -1798,7 +1799,9 @@ COPY public.calculation_factor (id, created_at, updated_at, deleted_at, "statusI
 47	2024-10-29 00:00:36.156533	2024-10-29 00:00:36.156533	\N	\N	\N	\N	\N	3	45.17849352	2024-10-29
 50	2024-11-05 20:54:42.442276	2024-11-05 20:54:42.442276	\N	\N	\N	\N	\N	3	47.4013772	2024-11-05
 51	2024-11-05 20:54:42.442276	2024-11-05 20:54:42.442276	\N	\N	\N	\N	\N	3	47.4013772	2024-11-06
-52	2024-11-05 20:54:42.442276	2024-11-05 20:54:42.442276	\N	\N	\N	\N	\N	3	47.4013772	2024-11-07
+53	2024-11-05 20:54:42.442276	2024-11-05 20:54:42.442276	\N	\N	\N	\N	\N	3	47.4013772	2024-11-07
+55	2024-11-09 21:04:53.958772	2024-11-09 21:04:53.958772	\N	\N	\N	\N	\N	3	48.05536843	2024-11-09
+56	2024-11-10 16:51:51.79932	2024-11-10 16:51:51.79932	\N	\N	\N	\N	\N	3	48.05536843	2024-11-10
 \.
 
 
@@ -2124,6 +2127,9 @@ COPY public.entities (id, description, created_at, updated_at, deleted_at, "stat
 --
 
 COPY public.external_request (id, code, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "typeExternalRequestId", request_url, request_json, response_json, "transactionId") FROM stdin;
+3	2024110900000001	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2024-11-09 21:08:21.256083	2024-11-09 21:08:21.256083	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2pCert/api/v1/PagoDBI	{"sMerchantId":"341433","sTrxId":"2024110900000001","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V24297146","sPhoneNumber":"584144196314","nAmount":14416.610529000001,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"userc2p"}		5
+4	2024111000000001	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2024-11-10 16:52:03.384875	2024-11-10 16:52:03.384875	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2pCert/api/v1/PagoDBI	{"sMerchantId":"341433","sTrxId":"2024111000000001","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V24297146","sPhoneNumber":"584144196314","nAmount":14416.610529,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"userc2p"}		6
+5	2024111000000001	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2024-11-10 16:52:57.94058	2024-11-10 16:52:57.94058	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2pCert/api/v1/PagoDBI	{"sMerchantId":"341433","sTrxId":"2024111000000001","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V24297146","sPhoneNumber":"584144196314","nAmount":14416.610529000001,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"userc2p"}		7
 \.
 
 
@@ -3633,6 +3639,10 @@ COPY public.parishes (id, code, description, created_at, updated_at, deleted_at,
 --
 
 COPY public.payment (id, amount, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "lockerId", "paymentTypeId") FROM stdin;
+12	14416.610529000001	2024-11-09 21:05:15.83213	2024-11-09 21:05:15.83213	\N	3	\N	\N	\N	\N	1
+13	14416.610529000001	2024-11-09 21:08:21.070214	2024-11-09 21:08:21.070214	\N	3	\N	\N	\N	\N	1
+14	14416.610529	2024-11-10 16:52:03.249341	2024-11-10 16:52:03.249341	\N	3	\N	\N	\N	\N	1
+15	14416.610529000001	2024-11-10 16:52:57.772787	2024-11-10 16:52:57.772787	\N	3	\N	\N	\N	\N	1
 \.
 
 
@@ -4120,13 +4130,18 @@ COPY public.state (id, code, description, created_at, updated_at, deleted_at, "s
 COPY public.status (id, code, description, apply_to, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById") FROM stdin;
 2	INACTIVE	logical state of deleted registers	all	2024-07-15 13:44:30.197311	2024-07-15 13:44:30.197311	\N	1	1	1	\N
 1	ACTIVE	logical state of active registers	all	2024-07-15 13:42:34.889805	2024-07-15 13:42:34.889805	\N	1	1	1	\N
-3	UNCONFIRMED	status for unconfirmed payments\r\n	payments	2024-11-05 21:19:06.172716	2024-11-05 21:19:06.172716	\N	1	1	1	\N
-4	CONFIRMED	status for confirmed payments\r\n	payments	2024-11-05 21:19:54.240486	2024-11-05 21:19:54.240486	\N	1	1	1	\N
-5	REQUESTED	status of requested transactions\r\n	transactions	2024-11-06 22:41:12.312778	2024-11-06 22:41:12.312778	\N	1	1	1	\N
 6	VERIFIED	verified transaction status	transactions	2024-11-06 22:41:12.316804	2024-11-06 22:41:12.316804	\N	1	1	1	\N
 8	SUCCESS_REQUEST	status of external requests with successful response.	external_requests	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N
 9	ERROR_REQUEST	Status of external requests with error in response.	external_requests	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N
 7	WAITING_RESPONSE	status of external requests waiting for a response	external_requests	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N
+10	GENERATED	status of tax stamps generated pending payment	stamps	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N
+3	UNCONFIRMED	status for unconfirmed payments	payments	2024-11-05 21:19:06.172716	2024-11-05 21:19:06.172716	\N	1	1	1	\N
+4	CONFIRMED	status for confirmed payments	payments	2024-11-05 21:19:54.240486	2024-11-05 21:19:54.240486	\N	1	1	1	\N
+5	REQUESTED	status of requested transactions	transactions	2024-11-06 22:41:12.312778	2024-11-06 22:41:12.312778	\N	1	1	1	\N
+11	PAID	status of tax stamps paid	stamps	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N
+12	CANCELED	status of tax stamps canceled	stamps	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N
+13	EXEMPT	Status of tax stamps exempted due to special conditions of the type of contributor	stamps	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N
+14	RECEIVED	Status of tax stamps received by the corresponding entity	stamps	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N
 \.
 
 
@@ -4172,6 +4187,30 @@ COPY public.subentity (id, description, created_at, updated_at, deleted_at, "sta
 --
 
 COPY public.tax_stamp (id, code, amount, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "userId", "procedureId", "calculationFactorId", number_folios, year) FROM stdin;
+206	10001000320240000001	2402.7684215	2024-11-09 21:05:15.631787	2024-11-09 21:05:15.631787	\N	\N	\N	\N	\N	2	3	\N	1	2024
+207	10001000320240000002	2402.7684215	2024-11-09 21:05:15.655115	2024-11-09 21:05:15.655115	\N	\N	\N	\N	\N	2	3	\N	1	2024
+208	10001000220240000003	2402.7684215	2024-11-09 21:05:15.722721	2024-11-09 21:05:15.722721	\N	\N	\N	\N	\N	2	2	\N	1	2024
+209	10001000420240000003	2402.7684215	2024-11-09 21:05:15.738898	2024-11-09 21:05:15.738898	\N	\N	\N	\N	\N	2	4	\N	1	2024
+210	10001000220240000004	2402.7684215	2024-11-09 21:05:15.76181	2024-11-09 21:05:15.76181	\N	\N	\N	\N	\N	2	2	\N	1	2024
+211	10001000220240000006	2402.7684215	2024-11-09 21:05:15.785377	2024-11-09 21:05:15.785377	\N	\N	\N	\N	\N	2	2	\N	1	2024
+212	10001000320240000007	2402.7684215	2024-11-09 21:08:20.983082	2024-11-09 21:08:20.983082	\N	\N	\N	\N	\N	2	3	\N	1	2024
+213	10001000320240000008	2402.7684215	2024-11-09 21:08:21.000918	2024-11-09 21:08:21.000918	\N	\N	\N	\N	\N	2	3	\N	1	2024
+214	10001000220240000009	2402.7684215	2024-11-09 21:08:21.033686	2024-11-09 21:08:21.033686	\N	\N	\N	\N	\N	2	2	\N	1	2024
+215	10001000420240000009	2402.7684215	2024-11-09 21:08:21.038895	2024-11-09 21:08:21.038895	\N	\N	\N	\N	\N	2	4	\N	1	2024
+216	10001000220240000010	2402.7684215	2024-11-09 21:08:21.047409	2024-11-09 21:08:21.047409	\N	\N	\N	\N	\N	2	2	\N	1	2024
+217	10001000220240000012	2402.7684215	2024-11-09 21:08:21.055745	2024-11-09 21:08:21.055745	\N	\N	\N	\N	\N	2	2	\N	1	2024
+218	10001000320240000013	2402.7684215	2024-11-10 16:52:03.150987	2024-11-10 16:52:03.150987	\N	\N	\N	\N	\N	2	3	\N	1	2024
+219	10001000320240000014	2402.7684215	2024-11-10 16:52:03.164285	2024-11-10 16:52:03.164285	\N	\N	\N	\N	\N	2	3	\N	1	2024
+220	10001000420240000015	2402.7684215	2024-11-10 16:52:03.203737	2024-11-10 16:52:03.203737	\N	\N	\N	\N	\N	2	4	\N	1	2024
+221	10001000220240000015	2402.7684215	2024-11-10 16:52:03.209111	2024-11-10 16:52:03.209111	\N	\N	\N	\N	\N	2	2	\N	1	2024
+222	10001000220240000017	2402.7684215	2024-11-10 16:52:03.221523	2024-11-10 16:52:03.221523	\N	\N	\N	\N	\N	2	2	\N	1	2024
+223	10001000220240000018	2402.7684215	2024-11-10 16:52:03.231715	2024-11-10 16:52:03.231715	\N	\N	\N	\N	\N	2	2	\N	1	2024
+224	10001000320240000019	2402.7684215	2024-11-10 16:52:57.694048	2024-11-10 16:52:57.694048	\N	\N	\N	\N	\N	2	3	\N	1	2024
+225	10001000320240000020	2402.7684215	2024-11-10 16:52:57.710556	2024-11-10 16:52:57.710556	\N	\N	\N	\N	\N	2	3	\N	1	2024
+226	10001000220240000021	2402.7684215	2024-11-10 16:52:57.743055	2024-11-10 16:52:57.743055	\N	\N	\N	\N	\N	2	2	\N	1	2024
+227	10001000420240000021	2402.7684215	2024-11-10 16:52:57.746447	2024-11-10 16:52:57.746447	\N	\N	\N	\N	\N	2	4	\N	1	2024
+228	10001000220240000022	2402.7684215	2024-11-10 16:52:57.754358	2024-11-10 16:52:57.754358	\N	\N	\N	\N	\N	2	2	\N	1	2024
+229	10001000220240000024	2402.7684215	2024-11-10 16:52:57.761144	2024-11-10 16:52:57.761144	\N	\N	\N	\N	\N	2	2	\N	1	2024
 \.
 
 
@@ -4180,6 +4219,30 @@ COPY public.tax_stamp (id, code, amount, created_at, updated_at, deleted_at, "st
 --
 
 COPY public.tax_stamps_payment (id, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "taxStampId", "paymentId") FROM stdin;
+49	2024-11-09 21:05:15.853781	2024-11-09 21:05:15.853781	\N	\N	\N	\N	\N	206	12
+50	2024-11-09 21:05:15.854799	2024-11-09 21:05:15.854799	\N	\N	\N	\N	\N	207	12
+51	2024-11-09 21:05:15.855814	2024-11-09 21:05:15.855814	\N	\N	\N	\N	\N	208	12
+52	2024-11-09 21:05:15.934376	2024-11-09 21:05:15.934376	\N	\N	\N	\N	\N	210	12
+53	2024-11-09 21:05:15.939267	2024-11-09 21:05:15.939267	\N	\N	\N	\N	\N	209	12
+54	2024-11-09 21:05:15.950952	2024-11-09 21:05:15.950952	\N	\N	\N	\N	\N	211	12
+55	2024-11-09 21:08:21.080804	2024-11-09 21:08:21.080804	\N	\N	\N	\N	\N	212	13
+56	2024-11-09 21:08:21.081699	2024-11-09 21:08:21.081699	\N	\N	\N	\N	\N	213	13
+57	2024-11-09 21:08:21.082746	2024-11-09 21:08:21.082746	\N	\N	\N	\N	\N	214	13
+58	2024-11-09 21:08:21.133332	2024-11-09 21:08:21.133332	\N	\N	\N	\N	\N	215	13
+59	2024-11-09 21:08:21.140288	2024-11-09 21:08:21.140288	\N	\N	\N	\N	\N	216	13
+60	2024-11-09 21:08:21.144011	2024-11-09 21:08:21.144011	\N	\N	\N	\N	\N	217	13
+61	2024-11-10 16:52:03.260276	2024-11-10 16:52:03.260276	\N	\N	\N	\N	\N	218	14
+62	2024-11-10 16:52:03.261623	2024-11-10 16:52:03.261623	\N	\N	\N	\N	\N	219	14
+63	2024-11-10 16:52:03.262688	2024-11-10 16:52:03.262688	\N	\N	\N	\N	\N	220	14
+64	2024-11-10 16:52:03.312731	2024-11-10 16:52:03.312731	\N	\N	\N	\N	\N	221	14
+65	2024-11-10 16:52:03.32072	2024-11-10 16:52:03.32072	\N	\N	\N	\N	\N	222	14
+66	2024-11-10 16:52:03.321655	2024-11-10 16:52:03.321655	\N	\N	\N	\N	\N	223	14
+67	2024-11-10 16:52:57.782561	2024-11-10 16:52:57.782561	\N	\N	\N	\N	\N	224	15
+68	2024-11-10 16:52:57.783	2024-11-10 16:52:57.783	\N	\N	\N	\N	\N	225	15
+69	2024-11-10 16:52:57.783454	2024-11-10 16:52:57.783454	\N	\N	\N	\N	\N	226	15
+70	2024-11-10 16:52:57.827231	2024-11-10 16:52:57.827231	\N	\N	\N	\N	\N	227	15
+71	2024-11-10 16:52:57.833878	2024-11-10 16:52:57.833878	\N	\N	\N	\N	\N	228	15
+72	2024-11-10 16:52:57.834619	2024-11-10 16:52:57.834619	\N	\N	\N	\N	\N	229	15
 \.
 
 
@@ -4188,6 +4251,10 @@ COPY public.tax_stamps_payment (id, created_at, updated_at, deleted_at, "statusI
 --
 
 COPY public.transaction (id, reference, amount, date, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "transactionTypeId", "bankAccountId", "paymentId") FROM stdin;
+4	2024110900000001	14416.610529000001	2024-11-09 21:05:15.963-04	2024-11-09 21:05:15.995389	2024-11-09 21:05:15.995389	\N	5	\N	\N	\N	1	1	12
+5	2024110900000001	14416.610529000001	2024-11-09 21:08:21.152-04	2024-11-09 21:08:21.168024	2024-11-09 21:08:21.168024	\N	5	\N	\N	\N	1	1	13
+6	2024111000000001	14416.610529	2024-11-10 16:52:03.332-04	2024-11-10 16:52:03.350889	2024-11-10 16:52:03.350889	\N	5	\N	\N	\N	1	1	14
+7	2024111000000001	14416.610529000001	2024-11-10 16:52:57.842-04	2024-11-10 16:52:57.856866	2024-11-10 16:52:57.856866	\N	5	\N	\N	\N	1	1	15
 \.
 
 
@@ -4214,11 +4281,11 @@ COPY public.types_external_request (id, code, description, created_at, updated_a
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.users (id, email, password, identity_document_letter, identity_document, birthdate, constitution_date, address, phone_number, last_connection, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "roleId", "contributorTypeId", "parishId", fullname, "refreshToken") FROM stdin;
-1	shyf.infosiartec@gmail.com	$2b$10$EnHiFgWDchGadUAoZDSFZepstWg//JTpdfAFrVus0uZZMrNZCRW5m	G	20000152-6	\N	1900-01-01	Av. Michelena a 100 Mts. del elevado La Quizanda detrás de las oficinas del IVEC Sede Sec. Hacienda y Finanzas – Valencia - Edo. Carabobo.	+58 241 8743470	\N	2024-06-25 21:49:14.69	2024-06-26 22:11:38.979	\N	1	\N	\N	\N	1	\N	\N	SUPER ADMIN	\N
-3	jennyaray98@gmail.com	$2a$10$OQsz9Gj2Xw4J.hsWbUo2gOtcA.FdXXHtPMgyYp1cCA9gjSiYFKxN.	V	26306715	1998-01-22	\N	San Judas Tadeo I	+58 424 4571298	\N	2024-10-17 19:17:42.11	2024-10-17 19:17:42.11	\N	\N	\N	\N	\N	3	1	285	Jennyreth Cristina Aray Andrade	\N
-4	broook.hum04@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465203	1999-08-04	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085730	\N	2024-10-14 14:54:09.9	2024-10-22 19:55:40.223	\N	\N	\N	\N	\N	3	1	285	Carlos Arnaldo Cárdenas Sosa	\N
-2	nelmerayala@gmail.com	$2a$10$PG1UH3TyqY9pS1c972/vSOM3w.Hj/N3D0XxpaNJ3ereTA4CnADY2K	C	24297146-6	1996-02-02	\N	Los tamarindos manzana a-9	+58 414 4196316	\N	2024-06-26 23:02:27.391	2024-11-06 20:32:30.222464	\N	1	1	1	\N	3	3	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$7r6zSlIboBKlUU++Ql3EWQ$uyVnfeHiNI0LszUXKoXI842JYrbqR7kiPBOVnWjDNbE
+COPY public.users (id, email, password, identity_document_letter, identity_document, birthdate, constitution_date, address, phone_number, last_connection, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "roleId", "contributorTypeId", "parishId", fullname, "refreshToken", contributor_exempt) FROM stdin;
+1	shyf.infosiartec@gmail.com	$2b$10$EnHiFgWDchGadUAoZDSFZepstWg//JTpdfAFrVus0uZZMrNZCRW5m	G	20000152-6	\N	1900-01-01	Av. Michelena a 100 Mts. del elevado La Quizanda detrás de las oficinas del IVEC Sede Sec. Hacienda y Finanzas – Valencia - Edo. Carabobo.	+58 241 8743470	\N	2024-06-25 21:49:14.69	2024-06-26 22:11:38.979	\N	1	\N	\N	\N	1	\N	\N	SUPER ADMIN	\N	f
+3	jennyaray98@gmail.com	$2a$10$OQsz9Gj2Xw4J.hsWbUo2gOtcA.FdXXHtPMgyYp1cCA9gjSiYFKxN.	V	26306715	1998-01-22	\N	San Judas Tadeo I	+58 424 4571298	\N	2024-10-17 19:17:42.11	2024-10-17 19:17:42.11	\N	1	\N	\N	\N	3	1	285	Jennyreth Cristina Aray Andrade	\N	f
+4	broook.hum04@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465203	1999-08-04	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085730	\N	2024-10-14 14:54:09.9	2024-10-22 19:55:40.223	\N	1	\N	\N	\N	3	1	285	Carlos Arnaldo Cárdenas Sosa	\N	f
+2	nelmerayala@gmail.com	$2a$10$PG1UH3TyqY9pS1c972/vSOM3w.Hj/N3D0XxpaNJ3ereTA4CnADY2K	C	24297146-6	1996-02-02	\N	Los tamarindos manzana a-9	+58 414 4196316	\N	2024-06-26 23:02:27.391	2024-11-10 16:51:28.015822	\N	1	1	1	\N	3	3	269	Ayala Seijas Nelmer Alexander 2	$argon2id$v=19$m=65536,t=3,p=4$z2vazPH1xQfpMd4RUAQp3g$3DrPccNi9yic0lFlnW/nkMdV3wia47zNCsqy3QM4Dcw	f
 \.
 
 
@@ -4268,7 +4335,7 @@ SELECT pg_catalog.setval('public.branch_id_seq', 1, false);
 -- Name: calculation_factor_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.calculation_factor_id_seq', 52, true);
+SELECT pg_catalog.setval('public.calculation_factor_id_seq', 56, true);
 
 
 --
@@ -4310,7 +4377,7 @@ SELECT pg_catalog.setval('public.entities_id_seq', 4, true);
 -- Name: external_request_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.external_request_id_seq', 1, true);
+SELECT pg_catalog.setval('public.external_request_id_seq', 5, true);
 
 
 --
@@ -4345,7 +4412,7 @@ SELECT pg_catalog.setval('public.parishes_id_seq', 1134, true);
 -- Name: payment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.payment_id_seq', 10, true);
+SELECT pg_catalog.setval('public.payment_id_seq', 15, true);
 
 
 --
@@ -4401,7 +4468,7 @@ SELECT pg_catalog.setval('public.state_id_seq', 24, true);
 -- Name: status_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.status_id_seq', 9, true);
+SELECT pg_catalog.setval('public.status_id_seq', 14, true);
 
 
 --
@@ -4415,21 +4482,21 @@ SELECT pg_catalog.setval('public.subentity_id_seq', 29, true);
 -- Name: tax_stamp_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tax_stamp_id_seq', 199, true);
+SELECT pg_catalog.setval('public.tax_stamp_id_seq', 229, true);
 
 
 --
 -- Name: tax_stamps_payment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tax_stamps_payment_id_seq', 42, true);
+SELECT pg_catalog.setval('public.tax_stamps_payment_id_seq', 72, true);
 
 
 --
 -- Name: transaction_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.transaction_id_seq', 2, true);
+SELECT pg_catalog.setval('public.transaction_id_seq', 7, true);
 
 
 --
@@ -4450,7 +4517,7 @@ SELECT pg_catalog.setval('public.types_external_request_id_seq', 1, true);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 5, false);
+SELECT pg_catalog.setval('public.users_id_seq', 7, true);
 
 
 --
