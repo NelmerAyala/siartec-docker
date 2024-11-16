@@ -1,7 +1,54 @@
+-- En Servidor Principla
+  -- instalar curl comandos:
+  sudo apt update
+  sudo apt install curl
+  sudo apt install nano
+
+-- CREAR ARCHIVOS SH
+  nano /home/siartec/siartec-docker/cron_jobs/run_calculation_factor.sh
+  
+  -- si no existe (debe existir porque esta en el repositorio principal siartec-docker)
+
 -- PASOS LUEGO DE CREAR .SH DE RESET NECESARIOS 
   COMANDOS: 
-    chmod +x /home/siartec/siartec-docker/cron_jobs/reset_sequence_daily_correlative_request_bank.sh
-    chmod +x /home/siartec/siartec-docker/cron_jobs/reset_sequence_annual_correlative_tax_stamps.sh
+    chmod +x /home/siartec/siartec-docker/cron_jobs/run_calculation_factor.sh
+
+  En servidor:
+    chmod +x /cron_jobs/reset_sequence_daily_correlative_request_bank.sh
+    chmod +x /cron_jobs/reset_sequence_annual_correlative_tax_stamps.sh
+
+  CONFIGURAR EL CRON JOB:
+
+    - Abre el archivo de cron con :
+      COMANDO: crontab -e
+
+    - Aparecen las opciones del editor a utilizar:
+      no crontab for siartec - using an empty one
+
+      Select an editor.  To change later, run 'select-editor'.
+        1. /bin/nano        <---- easiest
+        2. /usr/bin/vim.basic
+        3. /usr/bin/vim.tiny
+        4. /bin/ed
+
+    - Agrega una línea para ejecutar tu script:
+
+      LINEA PARA EJECUCION DIARIO 12:00AM: 0 0 * * * /home/siartec/siartec-docker/cron_jobs/reset_sequence_daily_correlative_request_bank.sh
+      LINEA PARA EJECUCION ANUAL 1 DE ENERO A LAS 12:00AM: 0 0 1 1 * /home/siartec/siartec-docker/cron_jobs/reset_sequence_annual_correlative_tax_stamps.sh
+
+      LINEA PARA EJECUCION DIARIO 12:00AM: 0 0 * * * /cron_jobs/reset_sequence_daily_correlative_request_bank.sh
+      LINEA PARA EJECUCION ANUAL 1 DE ENERO A LAS 12:00AM: 0 0 1 1 * /cron_jobs/reset_sequence_annual_correlative_tax_stamps.sh
+
+
+    Para comenzar a editar en nano :
+      teclear: insert 
+
+    Para salir de editor nano: 
+      teclear: ESC 
+      escribir :wq!
+      teclear: ENTER
+
+
 
 
 
@@ -83,8 +130,8 @@ C. Configurar el Cron Job:
   
   y agrega una línea para ejecutar tu script:
 
-    COMANDO DIARIO 12:00AM: 0 0 * * * /ruta/a/tu/script/reset_sequence_daily.sh
-    COMANDO ANUAL 1 DE ENERO A LAS 12:00AM: 0 0 1 1 * /ruta/a/tu/script/reset_sequence_annual.sh
+    COMANDO DIARIO 12:00AM: 0 0 * * * /home/siartec/siartec-docker/cron_jobs/reset_sequence_daily_correlative_request_bank.sh
+    COMANDO ANUAL 1 DE ENERO A LAS 12:00AM: 0 0 1 1 * /home/siartec/siartec-docker/cron_jobs/reset_sequence_annual_correlative_tax_stamps.sh
 
 
 Consideraciones de Seguridad:
