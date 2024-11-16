@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define el URL del endpoint
-API_URL="http://101.1.1.97:8020/calculation-factor/synchronize"
+API_URL="http://192.168.0.120:8020/calculation-factor/synchronize"
 
 # Definir la ruta para el archivo de log, incluyendo la fecha
 LOG_PATH="/logs/endpoints/calculation_factor/create_calculation_factor_$(date +\%Y-\%m-\%d).log"

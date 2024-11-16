@@ -13,9 +13,6 @@
   COMANDOS: 
     chmod +x /home/siartec/siartec-docker/cron_jobs/run_calculation_factor.sh
 
-  En servidor:
-    chmod +x /cron_jobs/reset_sequence_daily_correlative_request_bank.sh
-    chmod +x /cron_jobs/reset_sequence_annual_correlative_tax_stamps.sh
 
   CONFIGURAR EL CRON JOB:
 
@@ -33,21 +30,19 @@
 
     - Agrega una línea para ejecutar tu script:
 
-      LINEA PARA EJECUCION DIARIO 12:00AM: 0 0 * * * /home/siartec/siartec-docker/cron_jobs/reset_sequence_daily_correlative_request_bank.sh
-      LINEA PARA EJECUCION ANUAL 1 DE ENERO A LAS 12:00AM: 0 0 1 1 * /home/siartec/siartec-docker/cron_jobs/reset_sequence_annual_correlative_tax_stamps.sh
-
-      LINEA PARA EJECUCION DIARIO 12:00AM: 0 0 * * * /cron_jobs/reset_sequence_daily_correlative_request_bank.sh
-      LINEA PARA EJECUCION ANUAL 1 DE ENERO A LAS 12:00AM: 0 0 1 1 * /cron_jobs/reset_sequence_annual_correlative_tax_stamps.sh
-
+      LINEA PARA EJECUCION DIARIO 12:00AM: 0 0 * * * /home/siartec/siartec-docker/cron_jobs/run_calculation_factor.sh
 
     Para comenzar a editar en nano :
       teclear: insert 
 
     Para salir de editor nano: 
-      teclear: ESC 
-      escribir :wq!
-      teclear: ENTER
+      teclear: CTRL + Z
+      pide confirmacion de guardar: Y 
 
+  - Crear directorios
+  sudo mkdir /logs/
+  sudo mkdir /logs/endpoints/
+  sudo mkdir /logs/endpoints/calculation_factor/
 
 
 
