@@ -68,10 +68,23 @@ B. Guardar y Hacer el Script Ejecutable:
 
 C. Configurar el Cron Job:
 
-  Abre el archivo de cron con crontab -e y agrega una línea para ejecutar tu script:
+  Abre el archivo de cron con :
+    COMANDO: crontab -e
 
-  COMANDO DIARIO 12:00AM: 0 0 * * * /ruta/a/tu/script/reset_sequence_daily.sh /ruta/a/tu_log.log 2>&1
-  COMANDO ANUAL 1 DE ENERO A LAS 12:00AM: 0 0 1 1 * /ruta/a/tu/script/reset_sequence_annual.sh /ruta/a/tu_log.log 2>&1
+  Aparecen las opciones del editor a utilizar:
+    no crontab for siartec - using an empty one
+
+    Select an editor.  To change later, run 'select-editor'.
+      1. /bin/nano        <---- easiest
+      2. /usr/bin/vim.basic
+      3. /usr/bin/vim.tiny
+      4. /bin/ed
+
+  
+  y agrega una línea para ejecutar tu script:
+
+    COMANDO DIARIO 12:00AM: 0 0 * * * /ruta/a/tu/script/reset_sequence_daily.sh
+    COMANDO ANUAL 1 DE ENERO A LAS 12:00AM: 0 0 1 1 * /ruta/a/tu/script/reset_sequence_annual.sh
 
 
 Consideraciones de Seguridad:
