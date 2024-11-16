@@ -1,0 +1,87 @@
+-- PASOS LUEGO DE CREAR .SH DE RESET NECESARIOS 
+  COMANDOS: 
+    chmod +x /home/siartec/siartec-docker/cron_jobs/reset_sequence_daily_correlative_request_bank.sh
+    chmod +x /home/siartec/siartec-docker/cron_jobs/reset_sequence_annual_correlative_tax_stamps.sh
+
+
+
+
+-- ---------------------------------------------------------------------------------------------------------------
+-- ---------------------------------------------------------------------------------------------------------------
+                            -- TODOS LOS PASOS:
+-- CREAR CRON JOB EN EL SERVIDOR PARA EJECUTAR FUNCION DE REINICIO DE SECUENCIAS EN BASE DE DATOS
+-- CRON OPCIONES:
+1. OPCION
+
+- Paso 1: Acceder al Crontab
+Abre el archivo de tareas programadas del usuario utilizando el siguiente comando:
+
+  COMANDO: crontab -e
+
+- Paso 2: Agregar la Tarea al Crontab
+Agrega la siguiente línea al archivo de crontab para ejecutar la tarea diariamente, por ejemplo, a la medianoche:
+
+  -- cron diariamente a las 12:00am
+  COMANDO: 0 0 * * * psql -U tu_usuario -d tu_base_de_datos -c "SELECT reset_sequence('daily_seq')";
+
+  -- cron anualmente a la medianoche (00:00 horas) del 1 de enero de cada año
+  0 0 1 1 * psql -U tu_usuario -d tu_base_de_datos -c "SELECT reset_sequence('nombre_de_la_secuencia');"
+
+  - Desglose de la Línea de Cron:
+    0 0 1 1 *: Esto especifica que la tarea debe ejecutarse a la medianoche (00:00 horas) del 1 de enero de cada año.
+    0 0: Minuto y hora.
+    1 1: Día del mes y mes (1 de enero).
+    *: Cualquier día de la semana (ignorado en este caso, ya que hemos especificado una fecha exacta).
+    psql: Cliente de línea de comandos de PostgreSQL.
+
+    -U tu_usuario: Especifica el usuario de PostgreSQL que ejecutará el comando.
+    -d tu_base_de_datos: Indica la base de datos a la que te estás conectando.
+    -c "SELECT reset_sequence('nombre_de_la_secuencia');": Ejecuta el comando SQL para llamar a la función reset_sequence con el nombre de la secuencia que deseas reiniciar.
+
+
+2. OPCION
+
+Escribir el Script Bash:
+
+A. Crea un archivo de script bash, por ejemplo reset_sequence_daily.sh:
+  - CODIGO DEL ARCHIVO BASH:
+
+      #!/bin/bash
+
+      # Definir la variable de entorno para la contraseña
+      export PGPASSWORD='tu_contraseña'
+
+      # Ejecutar el comando de reinicio de secuencia
+      psql -U tu_usuario -d tu_base_de_datos -c "SELECT reset_sequence('nombre_sequencia');"
+
+      # Desexportar la variable para mayor seguridad
+      unset PGPASSWORD
+
+  Reemplaza 'tu_contraseña', tu_usuario, tu_base_de_datos y 'nombre_sequencia' con los valores apropiados para tu configuración.
+
+
+B. Guardar y Hacer el Script Ejecutable:
+
+  COMANDO: chmod +x /ruta/a/tu/script/reset_sequence_daily.sh
+           chmod +x /ruta/a/tu/script/reset_sequence_annual.sh
+
+
+C. Configurar el Cron Job:
+
+  Abre el archivo de cron con crontab -e y agrega una línea para ejecutar tu script:
+
+  COMANDO DIARIO 12:00AM: 0 0 * * * /ruta/a/tu/script/reset_sequence_daily.sh /ruta/a/tu_log.log 2>&1
+  COMANDO ANUAL 1 DE ENERO A LAS 12:00AM: 0 0 1 1 * /ruta/a/tu/script/reset_sequence_annual.sh /ruta/a/tu_log.log 2>&1
+
+
+Consideraciones de Seguridad:
+  Seguridad del script: Asegúrate de que el archivo de script tenga permisos restrictivos, para que solo el usuario autorizado pueda leerlo. Por ejemplo, usa chmod 700 reset_sequence_daily.sh.
+
+  Variables de entorno: La contraseña estará expuesta momentáneamente en el entorno del script, por eso se recomienda desexportarla justo después de ejecutar psql usando unset.
+
+  Uso de .pgpass: Alternativamente, considera usar el archivo de configuración .pgpass en el directorio de inicio del usuario que ejecutará el script. Esto permite almacenar credenciales sin exponerlas directamente en el script. El archivo .pgpass debe tener permisos 600 (solo legible/escribible por el propietario).
+
+  Logs: Si deseas registrar las salidas del comando cron para resolver problemas, puedes redirigir la salida estándar y de error a un archivo de log, añadiendo al final de la línea >> /ruta/a/tu_log.log 2>&1. Esto puede ser útil para depurar cualquier problema en el futuro.
+
+
+
