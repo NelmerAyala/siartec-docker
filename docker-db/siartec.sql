@@ -1873,6 +1873,7 @@ COPY public.bank_account (id, code, created_at, updated_at, deleted_at, "statusI
 --
 
 COPY public.branch (id, code, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById") FROM stdin;
+1	0001	SUCURSAL QUIZANSA	2024-11-21 23:24:37.38114	2024-11-21 23:24:37.38114	\N	1	1	1	\N
 \.
 
 
@@ -1896,6 +1897,7 @@ COPY public.calculation_factor (id, created_at, updated_at, deleted_at, "statusI
 61	2024-11-19 21:56:09.428021	2024-11-19 21:56:09.428021	\N	\N	\N	\N	\N	3	48.53736762	2024-11-19
 62	2024-11-20 23:02:30.910441	2024-11-20 23:02:30.910441	\N	\N	\N	\N	\N	3	48.49623169	2024-11-20
 63	2024-11-21 00:00:07.358523	2024-11-21 00:00:07.358523	\N	\N	\N	\N	\N	3	48.49623169	2024-11-21
+64	2024-11-23 19:26:20.627051	2024-11-23 19:26:20.627051	\N	\N	\N	\N	\N	3	48.54337305	2024-11-23
 \.
 
 
@@ -1920,6 +1922,7 @@ COPY public.contributors_type (id, code, description, amount, created_at, update
 3	INDUSTRIAL	Industrial	50	2024-07-15 16:56:16.657983	2024-07-15 16:56:16.657983	\N	1	\N	\N	\N	5
 4	FIRMA	Firma Personal	20	2024-10-12 12:38:22.943652	2024-10-12 12:38:22.943652	\N	\N	\N	\N	\N	6
 5	SUCESION	Sucesión	5	2024-10-12 12:40:37.344079	2024-10-12 12:40:37.344079	\N	\N	\N	\N	\N	7
+6	GOBIERNO	Gobierno	5	2024-11-23 20:03:52.221548	2024-11-23 20:03:52.221548	\N	1	1	1	\N	1
 \.
 
 
@@ -2229,6 +2232,7 @@ COPY public.external_request (id, code, description, created_at, updated_at, del
 --
 
 COPY public.locker (id, code, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "branchId", "userId") FROM stdin;
+1	001	Taquilla 1 - Quizanda	2024-11-24 11:22:58.689296	2024-11-24 11:22:58.689296	\N	1	1	1	\N	1	2
 \.
 
 
@@ -5019,12 +5023,12 @@ COPY public.types_external_request (id, code, description, created_at, updated_a
 --
 
 COPY public.users (id, email, password, identity_document_letter, identity_document, birthdate, constitution_date, address, phone_number, last_connection, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "roleId", "contributorTypeId", "parishId", fullname, "refreshToken", contributor_exempt, gender) FROM stdin;
-1	shyf.infosiartec@gmail.com	$2b$10$EnHiFgWDchGadUAoZDSFZepstWg//JTpdfAFrVus0uZZMrNZCRW5m	G	20000152-6	\N	1900-01-01	Av. Michelena a 100 Mts. del elevado La Quizanda detrás de las oficinas del IVEC Sede Sec. Hacienda y Finanzas – Valencia - Edo. Carabobo.	+58 241 8743470	\N	2024-06-25 21:49:14.69	2024-06-26 22:11:38.979	\N	1	\N	\N	\N	1	\N	\N	SUPER ADMIN	\N	f	O
-5	sebastian.gamboalima@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465204	1999-08-04	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085731	\N	2024-10-14 14:54:09.9	2024-11-15 11:35:39.869	\N	1	\N	\N	\N	3	1	285	Carlos Arnaldo Cárdenas Sosa	$argon2id$v=19$m=65536,t=3,p=4$atmS9u0ZTjbxYfgxb2lh1w$T9iM9d77pxMCC8RVxQG78uZ6EXr5/4mMemyD6Z8mnLI	f	O
-3	jennyaray98@gmail.com	$2a$10$OQsz9Gj2Xw4J.hsWbUo2gOtcA.FdXXHtPMgyYp1cCA9gjSiYFKxN.	V	26306715	1998-01-22	\N	San Judas Tadeo I	+58 424 4571298	\N	2024-10-17 19:17:42.11	2024-10-17 19:17:42.11	\N	1	\N	\N	\N	4	1	285	Jennyreth Cristina Aray Andrade	\N	f	O
-4	broook.hum04@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465203	1999-08-04	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085730	\N	2024-10-14 14:54:09.9	2024-11-19 20:30:30.133539	\N	1	\N	\N	\N	3	1	285	Carlos Arnaldo Cárdenas Sosa	$argon2id$v=19$m=65536,t=3,p=4$u4oiAeZXOk+ikrkb7u3CBA$nNHFdMEPUOJnEp0TqDlYzFZnT752wW1iHxn0y8Dd1ZM	f	O
-2	nelmerayala@gmail.com	$2a$10$PG1UH3TyqY9pS1c972/vSOM3w.Hj/N3D0XxpaNJ3ereTA4CnADY2K	V	24297146	1996-02-02	\N	Los tamarindos manzana a-9	+58 414 4196316	\N	2024-06-26 23:02:27.391	2024-11-20 23:00:47.32764	\N	1	1	1	\N	2	1	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$lOqmZJ6q2gpaeEoH7yja7w$fqLR7snypUWLy+mW5CeMrb4D3tNmJNUIwbQG3j8jfD0	f	M
-9	nelmer2@gmail.com	$2a$10$ctw5zN/YG3gETvIWpBuA1ukYJoEFAIC5r5NmW.7FEsGvcdW3lfWcu	V	24297146	\N	\N	mariar	+58 414 4196314	\N	2024-11-17 17:27:20.188627	2024-11-17 17:27:20.188627	\N	1	\N	\N	\N	3	1	261	Ejemplo	\N	f	F
+1	shyf.infosiartec@gmail.com	$2a$10$nXtUPsWyqglYlPp0ehUOQu.hrUCB0CIv/K51AW21ZDLcBUxsnZwTS	G	20000152-6	\N	1900-01-01	Av. Michelena a 100 Mts. del elevado La Quizanda detrás de las oficinas del IVEC Sede Sec. Hacienda y Finanzas – Valencia - Edo. Carabobo.	+58 241 8743470	\N	2024-06-25 21:49:14.69	2024-11-23 21:02:53.729682	\N	1	1	1	\N	1	6	285	SUPER ADMIN	$argon2id$v=19$m=65536,t=3,p=4$czbXB3FGHdN+QWFyHVsYrA$tDDmIBBW6AJZs8AzkcxwbhtUIbTx9ZKsd5uVDGzT9AM	f	O
+2	nelmerayala@gmail.com	$2a$10$PG1UH3TyqY9pS1c972/vSOM3w.Hj/N3D0XxpaNJ3ereTA4CnADY2K	V	24297146	1996-02-02	\N	Los tamarindos manzana a-9	+58 414 4196316	\N	2024-06-26 23:02:27.391	2024-11-24 10:33:23.166279	\N	1	1	1	\N	3	1	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$Z79bevoEUim4ooTjOhDzUA$LeEH3KdRmPOfIOgXI6W4bT6GsYBthidsl7XYIq7d9oc	f	M
+3	jennyaray98@gmail.com	$2a$10$OQsz9Gj2Xw4J.hsWbUo2gOtcA.FdXXHtPMgyYp1cCA9gjSiYFKxN.	V	26306715	1998-01-22	\N	San Judas Tadeo I	+58 424 4571298	\N	2024-10-17 19:17:42.11	2024-10-17 19:17:42.11	\N	1	1	1	\N	4	1	285	Jennyreth Cristina Aray Andrade	\N	f	O
+4	broook.hum04@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465203	1999-08-04	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085730	\N	2024-10-14 14:54:09.9	2024-11-19 20:30:30.133539	\N	1	1	1	\N	3	1	285	Carlos Arnaldo Cárdenas Sosa	$argon2id$v=19$m=65536,t=3,p=4$u4oiAeZXOk+ikrkb7u3CBA$nNHFdMEPUOJnEp0TqDlYzFZnT752wW1iHxn0y8Dd1ZM	f	O
+5	sebastian.gamboalima@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465204	1999-08-04	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085731	\N	2024-10-14 14:54:09.9	2024-11-15 11:35:39.869	\N	1	1	1	\N	3	1	285	Carlos Arnaldo Cárdenas Sosa	$argon2id$v=19$m=65536,t=3,p=4$atmS9u0ZTjbxYfgxb2lh1w$T9iM9d77pxMCC8RVxQG78uZ6EXr5/4mMemyD6Z8mnLI	f	O
+9	nelmer2@gmail.com	$2a$10$ctw5zN/YG3gETvIWpBuA1ukYJoEFAIC5r5NmW.7FEsGvcdW3lfWcu	V	24297146	\N	\N	mariar	+58 414 4196314	\N	2024-11-17 17:27:20.188627	2024-11-17 17:27:20.188627	\N	1	1	1	\N	3	1	261	Ejemplo	\N	f	F
 \.
 
 
@@ -5074,14 +5078,14 @@ SELECT pg_catalog.setval('public.bank_id_seq', 33, true);
 -- Name: branch_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.branch_id_seq', 1, false);
+SELECT pg_catalog.setval('public.branch_id_seq', 1, true);
 
 
 --
 -- Name: calculation_factor_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.calculation_factor_id_seq', 63, true);
+SELECT pg_catalog.setval('public.calculation_factor_id_seq', 64, true);
 
 
 --
@@ -5095,7 +5099,7 @@ SELECT pg_catalog.setval('public.coin_id_seq', 3, true);
 -- Name: contributors_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.contributors_type_id_seq', 5, true);
+SELECT pg_catalog.setval('public.contributors_type_id_seq', 6, true);
 
 
 --
@@ -5109,7 +5113,7 @@ SELECT pg_catalog.setval('public.country_id_seq', 240, true);
 -- Name: daily_correlative_request_bank; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.daily_correlative_request_bank', 26, true);
+SELECT pg_catalog.setval('public.daily_correlative_request_bank', 28, true);
 
 
 --
@@ -5144,7 +5148,7 @@ SELECT pg_catalog.setval('public.external_request_id_seq', 74, true);
 -- Name: locker_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.locker_id_seq', 1, false);
+SELECT pg_catalog.setval('public.locker_id_seq', 1, true);
 
 
 --

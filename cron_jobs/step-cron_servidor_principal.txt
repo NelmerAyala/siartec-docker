@@ -1,3 +1,7 @@
+-- WSL
+  Run cronjob = sudo /mnt/d/SIARTEC/cron_jobs/run_calculation_factor.sh
+  Open log: nano /logs/endpoints/calculation_factor/create_calculation_factor_2024-11-23.log
+
 -- En Servidor Principla
   -- instalar curl comandos:
   sudo apt update
