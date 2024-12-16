@@ -73,6 +73,64 @@ $$;
 ALTER FUNCTION public.reset_sequence(sequence_name text) OWNER TO postgres;
 
 --
+-- Name: verification_contributors_exempts(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.verification_contributors_exempts() RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  	UPDATE users
+	SET contributor_exempt=true
+	WHERE 
+	(date_part('year', age(birthdate)) >=CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and gender='F') or
+	(date_part('year', age(birthdate)) >=CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and gender='M') or
+	(date_part('year', age(birthdate)) <=CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
+	and contributor_exempt = false
+	and "contributorTypeId" = (SELECT id FROM contributors_type WHERE code='NATURAL');
+
+  	UPDATE users
+	SET contributor_exempt=false
+	WHERE 
+	((date_part('year', age(birthdate)) <CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and gender='F') or
+	(date_part('year', age(birthdate)) <CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and gender='M')) and
+	(date_part('year', age(birthdate)) >CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
+	and "contributorTypeId" = (SELECT id FROM contributors_type WHERE code='NATURAL');
+END;
+$$;
+
+
+ALTER FUNCTION public.verification_contributors_exempts() OWNER TO postgres;
+
+--
+-- Name: verification_contributors_exempts(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.verification_contributors_exempts(sequence_name text) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  	UPDATE users
+	SET contributor_exempt=true
+	WHERE 
+	(date_part('year', age(u.birthdate)) >=CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and u.gender='F') or
+	(date_part('year', age(u.birthdate)) >=CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and u.gender='M') or
+	(date_part('year', age(u.birthdate)) <=CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
+	and u.contributor_exempt = false;
+
+  	UPDATE users
+	SET contributor_exempt=false
+	WHERE 
+	((date_part('year', age(u.birthdate)) <CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and u.gender='F') or
+	(date_part('year', age(u.birthdate)) <CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and u.gender='M')) and
+	(date_part('year', age(u.birthdate)) >CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER));
+END;
+$$;
+
+
+ALTER FUNCTION public.verification_contributors_exempts(sequence_name text) OWNER TO postgres;
+
+--
 -- Name: annual_correlative_tax_stamps; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -812,6 +870,50 @@ ALTER SEQUENCE public.municipalities_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.municipalities_id_seq OWNED BY public.municipalities.id;
+
+
+--
+-- Name: parameter; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.parameter (
+    id integer NOT NULL,
+    code character varying(50) NOT NULL,
+    value character varying(50) NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    deleted_at timestamp without time zone,
+    "statusId" integer,
+    "createdById" integer,
+    "updatedById" integer,
+    "deletedById" integer,
+    type character varying(15) NOT NULL,
+    description character varying(256) NOT NULL
+);
+
+
+ALTER TABLE public.parameter OWNER TO postgres;
+
+--
+-- Name: parameter_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.parameter_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.parameter_id_seq OWNER TO postgres;
+
+--
+-- Name: parameter_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.parameter_id_seq OWNED BY public.parameter.id;
 
 
 --
@@ -1676,6 +1778,13 @@ ALTER TABLE ONLY public.municipalities ALTER COLUMN id SET DEFAULT nextval('publ
 
 
 --
+-- Name: parameter id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.parameter ALTER COLUMN id SET DEFAULT nextval('public.parameter_id_seq'::regclass);
+
+
+--
 -- Name: parishes id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -2171,31 +2280,31 @@ COPY public.country (id, code, description, created_at, updated_at, deleted_at, 
 --
 
 COPY public.document (id, path, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", number, publication_date, file_name) FROM stdin;
-6	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
-7	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
-8	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
-9	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
-10	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
-11	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
-12	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
-13	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
-14	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
-15	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
-16	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
-17	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
-18	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
-19	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
-20	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
-21	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
-22	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
-23	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
-24	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
-25	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-n1.pdf
 1	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
 2	GACETAS	Gaceta N 2 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-2.pdf
 3	GACETAS	Gaceta N 3 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-3.pdf
 4	GACETAS	Gaceta N 4 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-4.pdf
 5	GACETAS	Gaceta N 5 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-5.pdf
+14	GACETAS	Gaceta N 14 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+15	GACETAS	Gaceta N 15 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+16	GACETAS	Gaceta N 16 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+17	GACETAS	Gaceta N 17 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+18	GACETAS	Gaceta N 18 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+19	GACETAS	Gaceta N 19 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+20	GACETAS	Gaceta N 20 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+21	GACETAS	Gaceta N 21 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+6	GACETAS	Gaceta N 6 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+7	GACETAS	Gaceta N 7 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+8	GACETAS	Gaceta N 8 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+9	GACETAS	Gaceta N 9 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+10	GACETAS	Gaceta N 10 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+11	GACETAS	Gaceta N 11 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+12	GACETAS	Gaceta N 12 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+13	GACETAS	Gaceta N 13 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+22	GACETAS	Gaceta N 22 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+23	GACETAS	Gaceta N 23 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+24	GACETAS	Gaceta N 24 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+25	GACETAS	Gaceta N 25 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
 \.
 
 
@@ -2588,6 +2697,17 @@ COPY public.municipalities (id, code, description, created_at, updated_at, delet
 333	333	ANTONIO DIAZ	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	\N	\N	\N	23
 334	334	CASACOIMA	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	\N	\N	\N	23
 335	335	VARGAS	2024-06-26 23:02:27.391	2024-06-26 23:05:28.298	\N	1	\N	\N	\N	24
+\.
+
+
+--
+-- Data for Name: parameter; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.parameter (id, code, value, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", type, description) FROM stdin;
+1	MALE_AGE	60	2024-12-14 23:05:50.076677	2024-12-14 23:05:50.076677	\N	1	1	1	\N	number	Edad masculina - Adulto mayor
+2	FEMALE_AGE	55	2024-12-14 23:05:50.076677	2024-12-14 23:05:50.076677	\N	1	1	1	\N	number	Edad femenina - Adulto mayor
+3	MINORS_AGE	8	2024-12-14 23:05:50.076677	2024-12-14 23:05:50.076677	\N	1	1	1	\N	number	Edad niños - Menores
 \.
 
 
@@ -3745,9 +3865,7 @@ COPY public.payment (id, amount, created_at, updated_at, deleted_at, "statusId",
 201	258.5455	2024-12-10 22:04:45.051258	2024-12-10 22:04:52.690561	\N	4	\N	\N	\N	\N	1
 202	258.5455	2024-12-10 22:16:21.27953	2024-12-10 22:16:27.847063	\N	4	\N	\N	\N	\N	1
 203	258.5455	2024-12-10 23:36:10.727901	2024-12-10 23:36:10.727901	\N	4	\N	\N	\N	\N	2
-204	0	2024-12-10 23:38:32.660744	2024-12-10 23:38:32.660744	\N	4	\N	\N	\N	\N	2
 205	517.091	2024-12-10 23:40:59.675692	2024-12-10 23:40:59.675692	\N	4	\N	\N	\N	\N	2
-206	0	2024-12-10 23:43:14.211104	2024-12-10 23:43:14.211104	\N	4	\N	\N	\N	\N	2
 207	258.5455	2024-12-11 00:15:32.613576	2024-12-11 00:15:32.613576	\N	3	\N	\N	\N	\N	2
 208	258.55	2024-12-11 00:17:05.190431	2024-12-11 00:17:05.190431	\N	3	\N	\N	\N	\N	2
 209	258.55	2024-12-11 00:17:24.675706	2024-12-11 00:17:24.675706	\N	3	\N	\N	\N	\N	2
@@ -3760,7 +3878,6 @@ COPY public.payment (id, amount, created_at, updated_at, deleted_at, "statusId",
 216	258.55	2024-12-11 00:32:48.742457	2024-12-11 00:32:48.805138	\N	4	\N	\N	\N	\N	2
 217	258.55	2024-12-11 00:33:39.916966	2024-12-11 00:33:39.983813	\N	4	\N	\N	\N	\N	2
 218	258.55	2024-12-11 00:35:08.799858	2024-12-11 00:35:08.935834	\N	4	\N	\N	\N	\N	2
-219	0	2024-12-11 00:35:24.766345	2024-12-11 00:35:24.766345	\N	3	\N	\N	\N	\N	2
 220	517.09	2024-12-11 00:35:57.050772	2024-12-11 00:35:57.050772	\N	3	\N	\N	\N	\N	2
 221	517.09	2024-12-11 00:36:48.497429	2024-12-11 00:36:48.590033	\N	4	\N	\N	\N	\N	2
 \.
@@ -4327,6 +4444,22 @@ COPY public.tax_stamp (id, code, amount, created_at, updated_at, deleted_at, "st
 709	40029007920240000257	258.5455	2024-12-10 23:39:51.687	2024-12-10 23:39:51.687	\N	11	\N	\N	\N	5	361	\N	1	2024
 711	40029007920240000259	258.5455	2024-12-10 23:39:51.699	2024-12-10 23:39:51.699	\N	11	\N	\N	\N	5	361	\N	1	2024
 712	40028007220240000260	258.5455	2024-12-10 23:39:51.704	2024-12-10 23:39:51.704	\N	11	\N	\N	\N	5	354	\N	1	2024
+713	40029007820240000261	258.5455	2024-12-11 22:23:20.273226	2024-12-11 22:23:20.273226	\N	10	\N	\N	\N	5	360	\N	1	2024
+714	40029007820240000262	258.5455	2024-12-11 22:25:49.796913	2024-12-11 22:25:49.796913	\N	10	\N	\N	\N	5	360	\N	1	2024
+715	40029007820240000263	258.5455	2024-12-11 22:25:49.805169	2024-12-11 22:25:49.805169	\N	10	\N	\N	\N	5	360	\N	1	2024
+716	40029007820240000264	258.5455	2024-12-11 22:25:49.813337	2024-12-11 22:25:49.813337	\N	10	\N	\N	\N	5	360	\N	1	2024
+717	40029007820240000265	258.5455	2024-12-11 22:25:49.819318	2024-12-11 22:25:49.819318	\N	10	\N	\N	\N	5	360	\N	1	2024
+718	40029007820240000266	258.5455	2024-12-11 22:25:49.825884	2024-12-11 22:25:49.825884	\N	10	\N	\N	\N	5	360	\N	1	2024
+719	40029007820240000267	258.5455	2024-12-11 22:28:45.795287	2024-12-11 22:28:45.795287	\N	10	\N	\N	\N	5	360	\N	1	2024
+720	40029007820240000268	258.5455	2024-12-11 22:28:45.80634	2024-12-11 22:28:45.80634	\N	10	\N	\N	\N	5	360	\N	1	2024
+721	40029007820240000269	258.5455	2024-12-11 22:28:45.813297	2024-12-11 22:28:45.813297	\N	10	\N	\N	\N	5	360	\N	1	2024
+722	40029007820240000270	258.5455	2024-12-11 22:28:45.821007	2024-12-11 22:28:45.821007	\N	10	\N	\N	\N	5	360	\N	1	2024
+723	40029007820240000271	258.5455	2024-12-11 22:28:45.8274	2024-12-11 22:28:45.8274	\N	10	\N	\N	\N	5	360	\N	1	2024
+724	40029007920240000272	258.5455	2024-12-11 22:32:57.706616	2024-12-11 22:32:57.706616	\N	10	\N	\N	\N	5	361	\N	1	2024
+725	40029007920240000273	258.5455	2024-12-11 22:32:57.714833	2024-12-11 22:32:57.714833	\N	10	\N	\N	\N	5	361	\N	1	2024
+726	40029007820240000274	258.5455	2024-12-11 22:34:09.719339	2024-12-11 22:34:09.719339	\N	10	\N	\N	\N	5	360	\N	1	2024
+727	40029007820240000275	258.5455	2024-12-11 22:34:09.81972	2024-12-11 22:34:09.81972	\N	10	\N	\N	\N	5	360	\N	1	2024
+728	20024005420240000276	258.5455	2024-12-11 22:35:07.94082	2024-12-11 22:35:07.94082	\N	12	\N	\N	\N	5	336	\N	1	2024
 \.
 
 
@@ -4344,22 +4477,7 @@ COPY public.tax_stamps_payment (id, created_at, updated_at, deleted_at, "statusI
 568	2024-12-10 22:04:45.063503	2024-12-10 22:04:45.063503	\N	1	\N	\N	\N	705	201
 569	2024-12-10 22:16:21.290828	2024-12-10 22:16:21.290828	\N	1	\N	\N	\N	706	202
 570	2024-12-10 23:36:10.743094	2024-12-10 23:36:10.743094	\N	1	\N	\N	\N	707	203
-571	2024-12-10 23:40:59.688047	2024-12-10 23:40:59.688047	\N	1	\N	\N	\N	708	205
-572	2024-12-10 23:40:59.688622	2024-12-10 23:40:59.688622	\N	1	\N	\N	\N	710	205
-573	2024-12-11 00:15:32.625626	2024-12-11 00:15:32.625626	\N	1	\N	\N	\N	709	207
-574	2024-12-11 00:17:05.20834	2024-12-11 00:17:05.20834	\N	1	\N	\N	\N	709	208
-575	2024-12-11 00:17:24.691435	2024-12-11 00:17:24.691435	\N	1	\N	\N	\N	709	209
-576	2024-12-11 00:17:54.024224	2024-12-11 00:17:54.024224	\N	1	\N	\N	\N	709	210
-577	2024-12-11 00:20:16.601071	2024-12-11 00:20:16.601071	\N	1	\N	\N	\N	709	211
-578	2024-12-11 00:25:34.259111	2024-12-11 00:25:34.259111	\N	1	\N	\N	\N	709	212
-579	2024-12-11 00:27:34.942372	2024-12-11 00:27:34.942372	\N	1	\N	\N	\N	709	213
-580	2024-12-11 00:31:00.677054	2024-12-11 00:31:00.677054	\N	1	\N	\N	\N	709	214
-581	2024-12-11 00:32:12.316461	2024-12-11 00:32:12.316461	\N	1	\N	\N	\N	709	215
-582	2024-12-11 00:32:48.761731	2024-12-11 00:32:48.761731	\N	1	\N	\N	\N	709	216
-583	2024-12-11 00:33:39.935184	2024-12-11 00:33:39.935184	\N	1	\N	\N	\N	709	217
 584	2024-12-11 00:35:08.824123	2024-12-11 00:35:08.824123	\N	1	\N	\N	\N	709	218
-585	2024-12-11 00:35:57.060917	2024-12-11 00:35:57.060917	\N	1	\N	\N	\N	711	220
-586	2024-12-11 00:35:57.061261	2024-12-11 00:35:57.061261	\N	1	\N	\N	\N	712	220
 587	2024-12-11 00:36:48.507466	2024-12-11 00:36:48.507466	\N	1	\N	\N	\N	711	221
 588	2024-12-11 00:36:48.507793	2024-12-11 00:36:48.507793	\N	1	\N	\N	\N	712	221
 \.
@@ -4415,11 +4533,11 @@ COPY public.types_external_request (id, code, description, created_at, updated_a
 --
 
 COPY public.users (id, email, password, identity_document_letter, identity_document, birthdate, constitution_date, address, phone_number, last_connection, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "roleId", "contributorTypeId", "parishId", fullname, "refreshToken", contributor_exempt, gender) FROM stdin;
-1	shyf.infosiartec@gmail.com	$2a$10$nXtUPsWyqglYlPp0ehUOQu.hrUCB0CIv/K51AW21ZDLcBUxsnZwTS	G	20000152-6	\N	1900-01-01	Av. Michelena a 100 Mts. del elevado La Quizanda detrás de las oficinas del IVEC Sede Sec. Hacienda y Finanzas – Valencia - Edo. Carabobo.	+58 241 8743470	\N	2024-06-25 21:49:14.69	2024-11-23 21:02:53.729682	\N	1	1	1	\N	1	6	285	SUPER ADMIN	$argon2id$v=19$m=65536,t=3,p=4$czbXB3FGHdN+QWFyHVsYrA$tDDmIBBW6AJZs8AzkcxwbhtUIbTx9ZKsd5uVDGzT9AM	f	O
-5	sebastian.gamboalima@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465204	1999-08-04	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085731	\N	2024-10-14 14:54:09.9	2024-12-10 23:39:17.687691	\N	1	1	1	\N	3	1	285	Carlos Arnaldo Cárdenas Sosa	$argon2id$v=19$m=65536,t=3,p=4$Lu8lrPeFaKe67w+hO4OfCQ$YZ7Og48qdX9Dj5nJBmQg1nfDhe38FnyIModzjwgWoIU	f	O
-2	nelmerayala@gmail.com	$2a$10$PG1UH3TyqY9pS1c972/vSOM3w.Hj/N3D0XxpaNJ3ereTA4CnADY2K	V	24297146	1996-02-02	\N	Los tamarindos	+58 414 4196316	\N	2024-06-26 23:02:27.391	2024-12-10 23:40:19.426319	\N	1	1	1	\N	2	1	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$YhIiVRegylq1NxVR5CNPxw$YWmSL07zAsY8kJBdrvt4WC6PACi6ZTAg+ZYAswO+0xw	f	M
-3	jennyaray98@gmail.com	$2a$10$OQsz9Gj2Xw4J.hsWbUo2gOtcA.FdXXHtPMgyYp1cCA9gjSiYFKxN.	V	26306715	1998-01-22	\N	San Judas Tadeo I	+58 424 4571298	\N	2024-10-17 19:17:42.11	2024-10-17 19:17:42.11	\N	1	1	1	\N	4	1	285	Jennyreth Cristina Aray Andrade	\N	f	O
-4	broook.hum04@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465203	1999-08-04	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085730	\N	2024-10-14 14:54:09.9	2024-11-19 20:30:30.133539	\N	1	1	1	\N	3	1	285	Carlos Arnaldo Cárdenas Sosa	$argon2id$v=19$m=65536,t=3,p=4$u4oiAeZXOk+ikrkb7u3CBA$nNHFdMEPUOJnEp0TqDlYzFZnT752wW1iHxn0y8Dd1ZM	f	O
+1	shyf.infosiartec@gmail.com	$2a$10$nXtUPsWyqglYlPp0ehUOQu.hrUCB0CIv/K51AW21ZDLcBUxsnZwTS	G	20000152-6	\N	1900-01-01	Av. Michelena a 100 Mts. del elevado La Quizanda detrás de las oficinas del IVEC Sede Sec. Hacienda y Finanzas – Valencia - Edo. Carabobo.	+58 241 8743470	\N	2024-06-25 21:49:14.69	2024-11-23 21:02:53.729682	\N	1	1	1	\N	1	6	285	SUPER ADMIN		f	O
+4	broook.hum04@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465203	1964-02-02	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085730	\N	2024-10-14 14:54:09.9	2024-11-19 20:30:30.133539	\N	1	1	1	\N	3	1	285	Carlos Arnaldo Cárdenas Sosa		t	F
+5	sebastian.gamboalima@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465204	1953-12-15	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085731	\N	2024-10-14 14:54:09.9	2024-12-11 22:23:01.125155	\N	1	1	1	\N	3	1	285	Carlos Arnaldo Cárdenas Sosa		t	M
+3	jennyaray98@gmail.com	$2a$10$OQsz9Gj2Xw4J.hsWbUo2gOtcA.FdXXHtPMgyYp1cCA9gjSiYFKxN.	V	26306715	1965-02-02	\N	San Judas Tadeo I	+58 424 4571298	\N	2024-10-17 19:17:42.11	2024-10-17 19:17:42.11	\N	1	1	1	\N	4	1	285	Jennyreth Cristina Aray Andrade		t	F
+2	nelmerayala@gmail.com	$2a$10$PG1UH3TyqY9pS1c972/vSOM3w.Hj/N3D0XxpaNJ3ereTA4CnADY2K	V	24297146	1965-02-02	\N	Los tamarindos	+58 414 4196316	\N	2024-06-26 23:02:27.391	2024-12-16 11:15:30.42226	\N	1	1	1	\N	2	1	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$gEZyJ4jeM4GxYqskITEv9g$N4pYMEssAxIx4g1onBBFo/IKitH16+I7HosynxJ+khQ	f	M
 \.
 
 
@@ -4427,7 +4545,7 @@ COPY public.users (id, email, password, identity_document_letter, identity_docum
 -- Name: annual_correlative_tax_stamps; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.annual_correlative_tax_stamps', 260, true);
+SELECT pg_catalog.setval('public.annual_correlative_tax_stamps', 276, true);
 
 
 --
@@ -4557,6 +4675,13 @@ SELECT pg_catalog.setval('public.municipalities_id_seq', 335, true);
 
 
 --
+-- Name: parameter_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.parameter_id_seq', 3, true);
+
+
+--
 -- Name: parishes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -4637,7 +4762,7 @@ SELECT pg_catalog.setval('public.subentity_id_seq', 29, true);
 -- Name: tax_stamp_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tax_stamp_id_seq', 712, true);
+SELECT pg_catalog.setval('public.tax_stamp_id_seq', 728, true);
 
 
 --
@@ -4900,6 +5025,14 @@ ALTER TABLE ONLY public.parishes
 
 
 --
+-- Name: parameter PK_cc5c047040f9c69f0e0d6a844a0; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.parameter
+    ADD CONSTRAINT "PK_cc5c047040f9c69f0e0d6a844a0" PRIMARY KEY (id);
+
+
+--
 -- Name: external_request PK_df9a673903e91dd7d055dee49b5; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4937,6 +5070,14 @@ ALTER TABLE ONLY public.bank_account
 
 ALTER TABLE ONLY public.payment
     ADD CONSTRAINT "PK_fcaec7df5adf9cac408c686b2ab" PRIMARY KEY (id);
+
+
+--
+-- Name: parameter UQ_739d1ad76dacab8e0a73da54e59; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.parameter
+    ADD CONSTRAINT "UQ_739d1ad76dacab8e0a73da54e59" UNIQUE (code);
 
 
 --
@@ -5185,6 +5326,14 @@ ALTER TABLE ONLY public.document
 
 ALTER TABLE ONLY public.country
     ADD CONSTRAINT "FK_1e58299162002560831eba42907" FOREIGN KEY ("deletedById") REFERENCES public.users(id);
+
+
+--
+-- Name: parameter FK_1e5aeaf99f4b174e380a2061242; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.parameter
+    ADD CONSTRAINT "FK_1e5aeaf99f4b174e380a2061242" FOREIGN KEY ("deletedById") REFERENCES public.users(id);
 
 
 --
@@ -6012,6 +6161,14 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: parameter FK_cd7369492c2ff3ff0510f58f7bf; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.parameter
+    ADD CONSTRAINT "FK_cd7369492c2ff3ff0510f58f7bf" FOREIGN KEY ("createdById") REFERENCES public.users(id);
+
+
+--
 -- Name: audit FK_cd7c3eded9d5466c4cfe77a853a; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -6132,6 +6289,14 @@ ALTER TABLE ONLY public.tax_stamps_payment
 
 
 --
+-- Name: parameter FK_dff4dc5b724ff8a4a6433b8b12b; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.parameter
+    ADD CONSTRAINT "FK_dff4dc5b724ff8a4a6433b8b12b" FOREIGN KEY ("updatedById") REFERENCES public.users(id);
+
+
+--
 -- Name: external_request FK_e15239771e284fe10e5c0d9abee; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -6217,6 +6382,14 @@ ALTER TABLE ONLY public.roles_privilege
 
 ALTER TABLE ONLY public.tax_stamp
     ADD CONSTRAINT "FK_f4286785d364f39e97a220c7aab" FOREIGN KEY ("statusId") REFERENCES public.status(id);
+
+
+--
+-- Name: parameter FK_f5242ee8a7aa8c490eeb7f7bf29; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.parameter
+    ADD CONSTRAINT "FK_f5242ee8a7aa8c490eeb7f7bf29" FOREIGN KEY ("statusId") REFERENCES public.status(id);
 
 
 --
