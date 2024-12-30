@@ -9,10 +9,12 @@
     sudo mkdir /logs/
     sudo mkdir /logs/reset_sequences/annual_correlative_tax_stamps/
     sudo mkdir /logs/reset_sequences/daily_correlative_request_bank/
+    sudo mkdir /logs/tax_stamps/cancellation_daily/
     
 -- CREAR ARCHIVOS SH
   nano reset_sequence_annual_correlative_tax_stamps.sh
   nano reset_sequence_daily_correlative_request_bank.sh
+  nano cancellation_tax_stamps.sh
   
   -- se abre el editor nano y se copia el contenido de los archivos .sh
 
@@ -20,6 +22,7 @@
 
     chmod +x /cron_jobs/reset_sequence_daily_correlative_request_bank.sh
     chmod +x /cron_jobs/reset_sequence_annual_correlative_tax_stamps.sh
+    chmod +x /cron_jobs/cancellation_tax_stamps.sh
 
   CONFIGURAR EL CRON JOB:
 
@@ -38,6 +41,7 @@
     - Agrega una línea para ejecutar tu script:
       LINEA PARA EJECUCION DIARIO 12:00AM: 0 0 * * * /cron_jobs/reset_sequence_daily_correlative_request_bank.sh
       LINEA PARA EJECUCION ANUAL 1 DE ENERO A LAS 12:00AM: 0 0 1 1 * /cron_jobs/reset_sequence_annual_correlative_tax_stamps.sh
+      LINEA PARA EJECUCION DIARIO 12:00AM: 0 0 * * * /cron_jobs/cancellation_tax_stamps.sh
 
 
     Para comenzar a editar en nano :
