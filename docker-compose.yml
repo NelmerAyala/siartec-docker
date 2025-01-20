@@ -22,7 +22,7 @@ services:
       - siartec-network
     volumes:
       - ./siartec-backend:/usr/src/app
-      - C:\Reports\:/usr/src/app/Reports
+      # - C:\Reports\:/usr/src/app/Reports
       # - /usr/src/app/node_modules
     tty: true
     ports:
@@ -41,7 +41,7 @@ services:
       - siartec-network
     volumes:
       - ./siartec-frontend:/usr/src/app
-      - C:\Reports\:/usr/src/app/public/pdfs/Reports
+      # - C:\Reports\:/usr/src/app/public/pdfs/Reports
       # - /usr/src/app/node_modules
     tty: true
     ports:
