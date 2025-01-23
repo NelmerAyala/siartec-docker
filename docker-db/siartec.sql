@@ -63,10 +63,10 @@ ALTER TYPE public.users_gender_enum OWNER TO postgres;
 
 CREATE FUNCTION public.reset_sequence(sequence_name text) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-BEGIN
-  EXECUTE format('ALTER SEQUENCE %I RESTART WITH 1;', sequence_name);
-END;
+    AS $$
+BEGIN
+  EXECUTE format('ALTER SEQUENCE %I RESTART WITH 1;', sequence_name);
+END;
 $$;
 
 
@@ -78,25 +78,25 @@ ALTER FUNCTION public.reset_sequence(sequence_name text) OWNER TO postgres;
 
 CREATE FUNCTION public.verification_contributors_exempts() RETURNS void
     LANGUAGE plpgsql
-    AS $$
-BEGIN
-  	UPDATE users
-	SET contributor_exempt=true
-	WHERE 
-	(date_part('year', age(birthdate)) >=CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and gender='F') or
-	(date_part('year', age(birthdate)) >=CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and gender='M') or
-	(date_part('year', age(birthdate)) <=CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
-	and contributor_exempt = false
-	and "contributorTypeId" = (SELECT id FROM contributors_type WHERE code='NATURAL');
-
-  	UPDATE users
-	SET contributor_exempt=false
-	WHERE 
-	((date_part('year', age(birthdate)) <CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and gender='F') or
-	(date_part('year', age(birthdate)) <CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and gender='M')) and
-	(date_part('year', age(birthdate)) >CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
-	and "contributorTypeId" = (SELECT id FROM contributors_type WHERE code='NATURAL');
-END;
+    AS $$
+BEGIN
+  	UPDATE users
+	SET contributor_exempt=true
+	WHERE 
+	(date_part('year', age(birthdate)) >=CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and gender='F') or
+	(date_part('year', age(birthdate)) >=CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and gender='M') or
+	(date_part('year', age(birthdate)) <=CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
+	and contributor_exempt = false
+	and "contributorTypeId" = (SELECT id FROM contributors_type WHERE code='NATURAL');
+
+  	UPDATE users
+	SET contributor_exempt=false
+	WHERE 
+	((date_part('year', age(birthdate)) <CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and gender='F') or
+	(date_part('year', age(birthdate)) <CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and gender='M')) and
+	(date_part('year', age(birthdate)) >CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
+	and "contributorTypeId" = (SELECT id FROM contributors_type WHERE code='NATURAL');
+END;
 $$;
 
 
@@ -108,23 +108,23 @@ ALTER FUNCTION public.verification_contributors_exempts() OWNER TO postgres;
 
 CREATE FUNCTION public.verification_contributors_exempts(sequence_name text) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-BEGIN
-  	UPDATE users
-	SET contributor_exempt=true
-	WHERE 
-	(date_part('year', age(u.birthdate)) >=CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and u.gender='F') or
-	(date_part('year', age(u.birthdate)) >=CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and u.gender='M') or
-	(date_part('year', age(u.birthdate)) <=CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
-	and u.contributor_exempt = false;
-
-  	UPDATE users
-	SET contributor_exempt=false
-	WHERE 
-	((date_part('year', age(u.birthdate)) <CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and u.gender='F') or
-	(date_part('year', age(u.birthdate)) <CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and u.gender='M')) and
-	(date_part('year', age(u.birthdate)) >CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER));
-END;
+    AS $$
+BEGIN
+  	UPDATE users
+	SET contributor_exempt=true
+	WHERE 
+	(date_part('year', age(u.birthdate)) >=CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and u.gender='F') or
+	(date_part('year', age(u.birthdate)) >=CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and u.gender='M') or
+	(date_part('year', age(u.birthdate)) <=CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
+	and u.contributor_exempt = false;
+
+  	UPDATE users
+	SET contributor_exempt=false
+	WHERE 
+	((date_part('year', age(u.birthdate)) <CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and u.gender='F') or
+	(date_part('year', age(u.birthdate)) <CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and u.gender='M')) and
+	(date_part('year', age(u.birthdate)) >CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER));
+END;
 $$;
 
 
@@ -2003,6 +2003,14 @@ COPY public.calculation_factor (id, created_at, updated_at, deleted_at, "statusI
 79	2024-12-16 21:00:20.157861	2024-12-16 21:00:20.157861	\N	\N	\N	\N	\N	3	52.8321	2024-12-16
 80	2024-12-18 17:51:13.544956	2024-12-18 17:51:13.544956	\N	\N	\N	\N	\N	3	0.2	2024-12-18
 81	2024-12-29 14:05:06.409376	2024-12-29 14:05:06.409376	\N	\N	\N	\N	\N	3	54.1069	2024-12-29
+82	2025-01-07 14:41:45.455507	2025-01-07 14:41:45.455507	\N	\N	\N	\N	\N	3	0.25	2025-01-07
+83	2025-01-08 14:27:04.630496	2025-01-08 14:27:04.630496	\N	\N	\N	\N	\N	3	0.2	2025-01-08
+84	2025-01-13 13:52:05.87978	2025-01-13 13:52:05.87978	\N	\N	\N	\N	\N	3	0.25	2025-01-13
+85	2025-01-14 13:40:51.737873	2025-01-14 13:40:51.737873	\N	\N	\N	\N	\N	3	0.1	2025-01-14
+86	2025-01-15 15:27:54.761016	2025-01-15 15:27:54.761016	\N	\N	\N	\N	\N	3	55.4272	2025-01-15
+87	2025-01-16 13:32:53.302301	2025-01-16 13:32:53.302301	\N	\N	\N	\N	\N	3	0.062	2025-01-16
+88	2025-01-21 18:58:10.560625	2025-01-21 18:58:10.560625	\N	\N	\N	\N	\N	3	57.3155	2025-01-21
+89	2025-01-22 13:48:23.039263	2025-01-22 13:48:23.039263	\N	\N	\N	\N	\N	3	0.2	2025-01-22
 \.
 
 
@@ -2453,6 +2461,215 @@ COPY public.external_request (id, code, description, created_at, updated_at, del
 391	2024121800000367	External Request - Cobro DBI (Método de pago: Cuenta)	2024-12-18 22:16:50.003652	2024-12-18 22:16:50.003652	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2pCert/api/v1/PagoDBI	{"sMerchantId":"341433","sTrxId":"2024121800000367","sTrxType":"222","sCurrency":"VES","sBankId":"138","sDocumentId":"V8612413","sPhoneNumber":"01381234567891785489","nAmount":2,"sAuthKey":"123456","sReferenceNo":"0","sTerminalId":"userc2p"}		336
 392	2024121800000368	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2024-12-18 22:17:29.335889	2024-12-18 22:17:29.335889	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2pCert/api/v1/PagoDBI	{"sMerchantId":"341433","sTrxId":"2024121800000368","sTrxType":"522","sCurrency":"VES","sBankId":"138","sDocumentId":"V8612413","sPhoneNumber":"01381234567891785489","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"userc2p"}		337
 393	2024121800000369	External Request - Cobro DBI (Método de pago: Cuenta)	2024-12-18 22:17:38.651355	2024-12-18 22:17:38.651355	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2pCert/api/v1/PagoDBI	{"sMerchantId":"341433","sTrxId":"2024121800000369","sTrxType":"222","sCurrency":"VES","sBankId":"138","sDocumentId":"V8612413","sPhoneNumber":"01381234567891785489","nAmount":2,"sAuthKey":"123456","sReferenceNo":"0","sTerminalId":"userc2p"}		337
+394	2025010700000370	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-07 16:55:01.2487	2025-01-07 16:55:01.2487	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010700000370","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		340
+395	2025010700000371	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-07 16:56:09.208537	2025-01-07 16:56:09.208537	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010700000371","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		340
+396	2025010700000372	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-07 16:58:11.372621	2025-01-07 16:58:11.372621	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010700000372","sTrxType":"502","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"584244431006","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		340
+397	2025010700000373	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-07 17:00:49.619685	2025-01-07 17:00:49.619685	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010700000373","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		341
+398	2025010700000374	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-07 17:02:13.636604	2025-01-07 17:02:13.636604	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010700000374","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		341
+399	2025010700000375	External Request - Solicitud de Clave DBI (Método de pago: Cuenta)	2025-01-07 17:06:59.681647	2025-01-07 17:06:59.681647	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010700000375","sTrxType":"522","sCurrency":"VES","sBankId":"134","sDocumentId":"V9358504","sPhoneNumber":"01340467444671102284","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		341
+400	2025010700000376	External Request - Solicitud de Clave DBI (Método de pago: Cuenta)	2025-01-07 17:08:39.620634	2025-01-07 17:08:39.620634	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010700000376","sTrxType":"522","sCurrency":"VES","sBankId":"134","sDocumentId":"V9358504","sPhoneNumber":"01340467444671102284","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		341
+401	2025010700000377	External Request - Solicitud de Clave DBI (Método de pago: Cuenta)	2025-01-07 17:11:15.842184	2025-01-07 17:11:15.842184	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010700000377","sTrxType":"522","sCurrency":"VES","sBankId":"134","sDocumentId":"V9358504","sPhoneNumber":"01340467444671102284","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		341
+402	2025010700000378	External Request - Solicitud de Clave DBI (Método de pago: Cuenta)	2025-01-07 17:11:46.069653	2025-01-07 17:11:46.069653	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010700000378","sTrxType":"522","sCurrency":"VES","sBankId":"134","sDocumentId":"V9358504","sPhoneNumber":"01340467444671102284","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		341
+403	2025010700000379	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-07 19:21:46.47441	2025-01-07 19:21:46.47441	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010700000379","sTrxType":"502","sCurrency":"VES","sBankId":"128","sDocumentId":"V24297146","sPhoneNumber":"584144196314","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		342
+404	2025010700000380	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-07 19:22:34.843689	2025-01-07 19:22:34.843689	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010700000380","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V24297146","sPhoneNumber":"584144196314","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		342
+405	2025010700000381	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-07 19:23:14.600123	2025-01-07 19:23:14.600123	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010700000381","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V24297146","sPhoneNumber":"584144196314","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		342
+406	2025010700000382	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-07 19:54:42.065691	2025-01-07 19:54:42.065691	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010700000382","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		343
+407	2025010700000383	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-07 19:55:25.413869	2025-01-07 19:55:25.413869	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010700000383","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V4085730","sPhoneNumber":"584144085730","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		344
+408	2025010700000384	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-07 19:55:30.18974	2025-01-07 19:55:30.18974	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010700000384","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V24297146","sPhoneNumber":"584144196314","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		342
+409	2025010700000385	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-07 19:56:55.128095	2025-01-07 19:56:55.128095	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010700000385","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V24297145","sPhoneNumber":"584144196314","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		342
+410	2025010800000386	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 14:29:25.377279	2025-01-08 14:29:25.377279	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000386","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		345
+411	2025010800000387	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 14:33:03.871994	2025-01-08 14:33:03.871994	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000387","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		345
+412	2025010800000388	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 14:35:47.05032	2025-01-08 14:35:47.05032	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000388","sTrxType":"502","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"584244431006","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		346
+413	2025010800000389	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 14:38:30.886768	2025-01-08 14:38:30.886768	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000389","sTrxType":"502","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"584244431006","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		347
+414	2025010800000390	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-08 14:39:18.480999	2025-01-08 14:39:18.480999	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000390","sTrxType":"202","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"584244431006","nAmount":1.25,"sAuthKey":"21143635","sReferenceNo":"0","sTerminalId":"ingresos"}		347
+415	2025010800000391	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 14:39:58.117404	2025-01-08 14:39:58.117404	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000391","sTrxType":"502","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"584244431006","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		348
+416	2025010800000392	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-08 14:40:13.08846	2025-01-08 14:40:13.08846	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000392","sTrxType":"202","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"584244431006","nAmount":1.25,"sAuthKey":"12345678","sReferenceNo":"0","sTerminalId":"ingresos"}		348
+417	2025010800000393	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 14:42:21.131439	2025-01-08 14:42:21.131439	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000393","sTrxType":"502","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"584244431006","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		349
+418	2025010800000394	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-08 14:42:43.350504	2025-01-08 14:42:43.350504	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000394","sTrxType":"202","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"584244431006","nAmount":1.25,"sAuthKey":"63190308","sReferenceNo":"0","sTerminalId":"ingresos"}		349
+419	2025010800000395	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 14:46:04.586835	2025-01-08 14:46:04.586835	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000395","sTrxType":"502","sCurrency":"VES","sBankId":"151","sDocumentId":"V8612413","sPhoneNumber":"584244431006","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		350
+420	2025010800000396	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 14:50:12.05817	2025-01-08 14:50:12.05817	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000396","sTrxType":"502","sCurrency":"VES","sBankId":"151","sDocumentId":"V8612413","sPhoneNumber":"584244431006","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		350
+421	2025010800000397	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 14:53:00.398045	2025-01-08 14:53:00.398045	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000397","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V9358504","sPhoneNumber":"584144120796","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		351
+422	2025010800000398	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-08 14:53:28.336431	2025-01-08 14:53:28.336431	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000398","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V9358504","sPhoneNumber":"584144120796","nAmount":1.25,"sAuthKey":"53515586","sReferenceNo":"0","sTerminalId":"ingresos"}		351
+423	2025010800000399	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 14:56:52.353419	2025-01-08 14:56:52.353419	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000399","sTrxType":"502","sCurrency":"VES","sBankId":"134","sDocumentId":"V9358504","sPhoneNumber":"584124136169","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		352
+424	2025010800000400	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 15:01:47.410001	2025-01-08 15:01:47.410001	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000400","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		352
+425	2025010800000401	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-08 15:02:19.812206	2025-01-08 15:02:19.812206	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000401","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1,"sAuthKey":"73016693","sReferenceNo":"0","sTerminalId":"ingresos"}		352
+426	2025010800000402	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 15:04:08.435604	2025-01-08 15:04:08.435604	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000402","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		353
+427	2025010800000403	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 15:05:46.415036	2025-01-08 15:05:46.415036	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000403","sTrxType":"502","sCurrency":"VES","sBankId":"174","sDocumentId":"V9358504","sPhoneNumber":"584124136169","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		354
+428	2025010800000404	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 15:13:49.154612	2025-01-08 15:13:49.154612	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000404","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465204","sPhoneNumber":"584144085730","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		354
+429	2025010800000405	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 15:15:29.202761	2025-01-08 15:15:29.202761	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000405","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V86124166","sPhoneNumber":"584144120796","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		355
+430	2025010800000406	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 15:20:42.391933	2025-01-08 15:20:42.391933	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000406","sTrxType":"502","sCurrency":"VES","sBankId":"115","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		356
+431	2025010800000407	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 15:22:39.784564	2025-01-08 15:22:39.784564	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000407","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584141234567","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		357
+432	2025010800000408	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 15:29:31.087988	2025-01-08 15:29:31.087988	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000408","sTrxType":"522","sCurrency":"VES","sBankId":"134","sDocumentId":"V9358504","sPhoneNumber":"01340467444671102284","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		358
+433	2025010800000409	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 15:33:14.747122	2025-01-08 15:33:14.747122	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000409","sTrxType":"522","sCurrency":"VES","sBankId":"102","sDocumentId":"V28465203","sPhoneNumber":"01020349050000237624","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		359
+434	2025010800000410	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 15:36:14.126712	2025-01-08 15:36:14.126712	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000410","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V26671519","sPhoneNumber":"584244316939","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		360
+435	2025010800000411	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-08 15:37:39.194353	2025-01-08 15:37:39.194353	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000411","sTrxType":"202","sCurrency":"VES","sBankId":"191","sDocumentId":"V26671519","sPhoneNumber":"584244316939","nAmount":1,"sAuthKey":"30056040","sReferenceNo":"0","sTerminalId":"ingresos"}		360
+436	2025010800000412	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 15:43:24.246367	2025-01-08 15:43:24.246367	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000412","sTrxType":"522","sCurrency":"VES","sBankId":"191","sDocumentId":"V26671519","sPhoneNumber":"01910071572171058169","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		361
+437	2025010800000413	External Request - Solicitud de Clave DBI (Método de pago: Cuenta)	2025-01-08 15:48:20.496033	2025-01-08 15:48:20.496033	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000413","sTrxType":"522","sCurrency":"VES","sBankId":"108","sDocumentId":"V9358504","sPhoneNumber":"01080058760100084968","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		361
+438	2025010800000414	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 17:18:35.202071	2025-01-08 17:18:35.202071	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000414","sTrxType":"502","sCurrency":"VES","sBankId":"134","sDocumentId":"V9359504","sPhoneNumber":"584124136169","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		362
+439	2025010800000415	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 17:31:54.333129	2025-01-08 17:31:54.333129	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000415","sTrxType":"522","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"01050730890730066169","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		363
+440	2025010800000416	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 17:33:13.326837	2025-01-08 17:33:13.326837	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000416","sTrxType":"522","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"01050730890730066169","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		364
+441	2025010800000417	External Request - Cobro DBI (Método de pago: Cuenta)	2025-01-08 17:34:11.61393	2025-01-08 17:34:11.61393	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000417","sTrxType":"222","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"01050730890730066169","nAmount":1,"sAuthKey":"48578999","sReferenceNo":"0","sTerminalId":"ingresos"}		364
+442	2025010800000418	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 17:36:56.847015	2025-01-08 17:36:56.847015	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000418","sTrxType":"522","sCurrency":"VES","sBankId":"151","sDocumentId":"V8612413","sPhoneNumber":"01510070256003440975","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		365
+443	2025010800000419	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 17:41:01.652403	2025-01-08 17:41:01.652403	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000419","sTrxType":"522","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612415","sPhoneNumber":"01050730890730066169","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		366
+444	2025010800000420	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 18:02:19.053643	2025-01-08 18:02:19.053643	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000420","sTrxType":"502","sCurrency":"VES","sBankId":"172","sDocumentId":"V30009011","sPhoneNumber":"584145605726","nAmount":255,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		367
+445	2025010800000421	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 18:04:36.197562	2025-01-08 18:04:36.197562	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000421","sTrxType":"502","sCurrency":"VES","sBankId":"105","sDocumentId":"V9358504","sPhoneNumber":"584124136169","nAmount":255,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		368
+446	2025010800000422	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-08 18:05:05.972728	2025-01-08 18:05:05.972728	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000422","sTrxType":"202","sCurrency":"VES","sBankId":"105","sDocumentId":"V9358504","sPhoneNumber":"584124136169","nAmount":255,"sAuthKey":"31676504","sReferenceNo":"0","sTerminalId":"ingresos"}		368
+447	2025010800000423	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 18:14:47.022102	2025-01-08 18:14:47.022102	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000423","sTrxType":"522","sCurrency":"VES","sBankId":"172","sDocumentId":"V30009011","sPhoneNumber":"01720305343058329412","nAmount":250,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		369
+448	2025010800000424	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 18:24:10.122332	2025-01-08 18:24:10.122332	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000424","sTrxType":"522","sCurrency":"VES","sBankId":"105","sDocumentId":"V1234567","sPhoneNumber":"01050730890730066169","nAmount":250,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		370
+449	2025010800000425	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 18:25:55.466742	2025-01-08 18:25:55.466742	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000425","sTrxType":"522","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"01050730890730066169","nAmount":250,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		371
+450	2025010800000426	External Request - Cobro DBI (Método de pago: Cuenta)	2025-01-08 18:26:13.732601	2025-01-08 18:26:13.732601	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000426","sTrxType":"222","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"01050730890730066169","nAmount":250,"sAuthKey":"10005695","sReferenceNo":"0","sTerminalId":"ingresos"}		371
+451	2025010800000427	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 18:29:18.395249	2025-01-08 18:29:18.395249	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000427","sTrxType":"522","sCurrency":"VES","sBankId":"172","sDocumentId":"V24297146","sPhoneNumber":"01720204902045426802","nAmount":250,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		372
+452	2025010800000428	External Request - Cobro DBI (Método de pago: Cuenta)	2025-01-08 18:30:38.738994	2025-01-08 18:30:38.738994	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000428","sTrxType":"222","sCurrency":"VES","sBankId":"172","sDocumentId":"V24297146","sPhoneNumber":"01720204902045426802","nAmount":250,"sAuthKey":"56676211","sReferenceNo":"0","sTerminalId":"ingresos"}		372
+453	2025010800000429	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-08 18:32:59.72313	2025-01-08 18:32:59.72313	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000429","sTrxType":"522","sCurrency":"VES","sBankId":"172","sDocumentId":"V24297146","sPhoneNumber":"01720204902045426802","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		373
+454	2025010800000430	External Request - Cobro DBI (Método de pago: Cuenta)	2025-01-08 18:36:52.937141	2025-01-08 18:36:52.937141	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025010800000430","sTrxType":"222","sCurrency":"VES","sBankId":"172","sDocumentId":"V24297146","sPhoneNumber":"01720204902045426802","nAmount":1,"sAuthKey":"48827112","sReferenceNo":"0","sTerminalId":"ingresos"}		373
+455	2025011300000431	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-13 14:01:59.316056	2025-01-13 14:01:59.316056	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011300000431","sTrxType":"522","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"01050730890730066169","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		374
+456	2025011300000432	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-13 14:04:47.308501	2025-01-13 14:04:47.308501	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011300000432","sTrxType":"522","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"01050730890730066169","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		375
+457	2025011300000433	External Request - Cobro DBI (Método de pago: Cuenta)	2025-01-13 14:05:14.659528	2025-01-13 14:05:14.659528	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011300000433","sTrxType":"222","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"01050730890730066169","nAmount":1.25,"sAuthKey":"97109873","sReferenceNo":"0","sTerminalId":"ingresos"}		375
+458	2025011300000434	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-13 15:53:09.40865	2025-01-13 15:53:09.40865	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011300000434","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		376
+459	2025011300000435	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-13 15:56:18.670103	2025-01-13 15:56:18.670103	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011300000435","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		377
+460	2025011300000436	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-13 15:56:49.205589	2025-01-13 15:56:49.205589	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011300000436","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		378
+461	2025011300000437	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-13 15:57:12.950217	2025-01-13 15:57:12.950217	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011300000437","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1.25,"sAuthKey":"12345678","sReferenceNo":"0","sTerminalId":"ingresos"}		378
+462	2025011300000438	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-13 15:58:51.192163	2025-01-13 15:58:51.192163	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011300000438","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		379
+463	2025011300000439	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-13 15:58:57.595463	2025-01-13 15:58:57.595463	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011300000439","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1.25,"sAuthKey":"12345678","sReferenceNo":"0","sTerminalId":"ingresos"}		379
+464	2025011300000440	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-13 16:01:29.166104	2025-01-13 16:01:29.166104	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011300000440","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		380
+465	2025011300000441	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-13 16:01:57.324831	2025-01-13 16:01:57.324831	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011300000441","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1.25,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		381
+466	2025011300000442	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-13 16:02:05.832849	2025-01-13 16:02:05.832849	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011300000442","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":1.25,"sAuthKey":"12345678","sReferenceNo":"0","sTerminalId":"ingresos"}		381
+467	2025011300000443	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-13 19:26:08.143272	2025-01-13 19:26:08.681259	\N	8	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011300000443","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":12.5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}	{"sMerchantId":"36564","sTrxType":"502","sTrxId":"2025011300000443","sReferenceNo":"41306717","sAuthCode":"41306717","sRespCode":"ACCP","sRespDesc":"Transacción Aprobada","sTerminalId":"ingresos"}	382
+468	2025011300000444	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-13 19:27:24.473974	2025-01-13 19:27:24.473974	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011300000444","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":12.5,"sAuthKey":"324911","sReferenceNo":"0","sTerminalId":"ingresos"}		382
+469	2025011300000445	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-13 19:47:55.844713	2025-01-13 19:47:55.844713	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011300000445","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":12.5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		383
+470	2025011300000446	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-13 19:48:04.705492	2025-01-13 19:48:04.705492	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011300000446","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":12.5,"sAuthKey":"12345678","sReferenceNo":"0","sTerminalId":"ingresos"}		383
+471	2025011400000447	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 13:46:30.302754	2025-01-14 13:46:30.302754	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000447","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		384
+472	2025011400000448	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-14 13:48:10.581264	2025-01-14 13:48:10.581264	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000448","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"62804287","sReferenceNo":"0","sTerminalId":"ingresos"}		384
+473	2025011400000449	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 13:52:21.177793	2025-01-14 13:52:21.177793	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000449","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		385
+474	2025011400000450	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-14 13:52:52.088108	2025-01-14 13:52:52.088108	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000450","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"12345678","sReferenceNo":"0","sTerminalId":"ingresos"}		385
+475	2025011400000451	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 13:54:15.903963	2025-01-14 13:54:15.903963	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000451","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		386
+476	2025011400000452	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-14 13:54:30.253356	2025-01-14 13:54:30.253356	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000452","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"12345678","sReferenceNo":"0","sTerminalId":"ingresos"}		386
+477	2025011400000453	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 13:56:05.319301	2025-01-14 13:56:05.319301	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000453","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		387
+478	2025011400000454	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 14:01:46.254833	2025-01-14 14:01:46.254833	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000454","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		388
+479	2025011400000455	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-14 14:02:10.957032	2025-01-14 14:02:10.957032	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000455","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"29818048","sReferenceNo":"0","sTerminalId":"ingresos"}		388
+480	2025011400000456	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 14:23:46.438243	2025-01-14 14:23:46.438243	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000456","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		389
+481	2025011400000457	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 14:26:50.438515	2025-01-14 14:26:50.438515	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000457","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		390
+482	2025011400000458	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 14:29:36.560629	2025-01-14 14:29:36.560629	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000458","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		391
+483	2025011400000459	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 14:34:07.717796	2025-01-14 14:34:07.717796	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000459","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		392
+484	2025011400000460	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 14:34:49.734291	2025-01-14 14:34:49.734291	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000460","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		393
+485	2025011400000461	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-14 14:34:57.022388	2025-01-14 14:34:57.022388	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000461","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"12345678","sReferenceNo":"0","sTerminalId":"ingresos"}		393
+486	2025011400000462	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 14:51:38.246467	2025-01-14 14:51:38.246467	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000462","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		394
+487	2025011400000463	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-14 14:51:53.547409	2025-01-14 14:51:53.547409	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000463","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"12345678","sReferenceNo":"0","sTerminalId":"ingresos"}		394
+488	2025011400000464	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 14:52:02.348865	2025-01-14 14:52:02.348865	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000464","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		395
+489	2025011400000465	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-14 14:52:24.501997	2025-01-14 14:52:24.501997	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000465","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"34479272","sReferenceNo":"0","sTerminalId":"ingresos"}		395
+490	2025011400000466	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 14:55:31.399729	2025-01-14 14:55:31.399729	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000466","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		396
+491	2025011400000467	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 15:07:43.181166	2025-01-14 15:07:43.181166	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000467","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		396
+492	2025011400000468	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 15:11:22.829239	2025-01-14 15:11:22.829239	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000468","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		396
+493	2025011400000469	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 17:26:20.066737	2025-01-14 17:26:20.066737	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000469","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		397
+494	2025011400000470	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 18:04:01.349047	2025-01-14 18:04:04.927703	\N	8	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000470","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}	{"sMerchantId":"36564","sTrxType":"502","sTrxId":"2025011400000470","sReferenceNo":"41406770","sAuthCode":"41406770","sRespCode":"ACCP","sRespDesc":"Transacción Aprobada","sTerminalId":"ingresos"}	398
+495	2025011400000471	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-14 18:04:25.974993	2025-01-14 18:04:25.974993	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000471","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"31770770","sReferenceNo":"0","sTerminalId":"ingresos"}		398
+496	2025011400000472	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 18:06:54.909485	2025-01-14 18:06:55.415209	\N	8	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000472","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}	{"sMerchantId":"36564","sTrxType":"502","sTrxId":"2025011400000472","sReferenceNo":"41406772","sAuthCode":"41406772","sRespCode":"ACCP","sRespDesc":"Transacción Aprobada","sTerminalId":"ingresos"}	399
+497	2025011400000473	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-14 18:07:02.113418	2025-01-14 18:07:02.113418	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000473","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"12345678","sReferenceNo":"0","sTerminalId":"ingresos"}		399
+498	2025011400000474	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 18:16:14.105471	2025-01-14 18:16:14.618098	\N	8	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000474","sTrxType":"522","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"01050730890730066169","nAmount":4,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}	{"sMerchantId":"36564","sTrxType":"522","sTrxId":"2025011400000474","sReferenceNo":"41406776","sAuthCode":"41406776","sRespCode":"ACCP","sRespDesc":"Transacción Aprobada","sTerminalId":"ingresos"}	400
+499	2025011400000475	External Request - Cobro DBI (Método de pago: Cuenta)	2025-01-14 18:16:37.910249	2025-01-14 18:16:37.910249	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000475","sTrxType":"222","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"0730890730066169","nAmount":4,"sAuthKey":"12345678","sReferenceNo":"0","sTerminalId":"ingresos"}		400
+500	2025011400000476	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 18:16:42.618881	2025-01-14 18:16:42.739405	\N	8	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000476","sTrxType":"522","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"01050730890730066169","nAmount":4,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}	{"sMerchantId":"36564","sTrxType":"522","sTrxId":"2025011400000476","sReferenceNo":"41406777","sAuthCode":"41406777","sRespCode":"ACCP","sRespDesc":"Transacción Aprobada","sTerminalId":"ingresos"}	401
+501	2025011400000477	External Request - Cobro DBI (Método de pago: Cuenta)	2025-01-14 18:17:08.56761	2025-01-14 18:17:08.56761	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000477","sTrxType":"222","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"0730890730066169","nAmount":4,"sAuthKey":"96609213","sReferenceNo":"0","sTerminalId":"ingresos"}		401
+502	2025011400000478	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 18:18:58.709883	2025-01-14 18:18:58.709883	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000478","sTrxType":"522","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"01050730890730066169","nAmount":4,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		402
+503	2025011400000479	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-14 18:20:03.659596	2025-01-14 18:20:04.336369	\N	8	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000479","sTrxType":"522","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"01050730890730066169","nAmount":4,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}	{"sMerchantId":"36564","sTrxType":"522","sTrxId":"2025011400000479","sReferenceNo":"41406778","sAuthCode":"41406778","sRespCode":"ACCP","sRespDesc":"Transacción Aprobada","sTerminalId":"ingresos"}	403
+504	2025011400000480	External Request - Cobro DBI (Método de pago: Cuenta)	2025-01-14 18:20:40.939183	2025-01-14 18:20:40.939183	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011400000480","sTrxType":"222","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"01050730890730066169","nAmount":4,"sAuthKey":"15134371","sReferenceNo":"0","sTerminalId":"ingresos"}		403
+505	2025011600000481	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 13:36:28.447125	2025-01-16 13:36:28.447125	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000481","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		404
+506	2025011600000482	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 13:36:55.447276	2025-01-16 13:36:55.447276	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000482","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		405
+507	2025011600000483	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 13:42:10.749226	2025-01-16 13:42:10.749226	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000483","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		406
+508	2025011600000484	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 13:42:49.953582	2025-01-16 13:42:49.953582	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000484","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		407
+509	2025011600000485	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 13:43:27.207188	2025-01-16 13:43:27.207188	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000485","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		408
+510	2025011600000486	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 13:46:16.447796	2025-01-16 13:46:16.447796	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000486","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		409
+511	2025011600000487	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 13:46:46.994395	2025-01-16 13:46:46.994395	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000487","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		410
+512	2025011600000488	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 13:46:55.499023	2025-01-16 13:46:55.499023	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000488","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		411
+513	2025011600000489	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 13:47:48.566528	2025-01-16 13:47:48.566528	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000489","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		412
+514	2025011600000490	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 13:52:58.908019	2025-01-16 13:52:58.908019	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000490","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		413
+515	2025011600000491	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 13:55:34.729137	2025-01-16 13:55:34.729137	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000491","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		414
+516	2025011600000492	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 13:55:41.543933	2025-01-16 13:55:41.543933	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000492","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		415
+517	2025011600000493	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 13:56:07.70966	2025-01-16 13:56:07.70966	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000493","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		416
+518	2025011600000494	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 13:57:14.48155	2025-01-16 13:57:14.48155	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000494","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		417
+519	2025011600000495	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 13:57:53.578069	2025-01-16 13:57:53.578069	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000495","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		418
+520	2025011600000496	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 13:59:29.000109	2025-01-16 13:59:29.000109	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000496","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		419
+521	2025011600000497	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 14:01:15.525301	2025-01-16 14:01:15.525301	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000497","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		420
+522	2025011600000498	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 14:06:27.212583	2025-01-16 14:06:27.212583	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000498","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		421
+523	2025011600000499	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 14:11:21.389912	2025-01-16 14:11:21.389912	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000499","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		422
+524	2025011600000500	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 14:20:02.171835	2025-01-16 14:20:02.171835	\N	7	\N	\N	\N	1	https://www8.100x100banco3.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000500","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		423
+525	2025011600000501	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 17:43:11.816965	2025-01-16 17:43:11.816965	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000501","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		424
+526	2025011600000502	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 17:43:24.908391	2025-01-16 17:43:24.908391	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000502","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		425
+527	2025011600000503	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 17:44:24.352218	2025-01-16 17:44:24.352218	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000503","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"12345678","sReferenceNo":"0","sTerminalId":"ingresos"}		425
+528	2025011600000504	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 17:45:10.366689	2025-01-16 17:45:10.366689	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000504","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		426
+529	2025011600000505	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 17:45:36.475656	2025-01-16 17:45:36.475656	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000505","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"60698265","sReferenceNo":"0","sTerminalId":"ingresos"}		426
+530	2025011600000506	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 17:49:02.841132	2025-01-16 17:49:02.841132	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000506","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		427
+531	2025011600000507	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 17:49:26.519122	2025-01-16 17:49:26.519122	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000507","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		428
+532	2025011600000508	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 17:50:05.310013	2025-01-16 17:50:05.310013	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000508","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"12345678","sReferenceNo":"0","sTerminalId":"ingresos"}		428
+533	2025011600000509	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 17:50:17.13445	2025-01-16 17:50:17.13445	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000509","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		429
+534	2025011600000510	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 17:51:10.430927	2025-01-16 17:51:10.430927	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000510","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"95508440","sReferenceNo":"0","sTerminalId":"ingresos"}		429
+535	2025011600000511	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 17:51:28.819598	2025-01-16 17:51:28.819598	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000511","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		430
+536	2025011600000512	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 17:53:11.688521	2025-01-16 17:53:11.688521	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000512","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"12345678","sReferenceNo":"0","sTerminalId":"ingresos"}		430
+537	2025011600000513	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 17:53:18.633147	2025-01-16 17:53:18.633147	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000513","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		431
+538	2025011600000514	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 17:53:28.30532	2025-01-16 17:53:28.30532	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000514","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"12345678","sReferenceNo":"0","sTerminalId":"ingresos"}		431
+539	2025011600000515	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 17:54:03.264918	2025-01-16 17:54:03.264918	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000515","sTrxType":"502","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"584244431006","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		432
+540	2025011600000516	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 17:54:49.630867	2025-01-16 17:54:49.630867	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000516","sTrxType":"202","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"584244431006","nAmount":2,"sAuthKey":"97550511","sReferenceNo":"0","sTerminalId":"ingresos"}		432
+541	2025011600000517	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 17:56:31.178805	2025-01-16 17:56:31.178805	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000517","sTrxType":"502","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"584244431006","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		433
+542	2025011600000518	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 17:57:08.779492	2025-01-16 17:57:08.779492	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000518","sTrxType":"202","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"584244431006","nAmount":2,"sAuthKey":"09563344","sReferenceNo":"0","sTerminalId":"ingresos"}		433
+543	2025011600000519	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 18:01:14.161793	2025-01-16 18:01:14.161793	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000519","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		434
+544	2025011600000520	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 18:01:35.481396	2025-01-16 18:01:35.481396	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000520","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"60080467","sReferenceNo":"0","sTerminalId":"ingresos"}		434
+545	2025011600000521	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 18:01:44.729809	2025-01-16 18:01:44.729809	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000521","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		435
+546	2025011600000522	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 18:04:22.9399	2025-01-16 18:04:22.9399	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000522","sTrxType":"502","sCurrency":"VES","sBankId":"102","sDocumentId":"V24297146","sPhoneNumber":"584144196314","nAmount":5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		436
+547	2025011600000523	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 18:04:36.527155	2025-01-16 18:04:36.527155	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000523","sTrxType":"502","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"584244431006","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		437
+548	2025011600000524	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 18:04:52.429564	2025-01-16 18:04:52.429564	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000524","sTrxType":"202","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"584244431006","nAmount":2,"sAuthKey":"53780255","sReferenceNo":"0","sTerminalId":"ingresos"}		437
+549	2025011600000525	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 18:05:56.297197	2025-01-16 18:05:56.297197	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000525","sTrxType":"522","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"01050730890730066169","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		438
+550	2025011600000526	External Request - Cobro DBI (Método de pago: Cuenta)	2025-01-16 18:06:11.446185	2025-01-16 18:06:11.446185	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000526","sTrxType":"222","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"01050730890730066169","nAmount":2,"sAuthKey":"36143345","sReferenceNo":"0","sTerminalId":"ingresos"}		438
+551	2025011600000527	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 18:06:33.706046	2025-01-16 18:06:33.706046	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000527","sTrxType":"522","sCurrency":"VES","sBankId":"105","sDocumentId":"V8612413","sPhoneNumber":"01050730890730066169","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		439
+552	2025011600000528	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 18:06:51.724287	2025-01-16 18:06:51.724287	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000528","sTrxType":"502","sCurrency":"VES","sBankId":"172","sDocumentId":"V24297146","sPhoneNumber":"584144196314","nAmount":5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		440
+553	2025011600000529	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 18:07:43.002121	2025-01-16 18:07:43.002121	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000529","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		441
+554	2025011600000530	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 18:07:50.670768	2025-01-16 18:07:50.670768	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000530","sTrxType":"202","sCurrency":"VES","sBankId":"172","sDocumentId":"V24297146","sPhoneNumber":"584144196314","nAmount":5,"sAuthKey":"10435416","sReferenceNo":"0","sTerminalId":"ingresos"}		440
+555	2025011600000531	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 18:07:56.413025	2025-01-16 18:07:56.413025	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000531","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		442
+556	2025011600000532	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 18:07:59.648756	2025-01-16 18:07:59.648756	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000532","sTrxType":"502","sCurrency":"VES","sBankId":"172","sDocumentId":"V24297146","sPhoneNumber":"584144196314","nAmount":5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		443
+557	2025011600000533	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 18:08:17.887832	2025-01-16 18:08:17.887832	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000533","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V28465203","sPhoneNumber":"584144085730","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		444
+558	2025011600000534	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 18:08:26.542302	2025-01-16 18:08:26.542302	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000534","sTrxType":"202","sCurrency":"VES","sBankId":"172","sDocumentId":"V24297146","sPhoneNumber":"584144196314","nAmount":5,"sAuthKey":"27251963","sReferenceNo":"0","sTerminalId":"ingresos"}		443
+559	2025011600000535	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 18:12:09.514811	2025-01-16 18:12:09.514811	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000535","sTrxType":"502","sCurrency":"VES","sBankId":"172","sDocumentId":"V24297146","sPhoneNumber":"584144196314","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		444
+560	2025011600000536	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 18:13:58.202663	2025-01-16 18:13:58.202663	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000536","sTrxType":"202","sCurrency":"VES","sBankId":"172","sDocumentId":"V24297146","sPhoneNumber":"584144196314","nAmount":2,"sAuthKey":"95617077","sReferenceNo":"0","sTerminalId":"ingresos"}		444
+561	2025011600000537	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 18:50:28.39753	2025-01-16 18:50:28.39753	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000537","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		445
+562	2025011600000538	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 18:50:50.079294	2025-01-16 18:50:50.079294	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000538","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		446
+563	2025011600000539	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 18:51:46.459884	2025-01-16 18:51:46.459884	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000539","sTrxType":"202","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2,"sAuthKey":"06983036","sReferenceNo":"0","sTerminalId":"ingresos"}		446
+564	2025011600000540	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 18:53:33.218134	2025-01-16 18:53:33.218134	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000540","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		447
+565	2025011600000541	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 18:55:43.954455	2025-01-16 18:55:43.954455	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000541","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		448
+566	2025011600000542	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 18:55:54.717566	2025-01-16 18:55:54.717566	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000542","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		449
+567	2025011600000543	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 18:56:04.560546	2025-01-16 18:56:04.560546	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000543","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		450
+568	2025011600000544	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 18:56:48.810645	2025-01-16 18:56:48.810645	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000544","sTrxType":"202","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2,"sAuthKey":"22154299","sReferenceNo":"0","sTerminalId":"ingresos"}		450
+569	2025011600000545	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:10:17.145534	2025-01-16 19:10:17.145534	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000545","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2.5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		451
+570	2025011600000546	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 19:12:13.899274	2025-01-16 19:12:13.899274	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000546","sTrxType":"202","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2.5,"sAuthKey":"34056592","sReferenceNo":"0","sTerminalId":"ingresos"}		451
+571	2025011600000547	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:12:31.808912	2025-01-16 19:12:31.808912	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000547","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2.5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		452
+572	2025011600000548	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:12:53.964713	2025-01-16 19:12:53.964713	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000548","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2.5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		453
+573	2025011600000549	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 19:13:42.173822	2025-01-16 19:13:42.173822	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000549","sTrxType":"202","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2.5,"sAuthKey":"12042780","sReferenceNo":"0","sTerminalId":"ingresos"}		453
+574	2025011600000550	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:19:30.762796	2025-01-16 19:19:30.762796	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000550","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2.5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		454
+575	2025011600000551	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 19:20:10.890958	2025-01-16 19:20:10.890958	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000551","sTrxType":"202","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2.5,"sAuthKey":"50057915","sReferenceNo":"0","sTerminalId":"ingresos"}		454
+576	2025011600000552	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:20:43.393979	2025-01-16 19:20:43.393979	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000552","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2.5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		455
+577	2025011600000553	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:20:53.641438	2025-01-16 19:20:53.641438	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000553","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2.5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		456
+578	2025011600000554	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:21:10.30115	2025-01-16 19:21:10.30115	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000554","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2.5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		457
+579	2025011600000555	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:21:22.265404	2025-01-16 19:21:22.265404	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000555","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2.5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		458
+580	2025011600000556	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 19:21:52.148912	2025-01-16 19:21:52.148912	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000556","sTrxType":"202","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2.5,"sAuthKey":"41056936","sReferenceNo":"0","sTerminalId":"ingresos"}		458
+581	2025011600000557	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:25:24.640731	2025-01-16 19:25:24.640731	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000557","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2.5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		459
+582	2025011600000558	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 19:25:44.391289	2025-01-16 19:25:44.391289	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000558","sTrxType":"202","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2.5,"sAuthKey":"12345678","sReferenceNo":"0","sTerminalId":"ingresos"}		459
+583	2025011600000559	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:25:59.51187	2025-01-16 19:25:59.51187	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000559","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2.5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		460
+584	2025011600000560	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 19:26:15.295216	2025-01-16 19:26:15.295216	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000560","sTrxType":"202","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":2.5,"sAuthKey":"12345678","sReferenceNo":"0","sTerminalId":"ingresos"}		460
+585	2025011600000561	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:27:49.636817	2025-01-16 19:27:49.636817	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000561","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V156209075","sPhoneNumber":"584242753491","nAmount":2.5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		461
+586	2025011600000562	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:27:59.196071	2025-01-16 19:27:59.196071	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000562","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V156209075","sPhoneNumber":"584242753491","nAmount":2.5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		462
+587	2025011600000563	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:29:48.712394	2025-01-16 19:29:48.712394	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000563","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584144085730","nAmount":2.5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		463
+588	2025011600000564	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:33:10.6768	2025-01-16 19:33:10.6768	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000564","sTrxType":"522","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"01910181902100070080","nAmount":2.5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		464
+589	2025011600000565	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:33:19.836563	2025-01-16 19:33:19.836563	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000565","sTrxType":"522","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"01910181902100070080","nAmount":2.5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		465
+590	2025011600000566	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:33:27.836956	2025-01-16 19:33:27.836956	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000566","sTrxType":"522","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"01910181902100070080","nAmount":2.5,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		466
+591	2025011600000567	External Request - Cobro DBI (Método de pago: Cuenta)	2025-01-16 19:34:13.154119	2025-01-16 19:34:13.154119	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000567","sTrxType":"222","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"01910181902100070080","nAmount":2.5,"sAuthKey":"46028457","sReferenceNo":"0","sTerminalId":"ingresos"}		466
+592	2025011600000568	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:36:20.763484	2025-01-16 19:36:20.763484	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000568","sTrxType":"522","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"01910181902100070080","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		467
+593	2025011600000569	External Request - Cobro DBI (Método de pago: Cuenta)	2025-01-16 19:36:59.632909	2025-01-16 19:36:59.632909	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000569","sTrxType":"222","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"01910181902100070080","nAmount":2,"sAuthKey":"41046874","sReferenceNo":"0","sTerminalId":"ingresos"}		467
+594	2025011600000570	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:38:41.119793	2025-01-16 19:38:41.119793	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000570","sTrxType":"522","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"01910181902100070080","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		468
+595	2025011600000571	External Request - Cobro DBI (Método de pago: Cuenta)	2025-01-16 19:38:48.25619	2025-01-16 19:38:48.25619	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000571","sTrxType":"222","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"01910181902100070080","nAmount":2,"sAuthKey":"12345678","sReferenceNo":"0","sTerminalId":"ingresos"}		468
+596	2025011600000572	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:39:33.877414	2025-01-16 19:39:33.877414	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000572","sTrxType":"522","sCurrency":"VES","sBankId":"191","sDocumentId":"V156209075","sPhoneNumber":"01910181902100070080","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		469
+597	2025011600000573	External Request - Cobro DBI (Método de pago: Cuenta)	2025-01-16 19:39:54.813331	2025-01-16 19:39:54.813331	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000573","sTrxType":"222","sCurrency":"VES","sBankId":"191","sDocumentId":"V156209075","sPhoneNumber":"01910181902100070080","nAmount":2,"sAuthKey":"12345678","sReferenceNo":"0","sTerminalId":"ingresos"}		469
+598	2025011600000574	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:40:05.112	2025-01-16 19:40:05.112	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000574","sTrxType":"522","sCurrency":"VES","sBankId":"191","sDocumentId":"V156209075","sPhoneNumber":"01910181902100070085","nAmount":2,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		470
+599	2025011600000575	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-16 19:57:09.960067	2025-01-16 19:57:09.960067	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000575","sTrxType":"502","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":1.24,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		471
+600	2025011600000576	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 19:57:29.817321	2025-01-16 19:57:29.817321	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000576","sTrxType":"202","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":1.24,"sAuthKey":"26056790","sReferenceNo":"0","sTerminalId":"ingresos"}		471
+601	2025012200000577	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-22 15:54:16.486399	2025-01-22 15:54:16.486399	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025012200000577","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V7208763","sPhoneNumber":"584124935130","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		472
+602	2025012200000578	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-22 15:55:20.765115	2025-01-22 15:55:20.765115	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025012200000578","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V7208763","sPhoneNumber":"584124935130","nAmount":1,"sAuthKey":"93246606","sReferenceNo":"0","sTerminalId":"ingresos"}		472
 \.
 
 
@@ -4071,6 +4288,139 @@ COPY public.payment (id, amount, created_at, updated_at, deleted_at, "statusId",
 294	270.53	2024-12-29 14:40:33.804175	2024-12-29 14:40:33.804175	\N	3	\N	\N	\N	1	2
 295	270.53	2024-12-29 14:42:12.929884	2024-12-29 14:42:13.036158	\N	4	\N	\N	\N	1	2
 296	270.53	2024-12-29 15:48:16.716262	2024-12-29 15:48:16.805855	\N	4	\N	\N	\N	1	2
+297	1.25	2025-01-07 16:55:01.222075	2025-01-07 16:55:01.222075	\N	3	\N	\N	\N	\N	1
+298	1.25	2025-01-07 17:00:49.599075	2025-01-07 17:00:49.599075	\N	3	\N	\N	\N	\N	1
+299	1.25	2025-01-07 19:21:46.456295	2025-01-07 19:21:46.456295	\N	3	\N	\N	\N	\N	1
+300	1.25	2025-01-07 19:54:42.045071	2025-01-07 19:54:42.045071	\N	3	\N	\N	\N	\N	1
+301	1.25	2025-01-07 19:55:25.394422	2025-01-07 19:55:25.394422	\N	3	\N	\N	\N	\N	1
+302	1.25	2025-01-08 14:29:25.357552	2025-01-08 14:29:25.357552	\N	3	\N	\N	\N	\N	1
+303	1.25	2025-01-08 14:35:47.031203	2025-01-08 14:35:47.031203	\N	3	\N	\N	\N	\N	1
+304	1.25	2025-01-08 14:38:30.868543	2025-01-08 14:38:30.868543	\N	3	\N	\N	\N	\N	1
+305	1.25	2025-01-08 14:39:58.100344	2025-01-08 14:39:58.100344	\N	3	\N	\N	\N	\N	1
+306	1.25	2025-01-08 14:42:21.109966	2025-01-08 14:42:21.109966	\N	3	\N	\N	\N	\N	1
+307	1.25	2025-01-08 14:46:04.567714	2025-01-08 14:46:04.567714	\N	3	\N	\N	\N	\N	1
+308	1.25	2025-01-08 14:53:00.378298	2025-01-08 14:53:30.986907	\N	4	\N	\N	\N	\N	1
+309	1	2025-01-08 14:56:52.331557	2025-01-08 15:02:22.3192	\N	4	\N	\N	\N	\N	1
+310	1	2025-01-08 15:04:08.418165	2025-01-08 15:04:08.418165	\N	3	\N	\N	\N	\N	1
+311	1	2025-01-08 15:05:46.397163	2025-01-08 15:05:46.397163	\N	3	\N	\N	\N	\N	1
+312	1	2025-01-08 15:15:29.184319	2025-01-08 15:15:29.184319	\N	3	\N	\N	\N	\N	1
+313	1	2025-01-08 15:20:42.375641	2025-01-08 15:20:42.375641	\N	3	\N	\N	\N	\N	1
+314	1	2025-01-08 15:22:39.763916	2025-01-08 15:22:39.763916	\N	3	\N	\N	\N	\N	1
+315	1	2025-01-08 15:29:31.070111	2025-01-08 15:29:31.070111	\N	3	\N	\N	\N	\N	1
+316	1	2025-01-08 15:33:14.729956	2025-01-08 15:33:14.729956	\N	3	\N	\N	\N	\N	1
+317	1	2025-01-08 15:36:14.10648	2025-01-08 15:37:42.681667	\N	4	\N	\N	\N	\N	1
+318	1	2025-01-08 15:43:24.228893	2025-01-08 15:43:24.228893	\N	3	\N	\N	\N	\N	1
+319	1	2025-01-08 17:18:35.181815	2025-01-08 17:18:35.181815	\N	3	\N	\N	\N	\N	1
+320	1	2025-01-08 17:31:54.313266	2025-01-08 17:31:54.313266	\N	3	\N	\N	\N	\N	1
+321	1	2025-01-08 17:33:13.310094	2025-01-08 17:34:15.197716	\N	4	\N	\N	\N	\N	1
+322	1	2025-01-08 17:36:56.830342	2025-01-08 17:36:56.830342	\N	3	\N	\N	\N	\N	1
+323	1	2025-01-08 17:41:01.634578	2025-01-08 17:41:01.634578	\N	3	\N	\N	\N	\N	1
+324	255	2025-01-08 18:02:19.035989	2025-01-08 18:02:19.035989	\N	3	\N	\N	\N	\N	1
+325	255	2025-01-08 18:04:36.179159	2025-01-08 18:04:36.179159	\N	3	\N	\N	\N	\N	1
+326	250	2025-01-08 18:14:47.00251	2025-01-08 18:14:47.00251	\N	3	\N	\N	\N	\N	1
+327	250	2025-01-08 18:24:10.10386	2025-01-08 18:24:10.10386	\N	3	\N	\N	\N	\N	1
+328	250	2025-01-08 18:25:55.449027	2025-01-08 18:25:55.449027	\N	3	\N	\N	\N	\N	1
+329	250	2025-01-08 18:29:18.373983	2025-01-08 18:29:18.373983	\N	3	\N	\N	\N	\N	1
+330	1	2025-01-08 18:32:59.705668	2025-01-08 18:36:56.530183	\N	4	\N	\N	\N	\N	1
+331	1.25	2025-01-13 14:01:59.289383	2025-01-13 14:01:59.289383	\N	3	\N	\N	\N	\N	1
+332	1.25	2025-01-13 14:04:47.286949	2025-01-13 14:05:18.575272	\N	4	\N	\N	\N	\N	1
+333	1.25	2025-01-13 15:53:09.388152	2025-01-13 15:53:09.388152	\N	3	\N	\N	\N	\N	1
+334	1.25	2025-01-13 15:56:18.649976	2025-01-13 15:56:18.649976	\N	3	\N	\N	\N	\N	1
+335	1.25	2025-01-13 15:56:49.186316	2025-01-13 15:56:49.186316	\N	3	\N	\N	\N	\N	1
+336	1.25	2025-01-13 15:58:51.170256	2025-01-13 15:58:51.170256	\N	3	\N	\N	\N	\N	1
+337	1.25	2025-01-13 16:01:29.144032	2025-01-13 16:01:29.144032	\N	3	\N	\N	\N	\N	1
+338	1.25	2025-01-13 16:01:57.305569	2025-01-13 16:01:57.305569	\N	3	\N	\N	\N	\N	1
+339	12.5	2025-01-13 19:26:08.124712	2025-01-13 19:26:08.124712	\N	3	\N	\N	\N	\N	1
+340	12.5	2025-01-13 19:47:55.826968	2025-01-13 19:47:55.826968	\N	3	\N	\N	\N	\N	1
+341	2	2025-01-14 13:46:30.28117	2025-01-14 13:48:13.205769	\N	4	\N	\N	\N	\N	1
+342	2	2025-01-14 13:52:21.160516	2025-01-14 13:52:21.160516	\N	3	\N	\N	\N	\N	1
+343	2	2025-01-14 13:54:15.883099	2025-01-14 13:54:15.883099	\N	3	\N	\N	\N	\N	1
+344	2	2025-01-14 13:56:05.300662	2025-01-14 13:56:05.300662	\N	3	\N	\N	\N	\N	1
+345	2	2025-01-14 14:01:46.234556	2025-01-14 14:02:13.563783	\N	4	\N	\N	\N	\N	1
+346	2	2025-01-14 14:23:46.418773	2025-01-14 14:23:46.418773	\N	3	\N	\N	\N	\N	1
+347	2	2025-01-14 14:26:50.421383	2025-01-14 14:26:50.421383	\N	3	\N	\N	\N	\N	1
+348	2	2025-01-14 14:29:36.542141	2025-01-14 14:29:36.542141	\N	3	\N	\N	\N	\N	1
+349	2	2025-01-14 14:34:07.700218	2025-01-14 14:34:07.700218	\N	3	\N	\N	\N	\N	1
+350	2	2025-01-14 14:34:49.70965	2025-01-14 14:34:49.70965	\N	3	\N	\N	\N	\N	1
+351	2	2025-01-14 14:51:38.229531	2025-01-14 14:51:38.229531	\N	3	\N	\N	\N	\N	1
+352	2	2025-01-14 14:52:02.331723	2025-01-14 14:52:27.072302	\N	4	\N	\N	\N	\N	1
+353	2	2025-01-14 14:55:31.380375	2025-01-14 14:55:31.380375	\N	3	\N	\N	\N	\N	1
+354	2	2025-01-14 17:26:20.048524	2025-01-14 17:26:20.048524	\N	3	\N	\N	\N	\N	1
+355	2	2025-01-14 18:04:01.332795	2025-01-14 18:04:28.638852	\N	4	\N	\N	\N	\N	1
+356	2	2025-01-14 18:06:54.892825	2025-01-14 18:06:54.892825	\N	3	\N	\N	\N	\N	1
+357	4	2025-01-14 18:16:14.078762	2025-01-14 18:16:14.078762	\N	3	\N	\N	\N	\N	1
+358	4	2025-01-14 18:16:42.602525	2025-01-14 18:16:42.602525	\N	3	\N	\N	\N	\N	1
+359	4	2025-01-14 18:18:58.692475	2025-01-14 18:18:58.692475	\N	3	\N	\N	\N	\N	1
+360	4	2025-01-14 18:20:03.644507	2025-01-14 18:20:43.474663	\N	4	\N	\N	\N	\N	1
+361	2	2025-01-16 13:36:28.417884	2025-01-16 13:36:28.417884	\N	3	\N	\N	\N	\N	1
+362	2	2025-01-16 13:36:55.426531	2025-01-16 13:36:55.426531	\N	3	\N	\N	\N	\N	1
+363	2	2025-01-16 13:42:10.730424	2025-01-16 13:42:10.730424	\N	3	\N	\N	\N	\N	1
+364	2	2025-01-16 13:42:49.935411	2025-01-16 13:42:49.935411	\N	3	\N	\N	\N	\N	1
+365	2	2025-01-16 13:43:27.187631	2025-01-16 13:43:27.187631	\N	3	\N	\N	\N	\N	1
+366	2	2025-01-16 13:46:16.424498	2025-01-16 13:46:16.424498	\N	3	\N	\N	\N	\N	1
+367	2	2025-01-16 13:46:46.97528	2025-01-16 13:46:46.97528	\N	3	\N	\N	\N	\N	1
+368	2	2025-01-16 13:46:55.482341	2025-01-16 13:46:55.482341	\N	3	\N	\N	\N	\N	1
+369	2	2025-01-16 13:47:48.548769	2025-01-16 13:47:48.548769	\N	3	\N	\N	\N	\N	1
+370	2	2025-01-16 13:52:58.888063	2025-01-16 13:52:58.888063	\N	3	\N	\N	\N	\N	1
+371	2	2025-01-16 13:55:34.711864	2025-01-16 13:55:34.711864	\N	3	\N	\N	\N	\N	1
+372	2	2025-01-16 13:55:41.526176	2025-01-16 13:55:41.526176	\N	3	\N	\N	\N	\N	1
+373	2	2025-01-16 13:56:07.688059	2025-01-16 13:56:07.688059	\N	3	\N	\N	\N	\N	1
+374	2	2025-01-16 13:57:14.461829	2025-01-16 13:57:14.461829	\N	3	\N	\N	\N	\N	1
+375	2	2025-01-16 13:57:53.557681	2025-01-16 13:57:53.557681	\N	3	\N	\N	\N	\N	1
+376	2	2025-01-16 13:59:28.982686	2025-01-16 13:59:28.982686	\N	3	\N	\N	\N	\N	1
+377	2	2025-01-16 14:01:15.507199	2025-01-16 14:01:15.507199	\N	3	\N	\N	\N	\N	1
+378	2	2025-01-16 14:06:27.19526	2025-01-16 14:06:27.19526	\N	3	\N	\N	\N	\N	1
+379	2	2025-01-16 14:11:21.369431	2025-01-16 14:11:21.369431	\N	3	\N	\N	\N	\N	1
+380	2	2025-01-16 14:20:02.153246	2025-01-16 14:20:02.153246	\N	3	\N	\N	\N	\N	1
+381	2	2025-01-16 17:43:11.764643	2025-01-16 17:43:11.764643	\N	3	\N	\N	\N	\N	1
+382	2	2025-01-16 17:43:24.886543	2025-01-16 17:43:24.886543	\N	3	\N	\N	\N	\N	1
+383	2	2025-01-16 17:45:10.347384	2025-01-16 17:45:10.347384	\N	3	\N	\N	\N	\N	1
+384	2	2025-01-16 17:49:02.821695	2025-01-16 17:49:02.821695	\N	3	\N	\N	\N	\N	1
+385	2	2025-01-16 17:49:26.499741	2025-01-16 17:49:26.499741	\N	3	\N	\N	\N	\N	1
+386	2	2025-01-16 17:50:17.11574	2025-01-16 17:50:17.11574	\N	3	\N	\N	\N	\N	1
+387	2	2025-01-16 17:51:28.799132	2025-01-16 17:51:28.799132	\N	3	\N	\N	\N	\N	1
+388	2	2025-01-16 17:53:18.613785	2025-01-16 17:53:18.613785	\N	3	\N	\N	\N	\N	1
+389	2	2025-01-16 17:54:03.245869	2025-01-16 17:54:03.245869	\N	3	\N	\N	\N	\N	1
+390	2	2025-01-16 17:56:31.159445	2025-01-16 17:56:31.159445	\N	3	\N	\N	\N	\N	1
+391	2	2025-01-16 18:01:14.140917	2025-01-16 18:01:14.140917	\N	3	\N	\N	\N	\N	1
+392	2	2025-01-16 18:01:44.712441	2025-01-16 18:01:44.712441	\N	3	\N	\N	\N	\N	1
+393	5	2025-01-16 18:04:22.918977	2025-01-16 18:04:22.918977	\N	3	\N	\N	\N	\N	1
+394	2	2025-01-16 18:04:36.508638	2025-01-16 18:04:36.508638	\N	3	\N	\N	\N	\N	1
+395	2	2025-01-16 18:05:56.278918	2025-01-16 18:05:56.278918	\N	3	\N	\N	\N	\N	1
+396	2	2025-01-16 18:06:33.689398	2025-01-16 18:06:33.689398	\N	3	\N	\N	\N	\N	1
+397	5	2025-01-16 18:06:51.704787	2025-01-16 18:06:51.704787	\N	3	\N	\N	\N	\N	1
+398	2	2025-01-16 18:07:42.983438	2025-01-16 18:07:42.983438	\N	3	\N	\N	\N	\N	1
+399	2	2025-01-16 18:07:56.399014	2025-01-16 18:07:56.399014	\N	3	\N	\N	\N	\N	1
+400	5	2025-01-16 18:07:59.633655	2025-01-16 18:08:34.232088	\N	4	\N	\N	\N	\N	1
+401	2	2025-01-16 18:08:17.870711	2025-01-16 18:14:02.90937	\N	4	\N	\N	\N	\N	1
+402	2	2025-01-16 18:50:28.378359	2025-01-16 18:50:28.378359	\N	3	\N	\N	\N	\N	1
+403	2	2025-01-16 18:50:50.062613	2025-01-16 18:50:50.062613	\N	3	\N	\N	\N	\N	1
+404	2	2025-01-16 18:53:33.198381	2025-01-16 18:53:33.198381	\N	3	\N	\N	\N	\N	1
+405	2	2025-01-16 18:55:43.935766	2025-01-16 18:55:43.935766	\N	3	\N	\N	\N	\N	1
+406	2	2025-01-16 18:55:54.701723	2025-01-16 18:55:54.701723	\N	3	\N	\N	\N	\N	1
+407	2	2025-01-16 18:56:04.545835	2025-01-16 18:56:52.795842	\N	4	\N	\N	\N	\N	1
+408	2.5	2025-01-16 19:10:17.125758	2025-01-16 19:10:17.125758	\N	3	\N	\N	\N	\N	1
+409	2.5	2025-01-16 19:12:31.790739	2025-01-16 19:12:31.790739	\N	3	\N	\N	\N	\N	1
+410	2.5	2025-01-16 19:12:53.94844	2025-01-16 19:12:53.94844	\N	3	\N	\N	\N	\N	1
+411	2.5	2025-01-16 19:19:30.745507	2025-01-16 19:19:30.745507	\N	3	\N	\N	\N	\N	1
+412	2.5	2025-01-16 19:20:43.37468	2025-01-16 19:20:43.37468	\N	3	\N	\N	\N	\N	1
+413	2.5	2025-01-16 19:20:53.625551	2025-01-16 19:20:53.625551	\N	3	\N	\N	\N	\N	1
+414	2.5	2025-01-16 19:21:10.285241	2025-01-16 19:21:10.285241	\N	3	\N	\N	\N	\N	1
+415	2.5	2025-01-16 19:21:22.248243	2025-01-16 19:21:57.586407	\N	4	\N	\N	\N	\N	1
+416	2.5	2025-01-16 19:25:24.623021	2025-01-16 19:25:24.623021	\N	3	\N	\N	\N	\N	1
+417	2.5	2025-01-16 19:25:59.494985	2025-01-16 19:25:59.494985	\N	3	\N	\N	\N	\N	1
+418	2.5	2025-01-16 19:27:49.619977	2025-01-16 19:27:49.619977	\N	3	\N	\N	\N	\N	1
+419	2.5	2025-01-16 19:27:59.180847	2025-01-16 19:27:59.180847	\N	3	\N	\N	\N	\N	1
+420	2.5	2025-01-16 19:29:48.695124	2025-01-16 19:29:48.695124	\N	3	\N	\N	\N	\N	1
+421	2.5	2025-01-16 19:33:10.659448	2025-01-16 19:33:10.659448	\N	3	\N	\N	\N	\N	1
+422	2.5	2025-01-16 19:33:19.822877	2025-01-16 19:33:19.822877	\N	3	\N	\N	\N	\N	1
+423	2.5	2025-01-16 19:33:27.822555	2025-01-16 19:34:17.534623	\N	4	\N	\N	\N	\N	1
+424	2	2025-01-16 19:36:20.747526	2025-01-16 19:37:03.197197	\N	4	\N	\N	\N	\N	1
+425	2	2025-01-16 19:38:41.100917	2025-01-16 19:38:41.100917	\N	3	\N	\N	\N	\N	1
+426	2	2025-01-16 19:39:33.86031	2025-01-16 19:39:33.86031	\N	3	\N	\N	\N	\N	1
+427	2	2025-01-16 19:40:05.095665	2025-01-16 19:40:05.095665	\N	3	\N	\N	\N	\N	1
+428	1.24	2025-01-16 19:57:09.941117	2025-01-16 19:57:33.657163	\N	4	\N	\N	\N	\N	1
+429	1	2025-01-22 15:54:16.464579	2025-01-22 15:55:23.322999	\N	4	\N	\N	\N	\N	1
 \.
 
 
@@ -4771,6 +5121,139 @@ COPY public.tax_stamp (id, code, amount, created_at, updated_at, deleted_at, "st
 809	20024005320240000357	1068.802	2024-12-18 21:19:26.613237	2024-12-18 21:19:26.613237	\N	11	\N	\N	\N	2	335	\N	1	2024
 810	20024005320240000358	1068.802	2024-12-18 21:19:26.625028	2024-12-18 21:19:26.625028	\N	11	\N	\N	\N	2	335	\N	1	2024
 814	40029007820240000362	1068.802	2024-12-18 21:25:35.335027	2024-12-18 21:25:35.335027	\N	11	\N	\N	\N	2	360	\N	1	2024
+832	30025006220250000380	272.5055	2025-01-07 14:42:50.30867	2025-01-07 14:42:50.30867	\N	10	\N	\N	\N	12	344	82	1	2025
+833	40029007820250000381	1.25	2025-01-07 16:55:01.215135	2025-01-07 16:55:01.215135	\N	10	\N	\N	\N	12	360	\N	1	2025
+834	20024005320250000382	1.25	2025-01-07 17:00:49.593759	2025-01-07 17:00:49.593759	\N	10	\N	\N	\N	12	335	\N	1	2025
+835	40028007620250000383	1.25	2025-01-07 19:21:46.452161	2025-01-07 19:21:46.452161	\N	10	\N	\N	\N	5	358	\N	1	2025
+836	40029007820250000384	1.25	2025-01-07 19:54:42.039277	2025-01-07 19:54:42.039277	\N	10	\N	\N	\N	12	360	\N	1	2025
+837	20024005320250000385	1.25	2025-01-07 19:55:25.384796	2025-01-07 19:55:25.384796	\N	10	\N	\N	\N	12	335	\N	1	2025
+838	40029007820250000386	1.25	2025-01-08 14:29:25.353154	2025-01-08 14:29:25.353154	\N	10	\N	\N	\N	12	360	\N	1	2025
+839	20024005420250000387	1.25	2025-01-08 14:35:47.026019	2025-01-08 14:35:47.026019	\N	10	\N	\N	\N	12	336	\N	1	2025
+840	20024005320250000388	1.25	2025-01-08 14:38:30.863986	2025-01-08 14:38:30.863986	\N	10	\N	\N	\N	12	335	\N	1	2025
+841	20024005320250000389	1.25	2025-01-08 14:39:58.095793	2025-01-08 14:39:58.095793	\N	10	\N	\N	\N	12	335	\N	1	2025
+842	20024005320250000390	1.25	2025-01-08 14:42:21.100804	2025-01-08 14:42:21.100804	\N	10	\N	\N	\N	12	335	\N	1	2025
+843	20024005320250000391	1.25	2025-01-08 14:46:04.562592	2025-01-08 14:46:04.562592	\N	10	\N	\N	\N	12	335	\N	1	2025
+844	20024005320250000392	1.25	2025-01-08 14:53:00.373848	2025-01-08 14:53:30.984571	\N	11	\N	\N	\N	12	335	\N	1	2025
+845	20024005320250000393	1	2025-01-08 14:56:52.322616	2025-01-08 15:02:22.316792	\N	11	\N	\N	\N	12	335	\N	1	2025
+846	20024005320250000394	1	2025-01-08 15:04:08.413183	2025-01-08 15:04:08.413183	\N	10	\N	\N	\N	12	335	\N	1	2025
+847	20024005320250000395	1	2025-01-08 15:05:46.392149	2025-01-08 15:05:46.392149	\N	10	\N	\N	\N	12	335	\N	1	2025
+848	30026006520250000396	1	2025-01-08 15:15:29.179649	2025-01-08 15:15:29.179649	\N	10	\N	\N	\N	12	347	\N	1	2025
+849	20024005320250000397	1	2025-01-08 15:20:42.370608	2025-01-08 15:20:42.370608	\N	10	\N	\N	\N	12	335	\N	1	2025
+850	20024005320250000398	1	2025-01-08 15:22:39.758721	2025-01-08 15:22:39.758721	\N	10	\N	\N	\N	12	335	\N	1	2025
+851	20024005320250000399	1	2025-01-08 15:29:31.065444	2025-01-08 15:29:31.065444	\N	10	\N	\N	\N	12	335	\N	1	2025
+852	20024005320250000400	1	2025-01-08 15:33:14.719389	2025-01-08 15:33:14.719389	\N	10	\N	\N	\N	12	335	\N	1	2025
+853	40029007820250000401	1	2025-01-08 15:36:14.101424	2025-01-08 15:37:42.678965	\N	11	\N	\N	\N	12	360	\N	1	2025
+854	40029007920250000402	1	2025-01-08 15:43:24.220279	2025-01-08 15:43:24.220279	\N	10	\N	\N	\N	12	361	\N	1	2025
+855	40028007620250000403	1	2025-01-08 17:18:35.171812	2025-01-08 17:18:35.171812	\N	10	\N	\N	\N	12	358	\N	1	2025
+856	40028007620250000404	1	2025-01-08 17:31:54.308036	2025-01-08 17:31:54.308036	\N	10	\N	\N	\N	12	358	\N	1	2025
+857	40028007620250000405	1	2025-01-08 17:33:13.306262	2025-01-08 17:34:15.193696	\N	11	\N	\N	\N	12	358	\N	1	2025
+858	40029007820250000406	1	2025-01-08 17:36:56.82113	2025-01-08 17:36:56.82113	\N	10	\N	\N	\N	12	360	\N	1	2025
+859	20024005420250000407	1	2025-01-08 17:41:01.625006	2025-01-08 17:41:01.625006	\N	10	\N	\N	\N	12	336	\N	1	2025
+861	20024005320250000409	255	2025-01-08 18:04:36.174999	2025-01-08 18:04:36.174999	\N	10	\N	\N	\N	12	335	\N	1	2025
+862	30026006520250000410	250	2025-01-08 18:14:46.997622	2025-01-08 18:14:46.997622	\N	10	\N	\N	\N	12	347	\N	1	2025
+863	40029007820250000411	0	2025-01-08 18:20:33.987097	2025-01-08 18:20:33.987097	\N	13	\N	\N	\N	5	360	83	1	2025
+864	20024005320250000412	250	2025-01-08 18:24:10.094338	2025-01-08 18:24:10.094338	\N	10	\N	\N	\N	12	335	\N	1	2025
+865	20024005420250000413	250	2025-01-08 18:25:55.444736	2025-01-08 18:25:55.444736	\N	10	\N	\N	\N	12	336	\N	1	2025
+866	20024005420250000414	250	2025-01-08 18:29:18.36873	2025-01-08 18:29:18.36873	\N	10	\N	\N	\N	12	336	\N	1	2025
+867	20024005320250000415	1	2025-01-08 18:32:59.70157	2025-01-08 18:36:56.526911	\N	11	\N	\N	\N	12	335	\N	1	2025
+868	20024005320250000416	1.25	2025-01-13 14:01:59.28288	2025-01-13 14:01:59.28288	\N	10	\N	\N	\N	12	335	\N	1	2025
+869	40029007820250000417	1.25	2025-01-13 14:04:47.281386	2025-01-13 14:05:18.573159	\N	11	\N	\N	\N	12	360	\N	1	2025
+870	20024005320250000418	1.25	2025-01-13 15:53:09.383473	2025-01-13 15:53:09.383473	\N	10	\N	\N	\N	12	335	\N	1	2025
+872	20024005320250000420	1.25	2025-01-13 15:56:49.181146	2025-01-13 15:56:49.181146	\N	10	\N	\N	\N	12	335	\N	1	2025
+873	20024005320250000421	1.25	2025-01-13 15:58:51.156994	2025-01-13 15:58:51.156994	\N	10	\N	\N	\N	12	335	\N	1	2025
+871	20024005320250000419	12.5	2025-01-13 15:56:18.644	2025-01-13 15:56:18.644	\N	10	\N	\N	\N	12	335	\N	1	2025
+876	30027007020250000424	12.5	2025-01-13 19:47:55.822579	2025-01-13 19:47:55.822579	\N	10	\N	\N	\N	12	352	\N	1	2025
+878	20024005320250000426	2	2025-01-14 13:46:30.270882	2025-01-14 13:48:13.201692	\N	11	\N	\N	\N	12	335	\N	1	2025
+879	40029007820250000427	2	2025-01-14 13:52:21.156197	2025-01-14 13:52:21.156197	\N	10	\N	\N	\N	12	360	\N	1	2025
+880	20024005420250000428	2	2025-01-14 13:54:15.878178	2025-01-14 13:54:15.878178	\N	10	\N	\N	\N	12	336	\N	1	2025
+881	20024005320250000429	2	2025-01-14 13:56:05.296062	2025-01-14 13:56:05.296062	\N	10	\N	\N	\N	12	335	\N	1	2025
+882	20024005320250000430	2	2025-01-14 14:01:46.229328	2025-01-14 14:02:13.557873	\N	11	\N	\N	\N	12	335	\N	1	2025
+883	10014004820250000431	2	2025-01-14 14:23:46.414199	2025-01-14 14:23:46.414199	\N	10	\N	\N	\N	12	195	\N	1	2025
+884	20024005320250000432	2	2025-01-14 14:26:50.416835	2025-01-14 14:26:50.416835	\N	10	\N	\N	\N	12	335	\N	1	2025
+885	20024005320250000433	2	2025-01-14 14:29:36.537078	2025-01-14 14:29:36.537078	\N	10	\N	\N	\N	12	335	\N	1	2025
+887	30026006420250000435	2	2025-01-14 14:34:49.705621	2025-01-14 14:34:49.705621	\N	10	\N	\N	\N	12	346	\N	1	2025
+888	40029007820250000436	2	2025-01-14 14:51:38.225634	2025-01-14 14:51:38.225634	\N	10	\N	\N	\N	12	360	\N	1	2025
+889	40029007820250000437	2	2025-01-14 14:52:02.327218	2025-01-14 14:52:27.069553	\N	11	\N	\N	\N	12	360	\N	1	2025
+890	40029007820250000438	2	2025-01-14 14:55:31.375333	2025-01-14 14:55:31.375333	\N	10	\N	\N	\N	12	360	\N	1	2025
+891	40029007820250000439	2	2025-01-14 17:26:20.044334	2025-01-14 17:26:20.044334	\N	10	\N	\N	\N	12	360	\N	1	2025
+899	40029007820250000447	2	2025-01-16 13:46:55.47817	2025-01-16 13:46:55.47817	\N	10	\N	\N	\N	12	360	\N	1	2025
+886	40028007620250000434	2	2025-01-14 14:34:07.696	2025-01-14 18:04:28.63585	\N	11	\N	\N	\N	12	358	\N	1	2025
+860	40028007620250000408	2	2025-01-08 18:02:19.032	2025-01-08 18:02:19.032	\N	10	\N	\N	\N	12	358	\N	1	2025
+900	40029007820250000448	2	2025-01-16 13:47:48.539563	2025-01-16 13:47:48.539563	\N	10	\N	\N	\N	12	360	\N	1	2025
+901	40029007820250000449	2	2025-01-16 13:52:58.882713	2025-01-16 13:52:58.882713	\N	10	\N	\N	\N	12	360	\N	1	2025
+902	40029007820250000450	2	2025-01-16 13:55:34.706841	2025-01-16 13:55:34.706841	\N	10	\N	\N	\N	12	360	\N	1	2025
+903	40029007820250000451	2	2025-01-16 13:55:41.521664	2025-01-16 13:55:41.521664	\N	10	\N	\N	\N	12	360	\N	1	2025
+904	40029007820250000452	2	2025-01-16 13:56:07.68199	2025-01-16 13:56:07.68199	\N	10	\N	\N	\N	12	360	\N	1	2025
+877	20024005320250000425	2	2025-01-14 13:44:32.155	2025-01-14 13:44:32.155	\N	10	\N	\N	\N	12	335	85	1	2025
+905	40029007820250000453	2	2025-01-16 13:57:14.457618	2025-01-16 13:57:14.457618	\N	10	\N	\N	\N	12	360	\N	1	2025
+906	40029007820250000454	2	2025-01-16 13:57:53.552164	2025-01-16 13:57:53.552164	\N	10	\N	\N	\N	12	360	\N	1	2025
+874	20024005320250000422	2	2025-01-13 16:01:29.138	2025-01-14 18:20:43.471727	\N	11	\N	\N	\N	12	335	\N	1	2025
+875	20024005320250000423	2	2025-01-13 16:01:57.296	2025-01-14 18:20:43.481991	\N	11	\N	\N	\N	12	335	\N	1	2025
+892	20024005320250000440	2	2025-01-16 13:36:28.412148	2025-01-16 13:36:28.412148	\N	10	\N	\N	\N	12	335	\N	1	2025
+893	20024005320250000441	2	2025-01-16 13:36:55.421867	2025-01-16 13:36:55.421867	\N	10	\N	\N	\N	12	335	\N	1	2025
+894	20024005320250000442	2	2025-01-16 13:42:10.725798	2025-01-16 13:42:10.725798	\N	10	\N	\N	\N	12	335	\N	1	2025
+895	40029007820250000443	2	2025-01-16 13:42:49.925905	2025-01-16 13:42:49.925905	\N	10	\N	\N	\N	12	360	\N	1	2025
+896	40029007820250000444	2	2025-01-16 13:43:27.178642	2025-01-16 13:43:27.178642	\N	10	\N	\N	\N	12	360	\N	1	2025
+897	40029007820250000445	2	2025-01-16 13:46:16.414955	2025-01-16 13:46:16.414955	\N	10	\N	\N	\N	12	360	\N	1	2025
+898	40029007820250000446	2	2025-01-16 13:46:46.970699	2025-01-16 13:46:46.970699	\N	10	\N	\N	\N	12	360	\N	1	2025
+907	40029007820250000455	2	2025-01-16 13:59:28.978387	2025-01-16 13:59:28.978387	\N	10	\N	\N	\N	12	360	\N	1	2025
+908	40029007820250000456	2	2025-01-16 14:01:15.498532	2025-01-16 14:01:15.498532	\N	10	\N	\N	\N	12	360	\N	1	2025
+909	40029007820250000457	2	2025-01-16 14:06:27.191059	2025-01-16 14:06:27.191059	\N	10	\N	\N	\N	12	360	\N	1	2025
+910	40029007820250000458	2	2025-01-16 14:11:21.364144	2025-01-16 14:11:21.364144	\N	10	\N	\N	\N	12	360	\N	1	2025
+911	40029007820250000459	2	2025-01-16 14:20:02.148221	2025-01-16 14:20:02.148221	\N	10	\N	\N	\N	12	360	\N	1	2025
+912	40029007820250000460	2	2025-01-16 17:43:11.757476	2025-01-16 17:43:11.757476	\N	10	\N	\N	\N	12	360	\N	1	2025
+913	40029007820250000461	2	2025-01-16 17:43:24.881223	2025-01-16 17:43:24.881223	\N	10	\N	\N	\N	12	360	\N	1	2025
+914	40029007820250000462	2	2025-01-16 17:45:10.34242	2025-01-16 17:45:10.34242	\N	10	\N	\N	\N	12	360	\N	1	2025
+915	20024005320250000463	2	2025-01-16 17:49:02.817171	2025-01-16 17:49:02.817171	\N	10	\N	\N	\N	12	335	\N	1	2025
+916	20024005320250000464	2	2025-01-16 17:49:26.495079	2025-01-16 17:49:26.495079	\N	10	\N	\N	\N	12	335	\N	1	2025
+917	20024005320250000465	2	2025-01-16 17:50:17.110616	2025-01-16 17:50:17.110616	\N	10	\N	\N	\N	12	335	\N	1	2025
+918	20024005320250000466	2	2025-01-16 17:51:28.793028	2025-01-16 17:51:28.793028	\N	10	\N	\N	\N	12	335	\N	1	2025
+919	20024005320250000467	2	2025-01-16 17:53:18.60897	2025-01-16 17:53:18.60897	\N	10	\N	\N	\N	12	335	\N	1	2025
+920	20024005320250000468	2	2025-01-16 17:54:03.240869	2025-01-16 17:54:03.240869	\N	10	\N	\N	\N	12	335	\N	1	2025
+921	20024005320250000469	2	2025-01-16 17:56:31.154981	2025-01-16 17:56:31.154981	\N	10	\N	\N	\N	12	335	\N	1	2025
+922	20024005320250000470	2	2025-01-16 18:01:14.135278	2025-01-16 18:01:14.135278	\N	10	\N	\N	\N	12	335	\N	1	2025
+923	20024005320250000471	2	2025-01-16 18:01:44.708087	2025-01-16 18:01:44.708087	\N	10	\N	\N	\N	12	335	\N	1	2025
+924	40029007820250000472	5	2025-01-16 18:04:22.914426	2025-01-16 18:04:22.914426	\N	10	\N	\N	\N	5	360	\N	1	2025
+925	30026006520250000473	2	2025-01-16 18:04:36.504473	2025-01-16 18:04:36.504473	\N	10	\N	\N	\N	12	347	\N	1	2025
+926	30026006520250000474	2	2025-01-16 18:05:56.274405	2025-01-16 18:05:56.274405	\N	10	\N	\N	\N	12	347	\N	1	2025
+927	30026006520250000475	2	2025-01-16 18:06:33.680302	2025-01-16 18:06:33.680302	\N	10	\N	\N	\N	12	347	\N	1	2025
+928	40028007620250000476	5	2025-01-16 18:06:51.700205	2025-01-16 18:06:51.700205	\N	10	\N	\N	\N	5	358	\N	1	2025
+929	30026006520250000477	2	2025-01-16 18:07:42.973302	2025-01-16 18:07:42.973302	\N	10	\N	\N	\N	12	347	\N	1	2025
+930	30026006520250000478	2	2025-01-16 18:07:56.395506	2025-01-16 18:07:56.395506	\N	10	\N	\N	\N	12	347	\N	1	2025
+931	40028007620250000479	5	2025-01-16 18:07:59.629598	2025-01-16 18:08:34.225875	\N	11	\N	\N	\N	5	358	\N	1	2025
+932	30026006520250000480	2	2025-01-16 18:08:17.865986	2025-01-16 18:14:02.906018	\N	11	\N	\N	\N	12	347	\N	1	2025
+933	40029007820250000481	2	2025-01-16 18:50:28.373291	2025-01-16 18:50:28.373291	\N	10	\N	\N	\N	12	360	\N	1	2025
+934	40029007820250000482	2	2025-01-16 18:50:50.057696	2025-01-16 18:50:50.057696	\N	10	\N	\N	\N	12	360	\N	1	2025
+935	40029007820250000483	2	2025-01-16 18:53:33.193616	2025-01-16 18:53:33.193616	\N	10	\N	\N	\N	12	360	\N	1	2025
+936	20024005320250000484	2	2025-01-16 18:55:43.925838	2025-01-16 18:55:43.925838	\N	10	\N	\N	\N	12	335	\N	1	2025
+937	20024005320250000485	2	2025-01-16 18:55:54.697357	2025-01-16 18:55:54.697357	\N	10	\N	\N	\N	12	335	\N	1	2025
+938	20024005320250000486	2	2025-01-16 18:56:04.541911	2025-01-16 18:56:52.793591	\N	11	\N	\N	\N	12	335	\N	1	2025
+939	40029007820250000487	2.5	2025-01-16 19:10:17.120662	2025-01-16 19:10:17.120662	\N	10	\N	\N	\N	12	360	\N	1	2025
+940	40029007820250000488	2.5	2025-01-16 19:12:31.785629	2025-01-16 19:12:31.785629	\N	10	\N	\N	\N	12	360	\N	1	2025
+941	40029007820250000489	2.5	2025-01-16 19:12:53.944053	2025-01-16 19:12:53.944053	\N	10	\N	\N	\N	12	360	\N	1	2025
+942	40029007820250000490	2.5	2025-01-16 19:19:30.741562	2025-01-16 19:19:30.741562	\N	10	\N	\N	\N	12	360	\N	1	2025
+943	40029007820250000491	2.5	2025-01-16 19:20:43.364335	2025-01-16 19:20:43.364335	\N	10	\N	\N	\N	12	360	\N	1	2025
+944	40029007820250000492	2.5	2025-01-16 19:20:53.621429	2025-01-16 19:20:53.621429	\N	10	\N	\N	\N	12	360	\N	1	2025
+945	40029007820250000493	2.5	2025-01-16 19:21:10.281602	2025-01-16 19:21:10.281602	\N	10	\N	\N	\N	12	360	\N	1	2025
+946	40029007820250000494	2.5	2025-01-16 19:21:22.24398	2025-01-16 19:21:57.583749	\N	11	\N	\N	\N	12	360	\N	1	2025
+947	40029007820250000495	2.5	2025-01-16 19:25:24.618225	2025-01-16 19:25:24.618225	\N	10	\N	\N	\N	12	360	\N	1	2025
+948	40029007820250000496	2.5	2025-01-16 19:25:59.490718	2025-01-16 19:25:59.490718	\N	10	\N	\N	\N	12	360	\N	1	2025
+949	40029007820250000497	2.5	2025-01-16 19:27:49.615659	2025-01-16 19:27:49.615659	\N	10	\N	\N	\N	12	360	\N	1	2025
+950	40029007820250000498	2.5	2025-01-16 19:27:59.177506	2025-01-16 19:27:59.177506	\N	10	\N	\N	\N	12	360	\N	1	2025
+951	20024005320250000499	2.5	2025-01-16 19:29:48.689688	2025-01-16 19:29:48.689688	\N	10	\N	\N	\N	12	335	\N	1	2025
+952	40028007620250000500	2.5	2025-01-16 19:33:10.654452	2025-01-16 19:33:10.654452	\N	10	\N	\N	\N	12	358	\N	1	2025
+953	40028007620250000501	2.5	2025-01-16 19:33:19.81958	2025-01-16 19:33:19.81958	\N	10	\N	\N	\N	12	358	\N	1	2025
+954	40028007620250000502	2.5	2025-01-16 19:33:27.819181	2025-01-16 19:34:17.532748	\N	11	\N	\N	\N	12	358	\N	1	2025
+955	20024005320250000503	2	2025-01-16 19:36:20.743881	2025-01-16 19:37:03.19463	\N	11	\N	\N	\N	12	335	\N	1	2025
+956	20024005320250000504	2	2025-01-16 19:38:41.096034	2025-01-16 19:38:41.096034	\N	10	\N	\N	\N	12	335	\N	1	2025
+957	20024005320250000505	2	2025-01-16 19:39:33.855958	2025-01-16 19:39:33.855958	\N	10	\N	\N	\N	12	335	\N	1	2025
+958	20024005320250000506	2	2025-01-16 19:40:05.091789	2025-01-16 19:40:05.091789	\N	10	\N	\N	\N	12	335	\N	1	2025
+959	40029007820250000507	1.24	2025-01-16 19:57:09.932844	2025-01-16 19:57:33.649202	\N	11	\N	\N	\N	12	360	\N	1	2025
+960	20024005320250000508	1	2025-01-22 15:52:32.733305	2025-01-22 15:52:32.733305	\N	10	\N	\N	\N	13	335	89	1	2025
+961	40029007820250000509	1	2025-01-22 15:54:16.459462	2025-01-22 15:55:23.317077	\N	11	\N	\N	\N	13	360	\N	1	2025
+962	10001000920250000510	0	2025-01-22 16:18:41.662341	2025-01-22 16:18:41.662341	\N	13	\N	\N	\N	13	9	89	1	2025
+963	20024005320250000511	4	2025-01-22 16:37:34.260452	2025-01-22 16:37:34.260452	\N	10	\N	\N	\N	12	335	89	1	2025
+964	40029007820250000512	4	2025-01-22 17:55:14.013332	2025-01-22 17:55:14.013332	\N	10	\N	\N	\N	13	360	89	1	2025
 \.
 
 
@@ -4889,6 +5372,143 @@ COPY public.tax_stamps_payment (id, created_at, updated_at, deleted_at, "statusI
 684	2024-12-29 14:40:33.809265	2024-12-29 14:40:33.809265	\N	1	\N	\N	\N	713	294
 685	2024-12-29 14:42:12.94159	2024-12-29 14:42:12.94159	\N	1	\N	\N	\N	831	295
 686	2024-12-29 15:48:16.72781	2024-12-29 15:48:16.72781	\N	1	\N	\N	\N	831	296
+687	2025-01-07 16:55:01.226119	2025-01-07 16:55:01.226119	\N	1	\N	\N	\N	833	297
+688	2025-01-07 17:00:49.603005	2025-01-07 17:00:49.603005	\N	1	\N	\N	\N	834	298
+689	2025-01-07 19:21:46.459315	2025-01-07 19:21:46.459315	\N	1	\N	\N	\N	835	299
+690	2025-01-07 19:54:42.048554	2025-01-07 19:54:42.048554	\N	1	\N	\N	\N	836	300
+691	2025-01-07 19:55:25.397935	2025-01-07 19:55:25.397935	\N	1	\N	\N	\N	837	301
+692	2025-01-08 14:29:25.360746	2025-01-08 14:29:25.360746	\N	1	\N	\N	\N	838	302
+693	2025-01-08 14:35:47.034476	2025-01-08 14:35:47.034476	\N	1	\N	\N	\N	839	303
+694	2025-01-08 14:38:30.871699	2025-01-08 14:38:30.871699	\N	1	\N	\N	\N	840	304
+695	2025-01-08 14:39:58.10335	2025-01-08 14:39:58.10335	\N	1	\N	\N	\N	841	305
+696	2025-01-08 14:42:21.116557	2025-01-08 14:42:21.116557	\N	1	\N	\N	\N	842	306
+697	2025-01-08 14:46:04.57131	2025-01-08 14:46:04.57131	\N	1	\N	\N	\N	843	307
+698	2025-01-08 14:53:00.381758	2025-01-08 14:53:00.381758	\N	1	\N	\N	\N	844	308
+699	2025-01-08 14:56:52.335032	2025-01-08 14:56:52.335032	\N	1	\N	\N	\N	845	309
+700	2025-01-08 15:04:08.421191	2025-01-08 15:04:08.421191	\N	1	\N	\N	\N	846	310
+701	2025-01-08 15:05:46.400516	2025-01-08 15:05:46.400516	\N	1	\N	\N	\N	847	311
+702	2025-01-08 15:15:29.187708	2025-01-08 15:15:29.187708	\N	1	\N	\N	\N	848	312
+703	2025-01-08 15:20:42.37848	2025-01-08 15:20:42.37848	\N	1	\N	\N	\N	849	313
+704	2025-01-08 15:22:39.767445	2025-01-08 15:22:39.767445	\N	1	\N	\N	\N	850	314
+705	2025-01-08 15:29:31.073397	2025-01-08 15:29:31.073397	\N	1	\N	\N	\N	851	315
+706	2025-01-08 15:33:14.733233	2025-01-08 15:33:14.733233	\N	1	\N	\N	\N	852	316
+707	2025-01-08 15:36:14.10976	2025-01-08 15:36:14.10976	\N	1	\N	\N	\N	853	317
+708	2025-01-08 15:43:24.232108	2025-01-08 15:43:24.232108	\N	1	\N	\N	\N	854	318
+709	2025-01-08 17:18:35.18538	2025-01-08 17:18:35.18538	\N	1	\N	\N	\N	855	319
+710	2025-01-08 17:31:54.316749	2025-01-08 17:31:54.316749	\N	1	\N	\N	\N	856	320
+711	2025-01-08 17:33:13.312869	2025-01-08 17:33:13.312869	\N	1	\N	\N	\N	857	321
+712	2025-01-08 17:36:56.833656	2025-01-08 17:36:56.833656	\N	1	\N	\N	\N	858	322
+713	2025-01-08 17:41:01.637525	2025-01-08 17:41:01.637525	\N	1	\N	\N	\N	859	323
+714	2025-01-08 18:02:19.038868	2025-01-08 18:02:19.038868	\N	1	\N	\N	\N	860	324
+715	2025-01-08 18:04:36.182049	2025-01-08 18:04:36.182049	\N	1	\N	\N	\N	861	325
+716	2025-01-08 18:14:47.005823	2025-01-08 18:14:47.005823	\N	1	\N	\N	\N	862	326
+717	2025-01-08 18:24:10.106858	2025-01-08 18:24:10.106858	\N	1	\N	\N	\N	864	327
+718	2025-01-08 18:25:55.451974	2025-01-08 18:25:55.451974	\N	1	\N	\N	\N	865	328
+719	2025-01-08 18:29:18.377464	2025-01-08 18:29:18.377464	\N	1	\N	\N	\N	866	329
+720	2025-01-08 18:32:59.708494	2025-01-08 18:32:59.708494	\N	1	\N	\N	\N	867	330
+721	2025-01-13 14:01:59.29346	2025-01-13 14:01:59.29346	\N	1	\N	\N	\N	868	331
+722	2025-01-13 14:04:47.290717	2025-01-13 14:04:47.290717	\N	1	\N	\N	\N	869	332
+723	2025-01-13 15:53:09.391575	2025-01-13 15:53:09.391575	\N	1	\N	\N	\N	870	333
+724	2025-01-13 15:56:18.653859	2025-01-13 15:56:18.653859	\N	1	\N	\N	\N	871	334
+725	2025-01-13 15:56:49.190033	2025-01-13 15:56:49.190033	\N	1	\N	\N	\N	872	335
+726	2025-01-13 15:58:51.1745	2025-01-13 15:58:51.1745	\N	1	\N	\N	\N	873	336
+727	2025-01-13 16:01:29.148004	2025-01-13 16:01:29.148004	\N	1	\N	\N	\N	874	337
+728	2025-01-13 16:01:57.308986	2025-01-13 16:01:57.308986	\N	1	\N	\N	\N	875	338
+729	2025-01-13 19:26:08.128278	2025-01-13 19:26:08.128278	\N	1	\N	\N	\N	871	339
+730	2025-01-13 19:47:55.829973	2025-01-13 19:47:55.829973	\N	1	\N	\N	\N	876	340
+731	2025-01-14 13:46:30.285322	2025-01-14 13:46:30.285322	\N	1	\N	\N	\N	878	341
+732	2025-01-14 13:52:21.163397	2025-01-14 13:52:21.163397	\N	1	\N	\N	\N	879	342
+733	2025-01-14 13:54:15.886471	2025-01-14 13:54:15.886471	\N	1	\N	\N	\N	880	343
+734	2025-01-14 13:56:05.30384	2025-01-14 13:56:05.30384	\N	1	\N	\N	\N	881	344
+735	2025-01-14 14:01:46.238169	2025-01-14 14:01:46.238169	\N	1	\N	\N	\N	882	345
+736	2025-01-14 14:23:46.422144	2025-01-14 14:23:46.422144	\N	1	\N	\N	\N	883	346
+737	2025-01-14 14:26:50.424312	2025-01-14 14:26:50.424312	\N	1	\N	\N	\N	884	347
+738	2025-01-14 14:29:36.545643	2025-01-14 14:29:36.545643	\N	1	\N	\N	\N	885	348
+739	2025-01-14 14:34:07.703021	2025-01-14 14:34:07.703021	\N	1	\N	\N	\N	886	349
+740	2025-01-14 14:34:49.712769	2025-01-14 14:34:49.712769	\N	1	\N	\N	\N	887	350
+741	2025-01-14 14:51:38.232481	2025-01-14 14:51:38.232481	\N	1	\N	\N	\N	888	351
+742	2025-01-14 14:52:02.33495	2025-01-14 14:52:02.33495	\N	1	\N	\N	\N	889	352
+743	2025-01-14 14:55:31.383968	2025-01-14 14:55:31.383968	\N	1	\N	\N	\N	890	353
+744	2025-01-14 17:26:20.05144	2025-01-14 17:26:20.05144	\N	1	\N	\N	\N	891	354
+745	2025-01-14 18:04:01.335807	2025-01-14 18:04:01.335807	\N	1	\N	\N	\N	886	355
+746	2025-01-14 18:06:54.896059	2025-01-14 18:06:54.896059	\N	1	\N	\N	\N	860	356
+747	2025-01-14 18:16:14.081796	2025-01-14 18:16:14.081796	\N	1	\N	\N	\N	875	357
+748	2025-01-14 18:16:14.081853	2025-01-14 18:16:14.081853	\N	1	\N	\N	\N	877	357
+749	2025-01-14 18:16:42.60567	2025-01-14 18:16:42.60567	\N	1	\N	\N	\N	875	358
+750	2025-01-14 18:16:42.605731	2025-01-14 18:16:42.605731	\N	1	\N	\N	\N	877	358
+751	2025-01-14 18:18:58.695544	2025-01-14 18:18:58.695544	\N	1	\N	\N	\N	875	359
+752	2025-01-14 18:18:58.695604	2025-01-14 18:18:58.695604	\N	1	\N	\N	\N	877	359
+753	2025-01-14 18:20:03.647511	2025-01-14 18:20:03.647511	\N	1	\N	\N	\N	874	360
+754	2025-01-14 18:20:03.647577	2025-01-14 18:20:03.647577	\N	1	\N	\N	\N	875	360
+755	2025-01-16 13:36:28.422096	2025-01-16 13:36:28.422096	\N	1	\N	\N	\N	892	361
+756	2025-01-16 13:36:55.430046	2025-01-16 13:36:55.430046	\N	1	\N	\N	\N	893	362
+757	2025-01-16 13:42:10.733899	2025-01-16 13:42:10.733899	\N	1	\N	\N	\N	894	363
+758	2025-01-16 13:42:49.938611	2025-01-16 13:42:49.938611	\N	1	\N	\N	\N	895	364
+759	2025-01-16 13:43:27.191143	2025-01-16 13:43:27.191143	\N	1	\N	\N	\N	896	365
+760	2025-01-16 13:46:16.431255	2025-01-16 13:46:16.431255	\N	1	\N	\N	\N	897	366
+761	2025-01-16 13:46:46.978481	2025-01-16 13:46:46.978481	\N	1	\N	\N	\N	898	367
+762	2025-01-16 13:46:55.485589	2025-01-16 13:46:55.485589	\N	1	\N	\N	\N	899	368
+763	2025-01-16 13:47:48.551777	2025-01-16 13:47:48.551777	\N	1	\N	\N	\N	900	369
+764	2025-01-16 13:52:58.891419	2025-01-16 13:52:58.891419	\N	1	\N	\N	\N	901	370
+765	2025-01-16 13:55:34.715256	2025-01-16 13:55:34.715256	\N	1	\N	\N	\N	902	371
+766	2025-01-16 13:55:41.529685	2025-01-16 13:55:41.529685	\N	1	\N	\N	\N	903	372
+767	2025-01-16 13:56:07.69221	2025-01-16 13:56:07.69221	\N	1	\N	\N	\N	904	373
+768	2025-01-16 13:57:14.465001	2025-01-16 13:57:14.465001	\N	1	\N	\N	\N	905	374
+769	2025-01-16 13:57:53.561629	2025-01-16 13:57:53.561629	\N	1	\N	\N	\N	906	375
+770	2025-01-16 13:59:28.985961	2025-01-16 13:59:28.985961	\N	1	\N	\N	\N	907	376
+771	2025-01-16 14:01:15.510396	2025-01-16 14:01:15.510396	\N	1	\N	\N	\N	908	377
+772	2025-01-16 14:06:27.198285	2025-01-16 14:06:27.198285	\N	1	\N	\N	\N	909	378
+773	2025-01-16 14:11:21.373139	2025-01-16 14:11:21.373139	\N	1	\N	\N	\N	910	379
+774	2025-01-16 14:20:02.156872	2025-01-16 14:20:02.156872	\N	1	\N	\N	\N	911	380
+775	2025-01-16 17:43:11.76909	2025-01-16 17:43:11.76909	\N	1	\N	\N	\N	912	381
+776	2025-01-16 17:43:24.890256	2025-01-16 17:43:24.890256	\N	1	\N	\N	\N	913	382
+777	2025-01-16 17:45:10.35092	2025-01-16 17:45:10.35092	\N	1	\N	\N	\N	914	383
+778	2025-01-16 17:49:02.825175	2025-01-16 17:49:02.825175	\N	1	\N	\N	\N	915	384
+779	2025-01-16 17:49:26.503258	2025-01-16 17:49:26.503258	\N	1	\N	\N	\N	916	385
+780	2025-01-16 17:50:17.119283	2025-01-16 17:50:17.119283	\N	1	\N	\N	\N	917	386
+781	2025-01-16 17:51:28.802569	2025-01-16 17:51:28.802569	\N	1	\N	\N	\N	918	387
+782	2025-01-16 17:53:18.617454	2025-01-16 17:53:18.617454	\N	1	\N	\N	\N	919	388
+783	2025-01-16 17:54:03.249428	2025-01-16 17:54:03.249428	\N	1	\N	\N	\N	920	389
+784	2025-01-16 17:56:31.162591	2025-01-16 17:56:31.162591	\N	1	\N	\N	\N	921	390
+785	2025-01-16 18:01:14.145123	2025-01-16 18:01:14.145123	\N	1	\N	\N	\N	922	391
+786	2025-01-16 18:01:44.715657	2025-01-16 18:01:44.715657	\N	1	\N	\N	\N	923	392
+787	2025-01-16 18:04:22.922173	2025-01-16 18:04:22.922173	\N	1	\N	\N	\N	924	393
+788	2025-01-16 18:04:36.511769	2025-01-16 18:04:36.511769	\N	1	\N	\N	\N	925	394
+789	2025-01-16 18:05:56.282299	2025-01-16 18:05:56.282299	\N	1	\N	\N	\N	926	395
+790	2025-01-16 18:06:33.692322	2025-01-16 18:06:33.692322	\N	1	\N	\N	\N	927	396
+791	2025-01-16 18:06:51.707959	2025-01-16 18:06:51.707959	\N	1	\N	\N	\N	928	397
+792	2025-01-16 18:07:42.98656	2025-01-16 18:07:42.98656	\N	1	\N	\N	\N	929	398
+793	2025-01-16 18:07:56.401467	2025-01-16 18:07:56.401467	\N	1	\N	\N	\N	930	399
+794	2025-01-16 18:07:59.636265	2025-01-16 18:07:59.636265	\N	1	\N	\N	\N	931	400
+795	2025-01-16 18:08:17.873904	2025-01-16 18:08:17.873904	\N	1	\N	\N	\N	932	401
+796	2025-01-16 18:50:28.38202	2025-01-16 18:50:28.38202	\N	1	\N	\N	\N	933	402
+797	2025-01-16 18:50:50.065792	2025-01-16 18:50:50.065792	\N	1	\N	\N	\N	934	403
+798	2025-01-16 18:53:33.201848	2025-01-16 18:53:33.201848	\N	1	\N	\N	\N	935	404
+799	2025-01-16 18:55:43.939005	2025-01-16 18:55:43.939005	\N	1	\N	\N	\N	936	405
+800	2025-01-16 18:55:54.704506	2025-01-16 18:55:54.704506	\N	1	\N	\N	\N	937	406
+801	2025-01-16 18:56:04.548879	2025-01-16 18:56:04.548879	\N	1	\N	\N	\N	938	407
+802	2025-01-16 19:10:17.129108	2025-01-16 19:10:17.129108	\N	1	\N	\N	\N	939	408
+803	2025-01-16 19:12:31.794254	2025-01-16 19:12:31.794254	\N	1	\N	\N	\N	940	409
+804	2025-01-16 19:12:53.951162	2025-01-16 19:12:53.951162	\N	1	\N	\N	\N	941	410
+805	2025-01-16 19:19:30.748504	2025-01-16 19:19:30.748504	\N	1	\N	\N	\N	942	411
+806	2025-01-16 19:20:43.377435	2025-01-16 19:20:43.377435	\N	1	\N	\N	\N	943	412
+807	2025-01-16 19:20:53.628615	2025-01-16 19:20:53.628615	\N	1	\N	\N	\N	944	413
+808	2025-01-16 19:21:10.287988	2025-01-16 19:21:10.287988	\N	1	\N	\N	\N	945	414
+809	2025-01-16 19:21:22.251457	2025-01-16 19:21:22.251457	\N	1	\N	\N	\N	946	415
+810	2025-01-16 19:25:24.626564	2025-01-16 19:25:24.626564	\N	1	\N	\N	\N	947	416
+811	2025-01-16 19:25:59.498168	2025-01-16 19:25:59.498168	\N	1	\N	\N	\N	948	417
+812	2025-01-16 19:27:49.622758	2025-01-16 19:27:49.622758	\N	1	\N	\N	\N	949	418
+813	2025-01-16 19:27:59.183756	2025-01-16 19:27:59.183756	\N	1	\N	\N	\N	950	419
+814	2025-01-16 19:29:48.698608	2025-01-16 19:29:48.698608	\N	1	\N	\N	\N	951	420
+815	2025-01-16 19:33:10.662335	2025-01-16 19:33:10.662335	\N	1	\N	\N	\N	952	421
+816	2025-01-16 19:33:19.825641	2025-01-16 19:33:19.825641	\N	1	\N	\N	\N	953	422
+817	2025-01-16 19:33:27.824916	2025-01-16 19:33:27.824916	\N	1	\N	\N	\N	954	423
+818	2025-01-16 19:36:20.750065	2025-01-16 19:36:20.750065	\N	1	\N	\N	\N	955	424
+819	2025-01-16 19:38:41.103957	2025-01-16 19:38:41.103957	\N	1	\N	\N	\N	956	425
+820	2025-01-16 19:39:33.86336	2025-01-16 19:39:33.86336	\N	1	\N	\N	\N	957	426
+821	2025-01-16 19:40:05.098608	2025-01-16 19:40:05.098608	\N	1	\N	\N	\N	958	427
+822	2025-01-16 19:57:09.944189	2025-01-16 19:57:09.944189	\N	1	\N	\N	\N	959	428
+823	2025-01-22 15:54:16.468071	2025-01-22 15:54:16.468071	\N	1	\N	\N	\N	961	429
 \.
 
 
@@ -4897,93 +5517,226 @@ COPY public.tax_stamps_payment (id, created_at, updated_at, deleted_at, "statusI
 --
 
 COPY public.transaction (id, reference, amount, date, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "transactionTypeId", "bankAccountId", "paymentId") FROM stdin;
-283	2024121800000272	1068.8	2024-12-18 19:24:27.941-04	2024-12-18 19:24:27.95308	2024-12-18 19:24:27.95308	\N	5	\N	\N	\N	1	1	236
-284	2024121800000273	1068.8	2024-12-18 19:24:53.711-04	2024-12-18 19:24:53.723397	2024-12-18 19:24:53.723397	\N	5	\N	\N	\N	1	1	237
-285	2024121800000274	1068.8	2024-12-18 19:25:12.179-04	2024-12-18 19:25:12.189962	2024-12-18 19:25:12.189962	\N	5	\N	\N	\N	1	1	238
-286	2024121800000275	1068.8	2024-12-18 19:28:45.376-04	2024-12-18 19:28:45.385367	2024-12-18 19:28:45.385367	\N	5	\N	\N	\N	1	1	239
-287	2024121800000276	1068.8	2024-12-18 19:32:43.971-04	2024-12-18 19:32:43.98073	2024-12-18 19:32:43.98073	\N	5	\N	\N	\N	1	1	240
-288	2024121800000277	1068.8	2024-12-18 19:33:44.441-04	2024-12-18 19:33:44.450155	2024-12-18 19:33:44.450155	\N	5	\N	\N	\N	1	1	241
-289	2024121800000278	1068.8	2024-12-18 19:35:12.589-04	2024-12-18 19:35:12.59977	2024-12-18 19:35:12.59977	\N	5	\N	\N	\N	1	1	242
-290	2024121800000279	1068.8	2024-12-18 19:35:17.189-04	2024-12-18 19:35:17.206018	2024-12-18 19:35:17.206018	\N	5	\N	\N	\N	1	1	243
-291	2024121800000280	1068.8	2024-12-18 19:37:18.442-04	2024-12-18 19:37:18.454162	2024-12-18 19:37:18.454162	\N	5	\N	\N	\N	1	1	244
-292	2024121800000281	1068.8	2024-12-18 19:37:21.01-04	2024-12-18 19:37:21.028176	2024-12-18 19:37:21.028176	\N	5	\N	\N	\N	1	1	245
-293	2024121800000282	1068.8	2024-12-18 19:37:23.237-04	2024-12-18 19:37:23.253508	2024-12-18 19:37:23.253508	\N	5	\N	\N	\N	1	1	246
-294	2024121800000283	1068.8	2024-12-18 19:37:54.731-04	2024-12-18 19:37:54.747273	2024-12-18 19:37:54.747273	\N	5	\N	\N	\N	1	1	247
-295	2024121800000284	1068.8	2024-12-18 19:40:12.398-04	2024-12-18 19:40:12.408286	2024-12-18 19:40:12.408286	\N	5	\N	\N	\N	1	1	248
-296	2024121800000285	1068.8	2024-12-18 19:41:09.114-04	2024-12-18 19:41:09.125204	2024-12-18 19:41:09.125204	\N	5	\N	\N	\N	1	1	249
-253	2024121000000245	775.6365000000001	2024-12-10 21:40:22.045-04	2024-12-10 21:40:22.064279	2024-12-10 21:42:06.10905	\N	6	\N	\N	\N	1	1	197
-297	2024121800000286	1068.8	2024-12-18 19:43:13.219-04	2024-12-18 19:43:13.238253	2024-12-18 19:43:13.238253	\N	5	\N	\N	\N	1	1	250
-254	2024121000000248	258.5455	2024-12-10 21:49:03.799-04	2024-12-10 21:49:03.816955	2024-12-10 21:49:17.177882	\N	6	\N	\N	\N	1	1	198
-298	2024121800000287	1068.8	2024-12-18 19:44:42.697-04	2024-12-18 19:44:42.710435	2024-12-18 19:44:42.710435	\N	5	\N	\N	\N	1	1	251
-255	2024121000000250	258.5455	2024-12-10 21:57:27.21-04	2024-12-10 21:57:27.22872	2024-12-10 21:57:41.108276	\N	6	\N	\N	\N	1	1	199
-256	2024121000000252	258.5455	2024-12-10 22:01:52.188-04	2024-12-10 22:01:52.207446	2024-12-10 22:01:59.831208	\N	6	\N	\N	\N	1	1	200
-257	2024121000000254	258.5455	2024-12-10 22:04:45.069-04	2024-12-10 22:04:45.085813	2024-12-10 22:04:52.790431	\N	6	\N	\N	\N	1	1	201
-258	34501177	258.5455	2024-12-10 22:16:21.296-04	2024-12-10 22:16:21.317229	2024-12-10 22:16:27.850771	\N	6	\N	\N	\N	1	1	202
-259	123456987	258.5455	2024-12-10 00:00:00-04	2024-12-10 23:36:10.771396	2024-12-10 23:36:10.771396	\N	5	\N	\N	\N	2	2	203
-260	123434	258.5455	2024-12-11 00:00:00-04	2024-12-11 00:20:16.661524	2024-12-11 00:20:16.661524	\N	5	\N	\N	\N	2	2	211
-261	123434	258.5455	2024-12-11 00:00:00-04	2024-12-11 00:25:34.289194	2024-12-11 00:25:34.289194	\N	5	\N	\N	\N	2	2	212
-262	123434	258.5455	2024-12-11 00:00:00-04	2024-12-11 00:27:34.968093	2024-12-11 00:27:34.968093	\N	5	\N	\N	\N	2	2	213
-263	123434	258.5455	2024-12-11 00:00:00-04	2024-12-11 00:31:00.718884	2024-12-11 00:31:00.718884	\N	5	\N	\N	\N	2	2	214
-264	123434	258.5455	2024-12-11 00:00:00-04	2024-12-11 00:32:12.34768	2024-12-11 00:32:12.34768	\N	5	\N	\N	\N	2	2	215
-265	123434	258.5455	2024-12-11 00:00:00-04	2024-12-11 00:32:48.791252	2024-12-11 00:32:48.791252	\N	5	\N	\N	\N	2	2	216
-266	123434	258.5455	2024-12-11 00:00:00-04	2024-12-11 00:33:39.966555	2024-12-11 00:33:39.966555	\N	5	\N	\N	\N	2	2	217
-267	123434	258.5455	2024-12-11 00:00:00-04	2024-12-11 00:35:08.869367	2024-12-11 00:35:08.869367	\N	5	\N	\N	\N	2	2	218
-268	22222	517.091	2024-12-11 00:00:00-04	2024-12-11 00:36:48.534059	2024-12-11 00:36:48.534059	\N	5	\N	\N	\N	3	2	221
-269	2024121600000258	2113.28	2024-12-16 22:16:29.534-04	2024-12-16 22:16:29.551791	2024-12-16 22:16:29.551791	\N	5	\N	\N	\N	1	1	222
-270	2024121600000259	2113.28	2024-12-16 22:28:52.326-04	2024-12-16 22:28:52.346365	2024-12-16 22:28:52.346365	\N	5	\N	\N	\N	1	1	223
-271	2024121800000260	1068.8	2024-12-18 17:53:56.573-04	2024-12-18 17:53:56.596106	2024-12-18 17:53:56.596106	\N	5	\N	\N	\N	1	1	224
-272	2024121800000261	1068.8	2024-12-18 18:23:01.87-04	2024-12-18 18:23:01.894273	2024-12-18 18:23:01.894273	\N	5	\N	\N	\N	1	1	225
-273	2024121800000262	1068.8	2024-12-18 18:34:25.164-04	2024-12-18 18:34:25.184264	2024-12-18 18:34:25.184264	\N	5	\N	\N	\N	1	1	226
-274	2024121800000263	1068.8	2024-12-18 18:49:44.445-04	2024-12-18 18:49:44.470173	2024-12-18 18:49:44.470173	\N	5	\N	\N	\N	1	1	227
-275	2024121800000264	1068.8	2024-12-18 18:51:52.392-04	2024-12-18 18:51:52.410014	2024-12-18 18:51:52.410014	\N	5	\N	\N	\N	1	1	228
-276	2024121800000265	1068.8	2024-12-18 18:59:07.035-04	2024-12-18 18:59:07.046989	2024-12-18 18:59:07.046989	\N	5	\N	\N	\N	1	1	229
-277	2024121800000266	1068.8	2024-12-18 19:02:04.436-04	2024-12-18 19:02:04.454306	2024-12-18 19:02:04.454306	\N	5	\N	\N	\N	1	1	230
-278	2024121800000267	1068.8	2024-12-18 19:02:56.818-04	2024-12-18 19:02:56.851132	2024-12-18 19:02:56.851132	\N	5	\N	\N	\N	1	1	231
-279	2024121800000268	1068.8	2024-12-18 19:09:50.856-04	2024-12-18 19:09:50.875622	2024-12-18 19:09:50.875622	\N	5	\N	\N	\N	1	1	232
-280	2024121800000269	1068.8	2024-12-18 19:23:24.478-04	2024-12-18 19:23:24.491398	2024-12-18 19:23:24.491398	\N	5	\N	\N	\N	1	1	233
-281	2024121800000270	1068.8	2024-12-18 19:24:11.251-04	2024-12-18 19:24:11.267575	2024-12-18 19:24:11.267575	\N	5	\N	\N	\N	1	1	234
-282	2024121800000271	1068.8	2024-12-18 19:24:11.254-04	2024-12-18 19:24:11.271739	2024-12-18 19:24:11.271739	\N	5	\N	\N	\N	1	1	235
-299	35301257	1068.8	2024-12-18 19:47:35.424-04	2024-12-18 19:47:35.44283	2024-12-18 19:47:55.34236	\N	6	\N	\N	\N	1	1	252
-300	35301258	1068.8	2024-12-18 19:48:41.392-04	2024-12-18 19:48:41.407871	2024-12-18 19:48:49.23294	\N	6	\N	\N	\N	1	1	253
-301	35301259	1068.8	2024-12-18 19:54:38.774-04	2024-12-18 19:54:38.788054	2024-12-18 19:54:48.906514	\N	6	\N	\N	\N	1	1	254
-302	35301260	1068.8	2024-12-18 19:57:15.416-04	2024-12-18 19:57:15.430952	2024-12-18 19:57:21.406592	\N	6	\N	\N	\N	1	1	255
-303	2024121800000296	1068.8	2024-12-18 19:59:54.774-04	2024-12-18 19:59:54.790901	2024-12-18 19:59:54.790901	\N	5	\N	\N	\N	1	1	256
-304	2024121800000298	1068.8	2024-12-18 20:10:15.422-04	2024-12-18 20:10:15.433677	2024-12-18 20:10:15.433677	\N	5	\N	\N	\N	1	1	257
-305	2024121800000300	1068.8	2024-12-18 20:13:19.64-04	2024-12-18 20:13:19.661621	2024-12-18 20:13:19.661621	\N	5	\N	\N	\N	1	1	258
-306	2024121800000302	1068.8	2024-12-18 20:16:17.256-04	2024-12-18 20:16:17.269131	2024-12-18 20:16:17.269131	\N	5	\N	\N	\N	1	1	259
-307	2024121800000304	2137.6	2024-12-18 20:44:48.324-04	2024-12-18 20:44:48.342623	2024-12-18 20:44:48.342623	\N	5	\N	\N	\N	1	1	260
-308	2024121800000308	1068.8	2024-12-18 20:52:13.254-04	2024-12-18 20:52:13.274589	2024-12-18 20:52:13.274589	\N	5	\N	\N	\N	1	1	261
-309	2024121800000316	1068.8	2024-12-18 20:55:12.205-04	2024-12-18 20:55:12.218597	2024-12-18 20:55:12.218597	\N	5	\N	\N	\N	1	1	262
-310	2024121800000318	1068.8	2024-12-18 20:55:24.612-04	2024-12-18 20:55:24.627144	2024-12-18 20:55:24.627144	\N	5	\N	\N	\N	1	1	263
-311	2024121800000320	1068.8	2024-12-18 20:55:34.713-04	2024-12-18 20:55:34.731346	2024-12-18 20:55:34.731346	\N	5	\N	\N	\N	1	1	264
-312	2024121800000322	1068.8	2024-12-18 20:56:10.49-04	2024-12-18 20:56:10.514323	2024-12-18 20:56:10.514323	\N	5	\N	\N	\N	1	1	265
-313	2024121800000324	1068.8	2024-12-18 21:00:46.045-04	2024-12-18 21:00:46.070347	2024-12-18 21:00:46.070347	\N	5	\N	\N	\N	1	1	266
-314	2024121800000326	1068.8	2024-12-18 21:03:28.655-04	2024-12-18 21:03:28.672688	2024-12-18 21:03:28.672688	\N	5	\N	\N	\N	1	1	267
-315	2024121800000327	1068.8	2024-12-18 21:07:07.253-04	2024-12-18 21:07:07.267472	2024-12-18 21:07:07.267472	\N	5	\N	\N	\N	1	1	268
-316	2024121800000328	1068.8	2024-12-18 21:09:00.226-04	2024-12-18 21:09:00.245095	2024-12-18 21:09:00.245095	\N	5	\N	\N	\N	1	1	269
-317	2024121800000329	1068.8	2024-12-18 21:15:10.707-04	2024-12-18 21:15:10.726398	2024-12-18 21:15:10.726398	\N	5	\N	\N	\N	1	1	270
-318	35301261	12825.62	2024-12-18 21:17:46.613-04	2024-12-18 21:17:46.629779	2024-12-18 21:17:54.352188	\N	6	\N	\N	\N	1	1	271
-319	2024121800000332	2137.6	2024-12-18 21:18:59.886-04	2024-12-18 21:18:59.90529	2024-12-18 21:18:59.90529	\N	5	\N	\N	\N	1	1	272
-320	2024121800000334	2137.6	2024-12-18 21:19:26.696-04	2024-12-18 21:19:26.71171	2024-12-18 21:19:26.71171	\N	5	\N	\N	\N	1	1	273
-321	35301262	1068.8	2024-12-18 21:22:08.016-04	2024-12-18 21:22:08.037581	2024-12-18 21:22:14.693951	\N	6	\N	\N	\N	1	1	274
-322	35301263	1068.8	2024-12-18 21:22:51.553-04	2024-12-18 21:22:51.56959	2024-12-18 21:22:59.314	\N	6	\N	\N	\N	1	1	275
-323	35301264	1068.8	2024-12-18 21:24:14.922-04	2024-12-18 21:24:14.94107	2024-12-18 21:24:22.385998	\N	6	\N	\N	\N	1	1	276
-324	2024121800000342	1068.8	2024-12-18 21:25:35.373-04	2024-12-18 21:25:35.398264	2024-12-18 21:25:35.398264	\N	5	\N	\N	\N	1	1	277
-325	35301265	1068.8	2024-12-18 21:32:58-04	2024-12-18 21:32:58.023428	2024-12-18 21:33:14.728091	\N	6	\N	\N	\N	1	1	278
-326	35301267	1068.8	2024-12-18 21:34:14.573-04	2024-12-18 21:34:14.590744	2024-12-18 21:36:04.374986	\N	6	\N	\N	\N	1	1	279
-327	35301268	1068.8	2024-12-18 21:36:09.958-04	2024-12-18 21:36:09.976864	2024-12-18 21:36:16.112899	\N	6	\N	\N	\N	1	1	280
-328	35301269	1068.8	2024-12-18 21:36:51.569-04	2024-12-18 21:36:51.580255	2024-12-18 21:36:56.604357	\N	6	\N	\N	\N	1	1	281
-329	35301270	1068.8	2024-12-18 21:37:35.446-04	2024-12-18 21:37:35.466331	2024-12-18 21:37:41.118068	\N	6	\N	\N	\N	1	1	282
-330	35301271	1068.8	2024-12-18 21:39:09.624-04	2024-12-18 21:39:09.634357	2024-12-18 21:39:14.466063	\N	6	\N	\N	\N	1	1	283
-331	35301272	1068.8	2024-12-18 21:43:30.085-04	2024-12-18 21:43:30.108372	2024-12-18 21:43:36.214581	\N	6	\N	\N	\N	1	1	284
-332	35301273	1068.8	2024-12-18 21:44:24.934-04	2024-12-18 21:44:24.954181	2024-12-18 21:44:33.339133	\N	6	\N	\N	\N	1	1	285
-333	35301274	1068.8	2024-12-18 21:44:46.43-04	2024-12-18 21:44:46.441812	2024-12-18 21:44:50.929783	\N	6	\N	\N	\N	1	1	286
-334	35301275	1	2024-12-18 22:12:14.121-04	2024-12-18 22:12:14.141154	2024-12-18 22:12:34.647027	\N	6	\N	\N	\N	1	1	287
-335	35301276	2	2024-12-18 22:16:01.889-04	2024-12-18 22:16:01.903662	2024-12-18 22:16:11.021961	\N	6	\N	\N	\N	1	1	288
-336	35301277	2	2024-12-18 22:16:40.686-04	2024-12-18 22:16:40.698513	2024-12-18 22:16:50.465618	\N	6	\N	\N	\N	1	1	289
-337	35301278	2	2024-12-18 22:17:29.263-04	2024-12-18 22:17:29.282565	2024-12-18 22:17:39.12457	\N	6	\N	\N	\N	1	1	290
-338	1234	270.53	2024-12-29 00:00:00-04	2024-12-29 14:42:12.974707	2024-12-29 14:42:12.974707	\N	6	\N	\N	\N	2	2	295
-339	4125	270.53	2024-12-29 00:00:00-04	2024-12-29 15:48:16.749781	2024-12-29 15:48:16.749781	\N	6	\N	\N	\N	2	2	296
+283	2024121800000272	1068.8	2024-12-18 23:24:27.941+00	2024-12-18 19:24:27.95308	2024-12-18 19:24:27.95308	\N	5	\N	\N	\N	1	1	236
+284	2024121800000273	1068.8	2024-12-18 23:24:53.711+00	2024-12-18 19:24:53.723397	2024-12-18 19:24:53.723397	\N	5	\N	\N	\N	1	1	237
+285	2024121800000274	1068.8	2024-12-18 23:25:12.179+00	2024-12-18 19:25:12.189962	2024-12-18 19:25:12.189962	\N	5	\N	\N	\N	1	1	238
+286	2024121800000275	1068.8	2024-12-18 23:28:45.376+00	2024-12-18 19:28:45.385367	2024-12-18 19:28:45.385367	\N	5	\N	\N	\N	1	1	239
+287	2024121800000276	1068.8	2024-12-18 23:32:43.971+00	2024-12-18 19:32:43.98073	2024-12-18 19:32:43.98073	\N	5	\N	\N	\N	1	1	240
+288	2024121800000277	1068.8	2024-12-18 23:33:44.441+00	2024-12-18 19:33:44.450155	2024-12-18 19:33:44.450155	\N	5	\N	\N	\N	1	1	241
+289	2024121800000278	1068.8	2024-12-18 23:35:12.589+00	2024-12-18 19:35:12.59977	2024-12-18 19:35:12.59977	\N	5	\N	\N	\N	1	1	242
+290	2024121800000279	1068.8	2024-12-18 23:35:17.189+00	2024-12-18 19:35:17.206018	2024-12-18 19:35:17.206018	\N	5	\N	\N	\N	1	1	243
+291	2024121800000280	1068.8	2024-12-18 23:37:18.442+00	2024-12-18 19:37:18.454162	2024-12-18 19:37:18.454162	\N	5	\N	\N	\N	1	1	244
+292	2024121800000281	1068.8	2024-12-18 23:37:21.01+00	2024-12-18 19:37:21.028176	2024-12-18 19:37:21.028176	\N	5	\N	\N	\N	1	1	245
+293	2024121800000282	1068.8	2024-12-18 23:37:23.237+00	2024-12-18 19:37:23.253508	2024-12-18 19:37:23.253508	\N	5	\N	\N	\N	1	1	246
+294	2024121800000283	1068.8	2024-12-18 23:37:54.731+00	2024-12-18 19:37:54.747273	2024-12-18 19:37:54.747273	\N	5	\N	\N	\N	1	1	247
+295	2024121800000284	1068.8	2024-12-18 23:40:12.398+00	2024-12-18 19:40:12.408286	2024-12-18 19:40:12.408286	\N	5	\N	\N	\N	1	1	248
+296	2024121800000285	1068.8	2024-12-18 23:41:09.114+00	2024-12-18 19:41:09.125204	2024-12-18 19:41:09.125204	\N	5	\N	\N	\N	1	1	249
+253	2024121000000245	775.6365000000001	2024-12-11 01:40:22.045+00	2024-12-10 21:40:22.064279	2024-12-10 21:42:06.10905	\N	6	\N	\N	\N	1	1	197
+297	2024121800000286	1068.8	2024-12-18 23:43:13.219+00	2024-12-18 19:43:13.238253	2024-12-18 19:43:13.238253	\N	5	\N	\N	\N	1	1	250
+254	2024121000000248	258.5455	2024-12-11 01:49:03.799+00	2024-12-10 21:49:03.816955	2024-12-10 21:49:17.177882	\N	6	\N	\N	\N	1	1	198
+298	2024121800000287	1068.8	2024-12-18 23:44:42.697+00	2024-12-18 19:44:42.710435	2024-12-18 19:44:42.710435	\N	5	\N	\N	\N	1	1	251
+255	2024121000000250	258.5455	2024-12-11 01:57:27.21+00	2024-12-10 21:57:27.22872	2024-12-10 21:57:41.108276	\N	6	\N	\N	\N	1	1	199
+256	2024121000000252	258.5455	2024-12-11 02:01:52.188+00	2024-12-10 22:01:52.207446	2024-12-10 22:01:59.831208	\N	6	\N	\N	\N	1	1	200
+257	2024121000000254	258.5455	2024-12-11 02:04:45.069+00	2024-12-10 22:04:45.085813	2024-12-10 22:04:52.790431	\N	6	\N	\N	\N	1	1	201
+258	34501177	258.5455	2024-12-11 02:16:21.296+00	2024-12-10 22:16:21.317229	2024-12-10 22:16:27.850771	\N	6	\N	\N	\N	1	1	202
+259	123456987	258.5455	2024-12-10 04:00:00+00	2024-12-10 23:36:10.771396	2024-12-10 23:36:10.771396	\N	5	\N	\N	\N	2	2	203
+260	123434	258.5455	2024-12-11 04:00:00+00	2024-12-11 00:20:16.661524	2024-12-11 00:20:16.661524	\N	5	\N	\N	\N	2	2	211
+261	123434	258.5455	2024-12-11 04:00:00+00	2024-12-11 00:25:34.289194	2024-12-11 00:25:34.289194	\N	5	\N	\N	\N	2	2	212
+262	123434	258.5455	2024-12-11 04:00:00+00	2024-12-11 00:27:34.968093	2024-12-11 00:27:34.968093	\N	5	\N	\N	\N	2	2	213
+263	123434	258.5455	2024-12-11 04:00:00+00	2024-12-11 00:31:00.718884	2024-12-11 00:31:00.718884	\N	5	\N	\N	\N	2	2	214
+264	123434	258.5455	2024-12-11 04:00:00+00	2024-12-11 00:32:12.34768	2024-12-11 00:32:12.34768	\N	5	\N	\N	\N	2	2	215
+265	123434	258.5455	2024-12-11 04:00:00+00	2024-12-11 00:32:48.791252	2024-12-11 00:32:48.791252	\N	5	\N	\N	\N	2	2	216
+266	123434	258.5455	2024-12-11 04:00:00+00	2024-12-11 00:33:39.966555	2024-12-11 00:33:39.966555	\N	5	\N	\N	\N	2	2	217
+267	123434	258.5455	2024-12-11 04:00:00+00	2024-12-11 00:35:08.869367	2024-12-11 00:35:08.869367	\N	5	\N	\N	\N	2	2	218
+268	22222	517.091	2024-12-11 04:00:00+00	2024-12-11 00:36:48.534059	2024-12-11 00:36:48.534059	\N	5	\N	\N	\N	3	2	221
+269	2024121600000258	2113.28	2024-12-17 02:16:29.534+00	2024-12-16 22:16:29.551791	2024-12-16 22:16:29.551791	\N	5	\N	\N	\N	1	1	222
+270	2024121600000259	2113.28	2024-12-17 02:28:52.326+00	2024-12-16 22:28:52.346365	2024-12-16 22:28:52.346365	\N	5	\N	\N	\N	1	1	223
+271	2024121800000260	1068.8	2024-12-18 21:53:56.573+00	2024-12-18 17:53:56.596106	2024-12-18 17:53:56.596106	\N	5	\N	\N	\N	1	1	224
+272	2024121800000261	1068.8	2024-12-18 22:23:01.87+00	2024-12-18 18:23:01.894273	2024-12-18 18:23:01.894273	\N	5	\N	\N	\N	1	1	225
+273	2024121800000262	1068.8	2024-12-18 22:34:25.164+00	2024-12-18 18:34:25.184264	2024-12-18 18:34:25.184264	\N	5	\N	\N	\N	1	1	226
+274	2024121800000263	1068.8	2024-12-18 22:49:44.445+00	2024-12-18 18:49:44.470173	2024-12-18 18:49:44.470173	\N	5	\N	\N	\N	1	1	227
+275	2024121800000264	1068.8	2024-12-18 22:51:52.392+00	2024-12-18 18:51:52.410014	2024-12-18 18:51:52.410014	\N	5	\N	\N	\N	1	1	228
+276	2024121800000265	1068.8	2024-12-18 22:59:07.035+00	2024-12-18 18:59:07.046989	2024-12-18 18:59:07.046989	\N	5	\N	\N	\N	1	1	229
+277	2024121800000266	1068.8	2024-12-18 23:02:04.436+00	2024-12-18 19:02:04.454306	2024-12-18 19:02:04.454306	\N	5	\N	\N	\N	1	1	230
+278	2024121800000267	1068.8	2024-12-18 23:02:56.818+00	2024-12-18 19:02:56.851132	2024-12-18 19:02:56.851132	\N	5	\N	\N	\N	1	1	231
+279	2024121800000268	1068.8	2024-12-18 23:09:50.856+00	2024-12-18 19:09:50.875622	2024-12-18 19:09:50.875622	\N	5	\N	\N	\N	1	1	232
+280	2024121800000269	1068.8	2024-12-18 23:23:24.478+00	2024-12-18 19:23:24.491398	2024-12-18 19:23:24.491398	\N	5	\N	\N	\N	1	1	233
+281	2024121800000270	1068.8	2024-12-18 23:24:11.251+00	2024-12-18 19:24:11.267575	2024-12-18 19:24:11.267575	\N	5	\N	\N	\N	1	1	234
+282	2024121800000271	1068.8	2024-12-18 23:24:11.254+00	2024-12-18 19:24:11.271739	2024-12-18 19:24:11.271739	\N	5	\N	\N	\N	1	1	235
+299	35301257	1068.8	2024-12-18 23:47:35.424+00	2024-12-18 19:47:35.44283	2024-12-18 19:47:55.34236	\N	6	\N	\N	\N	1	1	252
+300	35301258	1068.8	2024-12-18 23:48:41.392+00	2024-12-18 19:48:41.407871	2024-12-18 19:48:49.23294	\N	6	\N	\N	\N	1	1	253
+301	35301259	1068.8	2024-12-18 23:54:38.774+00	2024-12-18 19:54:38.788054	2024-12-18 19:54:48.906514	\N	6	\N	\N	\N	1	1	254
+302	35301260	1068.8	2024-12-18 23:57:15.416+00	2024-12-18 19:57:15.430952	2024-12-18 19:57:21.406592	\N	6	\N	\N	\N	1	1	255
+303	2024121800000296	1068.8	2024-12-18 23:59:54.774+00	2024-12-18 19:59:54.790901	2024-12-18 19:59:54.790901	\N	5	\N	\N	\N	1	1	256
+304	2024121800000298	1068.8	2024-12-19 00:10:15.422+00	2024-12-18 20:10:15.433677	2024-12-18 20:10:15.433677	\N	5	\N	\N	\N	1	1	257
+305	2024121800000300	1068.8	2024-12-19 00:13:19.64+00	2024-12-18 20:13:19.661621	2024-12-18 20:13:19.661621	\N	5	\N	\N	\N	1	1	258
+306	2024121800000302	1068.8	2024-12-19 00:16:17.256+00	2024-12-18 20:16:17.269131	2024-12-18 20:16:17.269131	\N	5	\N	\N	\N	1	1	259
+307	2024121800000304	2137.6	2024-12-19 00:44:48.324+00	2024-12-18 20:44:48.342623	2024-12-18 20:44:48.342623	\N	5	\N	\N	\N	1	1	260
+308	2024121800000308	1068.8	2024-12-19 00:52:13.254+00	2024-12-18 20:52:13.274589	2024-12-18 20:52:13.274589	\N	5	\N	\N	\N	1	1	261
+309	2024121800000316	1068.8	2024-12-19 00:55:12.205+00	2024-12-18 20:55:12.218597	2024-12-18 20:55:12.218597	\N	5	\N	\N	\N	1	1	262
+310	2024121800000318	1068.8	2024-12-19 00:55:24.612+00	2024-12-18 20:55:24.627144	2024-12-18 20:55:24.627144	\N	5	\N	\N	\N	1	1	263
+311	2024121800000320	1068.8	2024-12-19 00:55:34.713+00	2024-12-18 20:55:34.731346	2024-12-18 20:55:34.731346	\N	5	\N	\N	\N	1	1	264
+312	2024121800000322	1068.8	2024-12-19 00:56:10.49+00	2024-12-18 20:56:10.514323	2024-12-18 20:56:10.514323	\N	5	\N	\N	\N	1	1	265
+313	2024121800000324	1068.8	2024-12-19 01:00:46.045+00	2024-12-18 21:00:46.070347	2024-12-18 21:00:46.070347	\N	5	\N	\N	\N	1	1	266
+314	2024121800000326	1068.8	2024-12-19 01:03:28.655+00	2024-12-18 21:03:28.672688	2024-12-18 21:03:28.672688	\N	5	\N	\N	\N	1	1	267
+315	2024121800000327	1068.8	2024-12-19 01:07:07.253+00	2024-12-18 21:07:07.267472	2024-12-18 21:07:07.267472	\N	5	\N	\N	\N	1	1	268
+316	2024121800000328	1068.8	2024-12-19 01:09:00.226+00	2024-12-18 21:09:00.245095	2024-12-18 21:09:00.245095	\N	5	\N	\N	\N	1	1	269
+317	2024121800000329	1068.8	2024-12-19 01:15:10.707+00	2024-12-18 21:15:10.726398	2024-12-18 21:15:10.726398	\N	5	\N	\N	\N	1	1	270
+318	35301261	12825.62	2024-12-19 01:17:46.613+00	2024-12-18 21:17:46.629779	2024-12-18 21:17:54.352188	\N	6	\N	\N	\N	1	1	271
+319	2024121800000332	2137.6	2024-12-19 01:18:59.886+00	2024-12-18 21:18:59.90529	2024-12-18 21:18:59.90529	\N	5	\N	\N	\N	1	1	272
+320	2024121800000334	2137.6	2024-12-19 01:19:26.696+00	2024-12-18 21:19:26.71171	2024-12-18 21:19:26.71171	\N	5	\N	\N	\N	1	1	273
+321	35301262	1068.8	2024-12-19 01:22:08.016+00	2024-12-18 21:22:08.037581	2024-12-18 21:22:14.693951	\N	6	\N	\N	\N	1	1	274
+322	35301263	1068.8	2024-12-19 01:22:51.553+00	2024-12-18 21:22:51.56959	2024-12-18 21:22:59.314	\N	6	\N	\N	\N	1	1	275
+323	35301264	1068.8	2024-12-19 01:24:14.922+00	2024-12-18 21:24:14.94107	2024-12-18 21:24:22.385998	\N	6	\N	\N	\N	1	1	276
+324	2024121800000342	1068.8	2024-12-19 01:25:35.373+00	2024-12-18 21:25:35.398264	2024-12-18 21:25:35.398264	\N	5	\N	\N	\N	1	1	277
+325	35301265	1068.8	2024-12-19 01:32:58+00	2024-12-18 21:32:58.023428	2024-12-18 21:33:14.728091	\N	6	\N	\N	\N	1	1	278
+326	35301267	1068.8	2024-12-19 01:34:14.573+00	2024-12-18 21:34:14.590744	2024-12-18 21:36:04.374986	\N	6	\N	\N	\N	1	1	279
+327	35301268	1068.8	2024-12-19 01:36:09.958+00	2024-12-18 21:36:09.976864	2024-12-18 21:36:16.112899	\N	6	\N	\N	\N	1	1	280
+328	35301269	1068.8	2024-12-19 01:36:51.569+00	2024-12-18 21:36:51.580255	2024-12-18 21:36:56.604357	\N	6	\N	\N	\N	1	1	281
+329	35301270	1068.8	2024-12-19 01:37:35.446+00	2024-12-18 21:37:35.466331	2024-12-18 21:37:41.118068	\N	6	\N	\N	\N	1	1	282
+330	35301271	1068.8	2024-12-19 01:39:09.624+00	2024-12-18 21:39:09.634357	2024-12-18 21:39:14.466063	\N	6	\N	\N	\N	1	1	283
+331	35301272	1068.8	2024-12-19 01:43:30.085+00	2024-12-18 21:43:30.108372	2024-12-18 21:43:36.214581	\N	6	\N	\N	\N	1	1	284
+332	35301273	1068.8	2024-12-19 01:44:24.934+00	2024-12-18 21:44:24.954181	2024-12-18 21:44:33.339133	\N	6	\N	\N	\N	1	1	285
+333	35301274	1068.8	2024-12-19 01:44:46.43+00	2024-12-18 21:44:46.441812	2024-12-18 21:44:50.929783	\N	6	\N	\N	\N	1	1	286
+334	35301275	1	2024-12-19 02:12:14.121+00	2024-12-18 22:12:14.141154	2024-12-18 22:12:34.647027	\N	6	\N	\N	\N	1	1	287
+335	35301276	2	2024-12-19 02:16:01.889+00	2024-12-18 22:16:01.903662	2024-12-18 22:16:11.021961	\N	6	\N	\N	\N	1	1	288
+336	35301277	2	2024-12-19 02:16:40.686+00	2024-12-18 22:16:40.698513	2024-12-18 22:16:50.465618	\N	6	\N	\N	\N	1	1	289
+337	35301278	2	2024-12-19 02:17:29.263+00	2024-12-18 22:17:29.282565	2024-12-18 22:17:39.12457	\N	6	\N	\N	\N	1	1	290
+338	1234	270.53	2024-12-29 04:00:00+00	2024-12-29 14:42:12.974707	2024-12-29 14:42:12.974707	\N	6	\N	\N	\N	2	2	295
+339	4125	270.53	2024-12-29 04:00:00+00	2024-12-29 15:48:16.749781	2024-12-29 15:48:16.749781	\N	6	\N	\N	\N	2	2	296
+340	2025010700000370	1.25	2025-01-07 16:55:01.228+00	2025-01-07 16:55:01.23374	2025-01-07 16:55:01.23374	\N	5	\N	\N	\N	1	1	297
+341	2025010700000373	1.25	2025-01-07 17:00:49.605+00	2025-01-07 17:00:49.609087	2025-01-07 17:00:49.609087	\N	5	\N	\N	\N	1	1	298
+342	2025010700000379	1.25	2025-01-07 19:21:46.461+00	2025-01-07 19:21:46.464955	2025-01-07 19:21:46.464955	\N	5	\N	\N	\N	1	1	299
+343	2025010700000382	1.25	2025-01-07 19:54:42.05+00	2025-01-07 19:54:42.055133	2025-01-07 19:54:42.055133	\N	5	\N	\N	\N	1	1	300
+344	2025010700000383	1.25	2025-01-07 19:55:25.4+00	2025-01-07 19:55:25.403995	2025-01-07 19:55:25.403995	\N	5	\N	\N	\N	1	1	301
+345	2025010800000386	1.25	2025-01-08 14:29:25.362+00	2025-01-08 14:29:25.366877	2025-01-08 14:29:25.366877	\N	5	\N	\N	\N	1	1	302
+346	2025010800000388	1.25	2025-01-08 14:35:47.036+00	2025-01-08 14:35:47.040029	2025-01-08 14:35:47.040029	\N	5	\N	\N	\N	1	1	303
+347	2025010800000390	1.25	2025-01-08 14:38:30.873+00	2025-01-08 14:38:30.877651	2025-01-08 14:39:21.030445	\N	6	\N	\N	\N	1	1	304
+348	2025010800000392	1.25	2025-01-08 14:39:58.105+00	2025-01-08 14:39:58.108328	2025-01-08 14:40:18.767146	\N	6	\N	\N	\N	1	1	305
+349	2025010800000394	1.25	2025-01-08 14:42:21.118+00	2025-01-08 14:42:21.121814	2025-01-08 14:42:45.976167	\N	6	\N	\N	\N	1	1	306
+350	2025010800000395	1.25	2025-01-08 14:46:04.573+00	2025-01-08 14:46:04.576711	2025-01-08 14:46:04.576711	\N	5	\N	\N	\N	1	1	307
+351	40806609	1.25	2025-01-08 14:53:00.384+00	2025-01-08 14:53:00.38811	2025-01-08 14:53:30.989657	\N	6	\N	\N	\N	1	1	308
+352	40806612	1	2025-01-08 14:56:52.337+00	2025-01-08 14:56:52.340546	2025-01-08 15:02:22.321294	\N	6	\N	\N	\N	1	1	309
+353	2025010800000402	1	2025-01-08 15:04:08.423+00	2025-01-08 15:04:08.426624	2025-01-08 15:04:08.426624	\N	5	\N	\N	\N	1	1	310
+354	2025010800000403	1	2025-01-08 15:05:46.402+00	2025-01-08 15:05:46.405925	2025-01-08 15:05:46.405925	\N	5	\N	\N	\N	1	1	311
+355	2025010800000405	1	2025-01-08 15:15:29.189+00	2025-01-08 15:15:29.193236	2025-01-08 15:15:29.193236	\N	5	\N	\N	\N	1	1	312
+356	2025010800000406	1	2025-01-08 15:20:42.38+00	2025-01-08 15:20:42.383788	2025-01-08 15:20:42.383788	\N	5	\N	\N	\N	1	1	313
+357	2025010800000407	1	2025-01-08 15:22:39.769+00	2025-01-08 15:22:39.773507	2025-01-08 15:22:39.773507	\N	5	\N	\N	\N	1	1	314
+358	2025010800000408	1	2025-01-08 15:29:31.075+00	2025-01-08 15:29:31.079232	2025-01-08 15:29:31.079232	\N	5	\N	\N	\N	1	1	315
+359	2025010800000409	1	2025-01-08 15:33:14.735+00	2025-01-08 15:33:14.738821	2025-01-08 15:33:14.738821	\N	5	\N	\N	\N	1	1	316
+360	40806622	1	2025-01-08 15:36:14.111+00	2025-01-08 15:36:14.115943	2025-01-08 15:37:42.683742	\N	6	\N	\N	\N	1	1	317
+361	2025010800000412	1	2025-01-08 15:43:24.233+00	2025-01-08 15:43:24.23758	2025-01-08 15:43:24.23758	\N	5	\N	\N	\N	1	1	318
+362	2025010800000414	1	2025-01-08 17:18:35.187+00	2025-01-08 17:18:35.192046	2025-01-08 17:18:35.192046	\N	5	\N	\N	\N	1	1	319
+363	2025010800000415	1	2025-01-08 17:31:54.319+00	2025-01-08 17:31:54.323325	2025-01-08 17:31:54.323325	\N	5	\N	\N	\N	1	1	320
+364	40806627	1	2025-01-08 17:33:13.314+00	2025-01-08 17:33:13.318588	2025-01-08 17:34:15.201166	\N	6	\N	\N	\N	1	1	321
+365	2025010800000418	1	2025-01-08 17:36:56.835+00	2025-01-08 17:36:56.838526	2025-01-08 17:36:56.838526	\N	5	\N	\N	\N	1	1	322
+366	2025010800000419	1	2025-01-08 17:41:01.639+00	2025-01-08 17:41:01.643048	2025-01-08 17:41:01.643048	\N	5	\N	\N	\N	1	1	323
+367	2025010800000420	255	2025-01-08 18:02:19.041+00	2025-01-08 18:02:19.04482	2025-01-08 18:02:19.04482	\N	5	\N	\N	\N	1	1	324
+368	2025010800000422	255	2025-01-08 18:04:36.183+00	2025-01-08 18:04:36.187189	2025-01-08 18:05:08.504651	\N	6	\N	\N	\N	1	1	325
+369	2025010800000423	250	2025-01-08 18:14:47.007+00	2025-01-08 18:14:47.011604	2025-01-08 18:14:47.011604	\N	5	\N	\N	\N	1	1	326
+370	2025010800000424	250	2025-01-08 18:24:10.108+00	2025-01-08 18:24:10.112516	2025-01-08 18:24:10.112516	\N	5	\N	\N	\N	1	1	327
+371	2025010800000426	250	2025-01-08 18:25:55.453+00	2025-01-08 18:25:55.457543	2025-01-08 18:26:16.240066	\N	6	\N	\N	\N	1	1	328
+372	2025010800000428	250	2025-01-08 18:29:18.379+00	2025-01-08 18:29:18.384218	2025-01-08 18:30:42.237071	\N	6	\N	\N	\N	1	1	329
+373	40806640	1	2025-01-08 18:32:59.71+00	2025-01-08 18:32:59.713997	2025-01-08 18:36:56.532124	\N	6	\N	\N	\N	1	1	330
+374	2025011300000431	1.25	2025-01-13 14:01:59.296+00	2025-01-13 14:01:59.302603	2025-01-13 14:01:59.302603	\N	5	\N	\N	\N	1	1	331
+375	41306707	1.25	2025-01-13 14:04:47.292+00	2025-01-13 14:04:47.297421	2025-01-13 14:05:18.57792	\N	6	\N	\N	\N	1	1	332
+376	2025011300000434	1.25	2025-01-13 15:53:09.393+00	2025-01-13 15:53:09.397796	2025-01-13 15:53:09.397796	\N	5	\N	\N	\N	1	1	333
+377	2025011300000435	1.25	2025-01-13 15:56:18.656+00	2025-01-13 15:56:18.660142	2025-01-13 15:56:18.660142	\N	5	\N	\N	\N	1	1	334
+378	2025011300000437	1.25	2025-01-13 15:56:49.192+00	2025-01-13 15:56:49.196071	2025-01-13 15:57:15.668329	\N	6	\N	\N	\N	1	1	335
+379	2025011300000439	1.25	2025-01-13 15:58:51.176+00	2025-01-13 15:58:51.181399	2025-01-13 15:59:00.407491	\N	6	\N	\N	\N	1	1	336
+380	2025011300000440	1.25	2025-01-13 16:01:29.15+00	2025-01-13 16:01:29.154598	2025-01-13 16:01:29.154598	\N	5	\N	\N	\N	1	1	337
+381	2025011300000442	1.25	2025-01-13 16:01:57.311+00	2025-01-13 16:01:57.315195	2025-01-13 16:02:08.868989	\N	6	\N	\N	\N	1	1	338
+382	2025011300000444	12.5	2025-01-13 19:26:08.13+00	2025-01-13 19:26:08.134489	2025-01-13 19:27:26.943417	\N	6	\N	\N	\N	1	1	339
+383	2025011300000445	12.5	2025-01-13 19:47:55.832+00	2025-01-13 19:47:55.835909	2025-01-13 19:47:55.835909	\N	5	\N	\N	\N	1	1	340
+384	41406730	2	2025-01-14 13:46:30.287+00	2025-01-14 13:46:30.292091	2025-01-14 13:48:13.207192	\N	6	\N	\N	\N	1	1	341
+385	2025011400000450	2	2025-01-14 13:52:21.165+00	2025-01-14 13:52:21.168719	2025-01-14 13:52:53.600645	\N	6	\N	\N	\N	1	1	342
+386	2025011400000452	2	2025-01-14 13:54:15.888+00	2025-01-14 13:54:15.892856	2025-01-14 13:54:32.791705	\N	6	\N	\N	\N	1	1	343
+387	2025011400000453	2	2025-01-14 13:56:05.305+00	2025-01-14 13:56:05.309744	2025-01-14 13:56:05.309744	\N	5	\N	\N	\N	1	1	344
+388	41406737	2	2025-01-14 14:01:46.24+00	2025-01-14 14:01:46.24426	2025-01-14 14:02:13.566736	\N	6	\N	\N	\N	1	1	345
+389	2025011400000456	2	2025-01-14 14:23:46.424+00	2025-01-14 14:23:46.428267	2025-01-14 14:23:46.428267	\N	5	\N	\N	\N	1	1	346
+390	2025011400000457	2	2025-01-14 14:26:50.426+00	2025-01-14 14:26:50.429786	2025-01-14 14:26:50.429786	\N	5	\N	\N	\N	1	1	347
+391	2025011400000458	2	2025-01-14 14:29:36.547+00	2025-01-14 14:29:36.551098	2025-01-14 14:29:36.551098	\N	5	\N	\N	\N	1	1	348
+392	2025011400000459	2	2025-01-14 14:34:07.704+00	2025-01-14 14:34:07.708822	2025-01-14 14:34:07.708822	\N	5	\N	\N	\N	1	1	349
+393	2025011400000461	2	2025-01-14 14:34:49.714+00	2025-01-14 14:34:49.718149	2025-01-14 14:34:59.646865	\N	6	\N	\N	\N	1	1	350
+394	2025011400000462	2	2025-01-14 14:51:38.234+00	2025-01-14 14:51:38.237988	2025-01-14 14:51:38.237988	\N	5	\N	\N	\N	1	1	351
+395	41406755	2	2025-01-14 14:52:02.337+00	2025-01-14 14:52:02.340325	2025-01-14 14:52:27.074605	\N	6	\N	\N	\N	1	1	352
+396	2025011400000466	2	2025-01-14 14:55:31.386+00	2025-01-14 14:55:31.389955	2025-01-14 14:55:31.389955	\N	5	\N	\N	\N	1	1	353
+397	2025011400000469	2	2025-01-14 17:26:20.053+00	2025-01-14 17:26:20.057227	2025-01-14 17:26:20.057227	\N	5	\N	\N	\N	1	1	354
+398	41406771	2	2025-01-14 18:04:01.337+00	2025-01-14 18:04:01.341597	2025-01-14 18:04:28.640807	\N	6	\N	\N	\N	1	1	355
+399	2025011400000473	2	2025-01-14 18:06:54.898+00	2025-01-14 18:06:54.902182	2025-01-14 18:07:04.598448	\N	6	\N	\N	\N	1	1	356
+400	2025011400000474	4	2025-01-14 18:16:14.083+00	2025-01-14 18:16:14.089534	2025-01-14 18:16:14.089534	\N	5	\N	\N	\N	1	1	357
+401	2025011400000476	4	2025-01-14 18:16:42.608+00	2025-01-14 18:16:42.612216	2025-01-14 18:16:42.612216	\N	5	\N	\N	\N	1	1	358
+402	2025011400000478	4	2025-01-14 18:18:58.697+00	2025-01-14 18:18:58.701948	2025-01-14 18:18:58.701948	\N	5	\N	\N	\N	1	1	359
+403	41406779	4	2025-01-14 18:20:03.649+00	2025-01-14 18:20:03.652706	2025-01-14 18:20:43.481696	\N	6	\N	\N	\N	1	1	360
+404	2025011600000481	2	2025-01-16 13:36:28.424+00	2025-01-16 13:36:28.429503	2025-01-16 13:36:28.429503	\N	5	\N	\N	\N	1	1	361
+405	2025011600000482	2	2025-01-16 13:36:55.432+00	2025-01-16 13:36:55.437232	2025-01-16 13:36:55.437232	\N	5	\N	\N	\N	1	1	362
+406	2025011600000483	2	2025-01-16 13:42:10.735+00	2025-01-16 13:42:10.739915	2025-01-16 13:42:10.739915	\N	5	\N	\N	\N	1	1	363
+407	2025011600000484	2	2025-01-16 13:42:49.94+00	2025-01-16 13:42:49.944478	2025-01-16 13:42:49.944478	\N	5	\N	\N	\N	1	1	364
+408	2025011600000485	2	2025-01-16 13:43:27.193+00	2025-01-16 13:43:27.197155	2025-01-16 13:43:27.197155	\N	5	\N	\N	\N	1	1	365
+409	2025011600000486	2	2025-01-16 13:46:16.433+00	2025-01-16 13:46:16.437503	2025-01-16 13:46:16.437503	\N	5	\N	\N	\N	1	1	366
+410	2025011600000487	2	2025-01-16 13:46:46.98+00	2025-01-16 13:46:46.984364	2025-01-16 13:46:46.984364	\N	5	\N	\N	\N	1	1	367
+411	2025011600000488	2	2025-01-16 13:46:55.487+00	2025-01-16 13:46:55.490462	2025-01-16 13:46:55.490462	\N	5	\N	\N	\N	1	1	368
+412	2025011600000489	2	2025-01-16 13:47:48.553+00	2025-01-16 13:47:48.557265	2025-01-16 13:47:48.557265	\N	5	\N	\N	\N	1	1	369
+413	2025011600000490	2	2025-01-16 13:52:58.893+00	2025-01-16 13:52:58.898445	2025-01-16 13:52:58.898445	\N	5	\N	\N	\N	1	1	370
+414	2025011600000491	2	2025-01-16 13:55:34.717+00	2025-01-16 13:55:34.720472	2025-01-16 13:55:34.720472	\N	5	\N	\N	\N	1	1	371
+415	2025011600000492	2	2025-01-16 13:55:41.531+00	2025-01-16 13:55:41.534703	2025-01-16 13:55:41.534703	\N	5	\N	\N	\N	1	1	372
+416	2025011600000493	2	2025-01-16 13:56:07.694+00	2025-01-16 13:56:07.69872	2025-01-16 13:56:07.69872	\N	5	\N	\N	\N	1	1	373
+417	2025011600000494	2	2025-01-16 13:57:14.467+00	2025-01-16 13:57:14.472036	2025-01-16 13:57:14.472036	\N	5	\N	\N	\N	1	1	374
+418	2025011600000495	2	2025-01-16 13:57:53.564+00	2025-01-16 13:57:53.568404	2025-01-16 13:57:53.568404	\N	5	\N	\N	\N	1	1	375
+419	2025011600000496	2	2025-01-16 13:59:28.987+00	2025-01-16 13:59:28.99136	2025-01-16 13:59:28.99136	\N	5	\N	\N	\N	1	1	376
+420	2025011600000497	2	2025-01-16 14:01:15.512+00	2025-01-16 14:01:15.515995	2025-01-16 14:01:15.515995	\N	5	\N	\N	\N	1	1	377
+421	2025011600000498	2	2025-01-16 14:06:27.2+00	2025-01-16 14:06:27.204054	2025-01-16 14:06:27.204054	\N	5	\N	\N	\N	1	1	378
+422	2025011600000499	2	2025-01-16 14:11:21.375+00	2025-01-16 14:11:21.380204	2025-01-16 14:11:21.380204	\N	5	\N	\N	\N	1	1	379
+423	2025011600000500	2	2025-01-16 14:20:02.159+00	2025-01-16 14:20:02.162908	2025-01-16 14:20:02.162908	\N	5	\N	\N	\N	1	1	380
+424	2025011600000501	2	2025-01-16 17:43:11.771+00	2025-01-16 17:43:11.776801	2025-01-16 17:43:11.776801	\N	5	\N	\N	\N	1	1	381
+425	2025011600000503	2	2025-01-16 17:43:24.892+00	2025-01-16 17:43:24.896752	2025-01-16 17:44:26.978623	\N	6	\N	\N	\N	1	1	382
+426	2025011600000505	2	2025-01-16 17:45:10.353+00	2025-01-16 17:45:10.356746	2025-01-16 17:45:39.09731	\N	6	\N	\N	\N	1	1	383
+427	2025011600000506	2	2025-01-16 17:49:02.827+00	2025-01-16 17:49:02.831481	2025-01-16 17:49:02.831481	\N	5	\N	\N	\N	1	1	384
+428	2025011600000507	2	2025-01-16 17:49:26.505+00	2025-01-16 17:49:26.509352	2025-01-16 17:49:26.509352	\N	5	\N	\N	\N	1	1	385
+429	2025011600000510	2	2025-01-16 17:50:17.121+00	2025-01-16 17:50:17.124539	2025-01-16 17:51:14.043454	\N	6	\N	\N	\N	1	1	386
+430	2025011600000512	2	2025-01-16 17:51:28.804+00	2025-01-16 17:51:28.808862	2025-01-16 17:53:14.349175	\N	6	\N	\N	\N	1	1	387
+431	2025011600000514	2	2025-01-16 17:53:18.619+00	2025-01-16 17:53:18.623639	2025-01-16 17:53:30.892039	\N	6	\N	\N	\N	1	1	388
+432	2025011600000516	2	2025-01-16 17:54:03.251+00	2025-01-16 17:54:03.255159	2025-01-16 17:54:52.175563	\N	6	\N	\N	\N	1	1	389
+433	2025011600000518	2	2025-01-16 17:56:31.165+00	2025-01-16 17:56:31.168798	2025-01-16 17:57:12.682762	\N	6	\N	\N	\N	1	1	390
+434	2025011600000520	2	2025-01-16 18:01:14.147+00	2025-01-16 18:01:14.151236	2025-01-16 18:01:39.058165	\N	6	\N	\N	\N	1	1	391
+435	2025011600000521	2	2025-01-16 18:01:44.717+00	2025-01-16 18:01:44.721132	2025-01-16 18:01:44.721132	\N	5	\N	\N	\N	1	1	392
+436	2025011600000522	5	2025-01-16 18:04:22.924+00	2025-01-16 18:04:22.928893	2025-01-16 18:04:22.928893	\N	5	\N	\N	\N	1	1	393
+437	2025011600000524	2	2025-01-16 18:04:36.513+00	2025-01-16 18:04:36.517642	2025-01-16 18:04:55.348419	\N	6	\N	\N	\N	1	1	394
+438	2025011600000525	2	2025-01-16 18:05:56.284+00	2025-01-16 18:05:56.28789	2025-01-16 18:05:56.28789	\N	5	\N	\N	\N	1	1	395
+439	2025011600000527	2	2025-01-16 18:06:33.694+00	2025-01-16 18:06:33.697716	2025-01-16 18:06:33.697716	\N	5	\N	\N	\N	1	1	396
+440	2025011600000528	5	2025-01-16 18:06:51.709+00	2025-01-16 18:06:51.713404	2025-01-16 18:06:51.713404	\N	5	\N	\N	\N	1	1	397
+441	2025011600000529	2	2025-01-16 18:07:42.988+00	2025-01-16 18:07:42.992655	2025-01-16 18:07:42.992655	\N	5	\N	\N	\N	1	1	398
+442	2025011600000531	2	2025-01-16 18:07:56.403+00	2025-01-16 18:07:56.405796	2025-01-16 18:07:56.405796	\N	5	\N	\N	\N	1	1	399
+443	41606839	5	2025-01-16 18:07:59.637+00	2025-01-16 18:07:59.64077	2025-01-16 18:08:34.231861	\N	6	\N	\N	\N	1	1	400
+444	41606841	2	2025-01-16 18:08:17.876+00	2025-01-16 18:08:17.87945	2025-01-16 18:14:02.911872	\N	6	\N	\N	\N	1	1	401
+445	2025011600000537	2	2025-01-16 18:50:28.384+00	2025-01-16 18:50:28.388256	2025-01-16 18:50:28.388256	\N	5	\N	\N	\N	1	1	402
+446	2025011600000539	2	2025-01-16 18:50:50.067+00	2025-01-16 18:50:50.070748	2025-01-16 18:51:50.974899	\N	6	\N	\N	\N	1	1	403
+447	2025011600000540	2	2025-01-16 18:53:33.203+00	2025-01-16 18:53:33.20805	2025-01-16 18:53:33.20805	\N	5	\N	\N	\N	1	1	404
+448	2025011600000541	2	2025-01-16 18:55:43.941+00	2025-01-16 18:55:43.944595	2025-01-16 18:55:43.944595	\N	5	\N	\N	\N	1	1	405
+449	2025011600000542	2	2025-01-16 18:55:54.706+00	2025-01-16 18:55:54.709403	2025-01-16 18:55:54.709403	\N	5	\N	\N	\N	1	1	406
+450	41606849	2	2025-01-16 18:56:04.55+00	2025-01-16 18:56:04.552995	2025-01-16 18:56:52.798238	\N	6	\N	\N	\N	1	1	407
+451	2025011600000545	2.5	2025-01-16 19:10:17.131+00	2025-01-16 19:10:17.13582	2025-01-16 19:10:17.13582	\N	5	\N	\N	\N	1	1	408
+452	2025011600000547	2.5	2025-01-16 19:12:31.796+00	2025-01-16 19:12:31.800095	2025-01-16 19:12:31.800095	\N	5	\N	\N	\N	1	1	409
+453	2025011600000548	2.5	2025-01-16 19:12:53.953+00	2025-01-16 19:12:53.956691	2025-01-16 19:12:53.956691	\N	5	\N	\N	\N	1	1	410
+454	2025011600000550	2.5	2025-01-16 19:19:30.75+00	2025-01-16 19:19:30.754337	2025-01-16 19:19:30.754337	\N	5	\N	\N	\N	1	1	411
+455	2025011600000552	2.5	2025-01-16 19:20:43.379+00	2025-01-16 19:20:43.38402	2025-01-16 19:20:43.38402	\N	5	\N	\N	\N	1	1	412
+456	2025011600000553	2.5	2025-01-16 19:20:53.63+00	2025-01-16 19:20:53.633484	2025-01-16 19:20:53.633484	\N	5	\N	\N	\N	1	1	413
+457	2025011600000554	2.5	2025-01-16 19:21:10.289+00	2025-01-16 19:21:10.292907	2025-01-16 19:21:10.292907	\N	5	\N	\N	\N	1	1	414
+458	41606854	2.5	2025-01-16 19:21:22.253+00	2025-01-16 19:21:22.256921	2025-01-16 19:21:57.588541	\N	6	\N	\N	\N	1	1	415
+459	2025011600000557	2.5	2025-01-16 19:25:24.628+00	2025-01-16 19:25:24.631763	2025-01-16 19:25:24.631763	\N	5	\N	\N	\N	1	1	416
+460	2025011600000560	2.5	2025-01-16 19:25:59.5+00	2025-01-16 19:25:59.503862	2025-01-16 19:26:18.216977	\N	6	\N	\N	\N	1	1	417
+461	2025011600000561	2.5	2025-01-16 19:27:49.624+00	2025-01-16 19:27:49.62821	2025-01-16 19:27:49.62821	\N	5	\N	\N	\N	1	1	418
+462	2025011600000562	2.5	2025-01-16 19:27:59.185+00	2025-01-16 19:27:59.188729	2025-01-16 19:27:59.188729	\N	5	\N	\N	\N	1	1	419
+463	2025011600000563	2.5	2025-01-16 19:29:48.7+00	2025-01-16 19:29:48.703896	2025-01-16 19:29:48.703896	\N	5	\N	\N	\N	1	1	420
+464	2025011600000564	2.5	2025-01-16 19:33:10.664+00	2025-01-16 19:33:10.667728	2025-01-16 19:33:10.667728	\N	5	\N	\N	\N	1	1	421
+465	2025011600000565	2.5	2025-01-16 19:33:19.827+00	2025-01-16 19:33:19.829711	2025-01-16 19:33:19.829711	\N	5	\N	\N	\N	1	1	422
+466	41606861	2.5	2025-01-16 19:33:27.826+00	2025-01-16 19:33:27.828941	2025-01-16 19:34:17.536636	\N	6	\N	\N	\N	1	1	423
+467	41606863	2	2025-01-16 19:36:20.751+00	2025-01-16 19:36:20.755275	2025-01-16 19:37:03.200639	\N	6	\N	\N	\N	1	1	424
+468	2025011600000571	2	2025-01-16 19:38:41.106+00	2025-01-16 19:38:41.109509	2025-01-16 19:38:52.107848	\N	6	\N	\N	\N	1	1	425
+469	2025011600000573	2	2025-01-16 19:39:33.865+00	2025-01-16 19:39:33.868635	2025-01-16 19:39:58.615368	\N	6	\N	\N	\N	1	1	426
+470	2025011600000574	2	2025-01-16 19:40:05.1+00	2025-01-16 19:40:05.103834	2025-01-16 19:40:05.103834	\N	5	\N	\N	\N	1	1	427
+471	41606870	1.24	2025-01-16 19:57:09.946+00	2025-01-16 19:57:09.950007	2025-01-16 19:57:33.662517	\N	6	\N	\N	\N	1	1	428
+472	42206914	1	2025-01-22 15:54:16.47+00	2025-01-22 15:54:16.47528	2025-01-22 15:55:23.32508	\N	6	\N	\N	\N	1	1	429
 \.
 
 
@@ -5014,11 +5767,13 @@ COPY public.types_external_request (id, code, description, created_at, updated_a
 
 COPY public.users (id, email, password, identity_document_letter, identity_document, birthdate, constitution_date, address, phone_number, last_connection, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "roleId", "contributorTypeId", "parishId", fullname, "refreshToken", contributor_exempt, gender) FROM stdin;
 11	ljml69@gmail.com	$2a$10$nMX0Lc0X4M7lZD0kxYAYrei34eQRgOz9ErhfU.qKvwrXvToW1KlVW	V	8612413	1996-01-19	\N	El refugio	+58 424 4431006	\N	2024-12-18 22:05:24.607124	2024-12-18 22:07:42.866688	\N	1	\N	\N	\N	3	1	274	Lisbeth Martinez	$argon2id$v=19$m=65536,t=3,p=4$pMSTFOApWRSl3uFNKt9gag$X5KcbNQuVGXvoEy84HrUpe/GkkyS4lgk5hF5INpEwW8	f	F
-4	broook.hum04@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465203	1964-02-02	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085730	\N	2024-10-14 14:54:09.9	2024-11-19 20:30:30.133539	\N	1	1	1	\N	3	1	285	Carlos Arnaldo Cárdenas Sosa		f	F
 1	shyf.infosiartec@gmail.com	$2a$10$nXtUPsWyqglYlPp0ehUOQu.hrUCB0CIv/K51AW21ZDLcBUxsnZwTS	G	20000152-6	\N	1900-01-01	Av. Michelena a 100 Mts. del elevado La Quizanda detrás de las oficinas del IVEC Sede Sec. Hacienda y Finanzas – Valencia - Edo. Carabobo.	+58 241 8743470	\N	2024-06-25 21:49:14.69	2024-11-23 21:02:53.729682	\N	1	1	1	\N	1	6	285	SUPER ADMIN		f	O
-5	sebastian.gamboalima@gmail.com	$2a$10$wpHmJMkJYYAOWQ/OkaY02.A4BupEFscr.OosU59uwd/xqw/6BAetC	V	28465204	1953-12-15	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085731	\N	2024-10-14 14:54:09.9	2024-12-29 14:06:23.710022	\N	1	1	1	\N	3	1	285	Carlos Arnaldo Cárdenas Sosa	$argon2id$v=19$m=65536,t=3,p=4$WCjE3BYZffw+Ue+QdoJAwQ$s5CROegvL1ZHM26IMU+yeXcz6w55x8l6JMoJ5Snx1RY	f	M
-2	nelmerayala@gmail.com	$2a$10$wpHmJMkJYYAOWQ/OkaY02.A4BupEFscr.OosU59uwd/xqw/6BAetC	V	24297146	1965-02-02	\N	Los tamarindos	+58 414 4196316	\N	2024-06-26 23:02:27.391	2024-12-29 14:10:10.241581	\N	1	1	1	\N	2	2	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$kljZIKbPBWpVaQOwrs3d3g$oyzzi6yZ+XzSAzf7+AWf06Q8e7Yq03aphfkNkSYVZLI	f	M
 3	jennyaray98@gmail.com	$2a$10$OQsz9Gj2Xw4J.hsWbUo2gOtcA.FdXXHtPMgyYp1cCA9gjSiYFKxN.	V	26306715	1965-02-02	\N	San Judas Tadeo I	+58 424 4571298	\N	2024-10-17 19:17:42.11	2024-10-17 19:17:42.11	\N	1	1	1	\N	4	1	285	Jennyreth Cristina Aray Andrade		t	F
+5	sebastian.gamboalima@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465204	1953-12-15	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085731	\N	2024-10-14 14:54:09.9	2025-01-20 20:42:10.985768	\N	1	1	1	\N	3	2	285	Carlos Arnaldo Cárdenas Sosa	$argon2id$v=19$m=65536,t=3,p=4$g8au477HCUryHs0MAbW4Uw$ro3sNGV3J0qPVeg+vx6ETVjS6ZIQEbleRRDFok2c98E	f	M
+12	evigonzalez17@gmail.com	$2a$10$mufsqlPGyXG6cRBbam471eHhiVtNgadE3x5sa0JWuS17OcCLcVddS	J	28063607	2000-07-04	\N	Urb rafael urdaneta av   guigue sector L 12	+58 414 5944030	\N	2025-01-07 14:37:36.843822	2025-01-22 16:37:12.694186	\N	1	\N	\N	\N	3	2	285	Evimar Desiree Gonzalez Jimenez	$argon2id$v=19$m=65536,t=3,p=4$Q4Ob4/1mE7deN13gnUwueA$cC2XkI3RrQkCtwrB6/dhNyt1QpRE6gGtPwTjY2tjmBs	f	F
+4	broook.hum04@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465203	1964-02-02	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085730	\N	2024-10-14 14:54:09.9	2025-01-22 16:38:17.337427	\N	1	1	1	\N	2	1	285	Carlos Arnaldo Cárdenas Sosa	$argon2id$v=19$m=65536,t=3,p=4$88M7SMUPQfMSPGpzpEL4sA$Nk+uaaVrnG55BpnuhcklGV7dI88FnyZKxwec3coD9TE	f	M
+2	nelmerayala@gmail.com	$2a$10$wpHmJMkJYYAOWQ/OkaY02.A4BupEFscr.OosU59uwd/xqw/6BAetC	V	24297146	1965-02-02	\N	Los tamarindos	+58 414 4196316	\N	2024-06-26 23:02:27.391	2025-01-22 16:47:09.329243	\N	1	1	1	\N	2	2	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$jVH3Da3ZbarLepuwswhRFw$B17I4HL4QQCYaDBJRN7YtcYkAP5FUt/Eyvmm6cp7dtE	f	M
+13	jrligas@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	J	7208763	1962-09-29	\N	Flor  Amarillo	+58 412 4935130	\N	2025-01-22 15:31:46.185439	2025-01-22 17:23:12.272595	\N	1	\N	\N	\N	3	2	282	José Rodolfo Ligas Chacón	$argon2id$v=19$m=65536,t=3,p=4$/nessLFhuRhImFU96Ddcrw$TuMoNK2mA0Ul05IqfAvvz2va+7ZXiK2IZijL5hm4T9k	f	M
 \.
 
 
@@ -5026,7 +5781,7 @@ COPY public.users (id, email, password, identity_document_letter, identity_docum
 -- Name: annual_correlative_tax_stamps; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.annual_correlative_tax_stamps', 379, true);
+SELECT pg_catalog.setval('public.annual_correlative_tax_stamps', 512, true);
 
 
 --
@@ -5075,7 +5830,7 @@ SELECT pg_catalog.setval('public.branch_id_seq', 1, true);
 -- Name: calculation_factor_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.calculation_factor_id_seq', 81, true);
+SELECT pg_catalog.setval('public.calculation_factor_id_seq', 89, true);
 
 
 --
@@ -5103,7 +5858,7 @@ SELECT pg_catalog.setval('public.country_id_seq', 240, true);
 -- Name: daily_correlative_request_bank; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.daily_correlative_request_bank', 369, true);
+SELECT pg_catalog.setval('public.daily_correlative_request_bank', 578, true);
 
 
 --
@@ -5131,7 +5886,7 @@ SELECT pg_catalog.setval('public.entities_id_seq', 4, true);
 -- Name: external_request_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.external_request_id_seq', 393, true);
+SELECT pg_catalog.setval('public.external_request_id_seq', 602, true);
 
 
 --
@@ -5173,7 +5928,7 @@ SELECT pg_catalog.setval('public.parishes_id_seq', 1134, true);
 -- Name: payment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.payment_id_seq', 296, true);
+SELECT pg_catalog.setval('public.payment_id_seq', 429, true);
 
 
 --
@@ -5243,21 +5998,21 @@ SELECT pg_catalog.setval('public.subentity_id_seq', 29, true);
 -- Name: tax_stamp_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tax_stamp_id_seq', 831, true);
+SELECT pg_catalog.setval('public.tax_stamp_id_seq', 964, true);
 
 
 --
 -- Name: tax_stamps_payment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tax_stamps_payment_id_seq', 686, true);
+SELECT pg_catalog.setval('public.tax_stamps_payment_id_seq', 823, true);
 
 
 --
 -- Name: transaction_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.transaction_id_seq', 339, true);
+SELECT pg_catalog.setval('public.transaction_id_seq', 472, true);
 
 
 --
@@ -5278,7 +6033,7 @@ SELECT pg_catalog.setval('public.types_external_request_id_seq', 1, true);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 11, true);
+SELECT pg_catalog.setval('public.users_id_seq', 13, true);
 
 
 --
