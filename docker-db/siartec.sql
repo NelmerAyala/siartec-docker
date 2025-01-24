@@ -63,10 +63,10 @@ ALTER TYPE public.users_gender_enum OWNER TO postgres;
 
 CREATE FUNCTION public.reset_sequence(sequence_name text) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-BEGIN
-  EXECUTE format('ALTER SEQUENCE %I RESTART WITH 1;', sequence_name);
-END;
+    AS $$
+BEGIN
+  EXECUTE format('ALTER SEQUENCE %I RESTART WITH 1;', sequence_name);
+END;
 $$;
 
 
@@ -78,25 +78,25 @@ ALTER FUNCTION public.reset_sequence(sequence_name text) OWNER TO postgres;
 
 CREATE FUNCTION public.verification_contributors_exempts() RETURNS void
     LANGUAGE plpgsql
-    AS $$
-BEGIN
-  	UPDATE users
-	SET contributor_exempt=true
-	WHERE 
-	(date_part('year', age(birthdate)) >=CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and gender='F') or
-	(date_part('year', age(birthdate)) >=CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and gender='M') or
-	(date_part('year', age(birthdate)) <=CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
-	and contributor_exempt = false
-	and "contributorTypeId" = (SELECT id FROM contributors_type WHERE code='NATURAL');
-
-  	UPDATE users
-	SET contributor_exempt=false
-	WHERE 
-	((date_part('year', age(birthdate)) <CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and gender='F') or
-	(date_part('year', age(birthdate)) <CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and gender='M')) and
-	(date_part('year', age(birthdate)) >CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
-	and "contributorTypeId" = (SELECT id FROM contributors_type WHERE code='NATURAL');
-END;
+    AS $$
+BEGIN
+  	UPDATE users
+	SET contributor_exempt=true
+	WHERE 
+	(date_part('year', age(birthdate)) >=CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and gender='F') or
+	(date_part('year', age(birthdate)) >=CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and gender='M') or
+	(date_part('year', age(birthdate)) <=CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
+	and contributor_exempt = false
+	and "contributorTypeId" = (SELECT id FROM contributors_type WHERE code='NATURAL');
+
+  	UPDATE users
+	SET contributor_exempt=false
+	WHERE 
+	((date_part('year', age(birthdate)) <CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and gender='F') or
+	(date_part('year', age(birthdate)) <CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and gender='M')) and
+	(date_part('year', age(birthdate)) >CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
+	and "contributorTypeId" = (SELECT id FROM contributors_type WHERE code='NATURAL');
+END;
 $$;
 
 
@@ -108,23 +108,23 @@ ALTER FUNCTION public.verification_contributors_exempts() OWNER TO postgres;
 
 CREATE FUNCTION public.verification_contributors_exempts(sequence_name text) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-BEGIN
-  	UPDATE users
-	SET contributor_exempt=true
-	WHERE 
-	(date_part('year', age(u.birthdate)) >=CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and u.gender='F') or
-	(date_part('year', age(u.birthdate)) >=CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and u.gender='M') or
-	(date_part('year', age(u.birthdate)) <=CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
-	and u.contributor_exempt = false;
-
-  	UPDATE users
-	SET contributor_exempt=false
-	WHERE 
-	((date_part('year', age(u.birthdate)) <CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and u.gender='F') or
-	(date_part('year', age(u.birthdate)) <CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and u.gender='M')) and
-	(date_part('year', age(u.birthdate)) >CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER));
-END;
+    AS $$
+BEGIN
+  	UPDATE users
+	SET contributor_exempt=true
+	WHERE 
+	(date_part('year', age(u.birthdate)) >=CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and u.gender='F') or
+	(date_part('year', age(u.birthdate)) >=CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and u.gender='M') or
+	(date_part('year', age(u.birthdate)) <=CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
+	and u.contributor_exempt = false;
+
+  	UPDATE users
+	SET contributor_exempt=false
+	WHERE 
+	((date_part('year', age(u.birthdate)) <CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and u.gender='F') or
+	(date_part('year', age(u.birthdate)) <CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and u.gender='M')) and
+	(date_part('year', age(u.birthdate)) >CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER));
+END;
 $$;
 
 
@@ -1318,7 +1318,8 @@ CREATE TABLE public.status (
     "statusId" integer,
     "createdById" integer,
     "updatedById" integer,
-    "deletedById" integer
+    "deletedById" integer,
+    description_interface character varying DEFAULT 'N'::character varying NOT NULL
 );
 
 
@@ -4931,21 +4932,21 @@ COPY public.state (id, code, description, created_at, updated_at, deleted_at, "s
 -- Data for Name: status; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.status (id, code, description, apply_to, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById") FROM stdin;
-2	INACTIVE	logical state of deleted registers	all	2024-07-15 13:44:30.197311	2024-07-15 13:44:30.197311	\N	1	1	1	\N
-1	ACTIVE	logical state of active registers	all	2024-07-15 13:42:34.889805	2024-07-15 13:42:34.889805	\N	1	1	1	\N
-6	VERIFIED	verified transaction status	transactions	2024-11-06 22:41:12.316804	2024-11-06 22:41:12.316804	\N	1	1	1	\N
-8	SUCCESS_REQUEST	status of external requests with successful response.	external_requests	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N
-9	ERROR_REQUEST	Status of external requests with error in response.	external_requests	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N
-7	WAITING_RESPONSE	status of external requests waiting for a response	external_requests	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N
-10	GENERATED	status of tax stamps generated pending payment	stamps	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N
-3	UNCONFIRMED	status for unconfirmed payments	payments	2024-11-05 21:19:06.172716	2024-11-05 21:19:06.172716	\N	1	1	1	\N
-4	CONFIRMED	status for confirmed payments	payments	2024-11-05 21:19:54.240486	2024-11-05 21:19:54.240486	\N	1	1	1	\N
-5	REQUESTED	status of requested transactions	transactions	2024-11-06 22:41:12.312778	2024-11-06 22:41:12.312778	\N	1	1	1	\N
-11	PAID	status of tax stamps paid	stamps	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N
-12	CANCELED	status of tax stamps canceled	stamps	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N
-13	EXEMPT	Status of tax stamps exempted due to special conditions of the type of contributor	stamps	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N
-14	RECEIVED	Status of tax stamps received by the corresponding entity	stamps	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N
+COPY public.status (id, code, description, apply_to, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", description_interface) FROM stdin;
+1	ACTIVE	logical state of active registers	all	2024-07-15 13:42:34.889805	2024-07-15 13:42:34.889805	\N	1	1	1	\N	ACTIVO
+2	INACTIVE	logical state of deleted registers	all	2024-07-15 13:44:30.197311	2024-07-15 13:44:30.197311	\N	1	1	1	\N	INACTIVO
+3	UNCONFIRMED	status for unconfirmed payments	payments	2024-11-05 21:19:06.172716	2024-11-05 21:19:06.172716	\N	1	1	1	\N	NO CONFIRMADO
+4	CONFIRMED	status for confirmed payments	payments	2024-11-05 21:19:54.240486	2024-11-05 21:19:54.240486	\N	1	1	1	\N	CONFIRMADO
+5	REQUESTED	status of requested transactions	transactions	2024-11-06 22:41:12.312778	2024-11-06 22:41:12.312778	\N	1	1	1	\N	SOLICITADA
+6	VERIFIED	verified transaction status	transactions	2024-11-06 22:41:12.316804	2024-11-06 22:41:12.316804	\N	1	1	1	\N	VERIFICADA
+7	WAITING_RESPONSE	status of external requests waiting for a response	external_requests	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N	ESPERANDO RESPUESTA
+8	SUCCESS_REQUEST	status of external requests with successful response.	external_requests	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N	PETICIÓN SATISFACTORIA
+9	ERROR_REQUEST	Status of external requests with error in response.	external_requests	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N	ERROR EN PETICIÓN
+10	GENERATED	status of tax stamps generated pending payment	stamps	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N	GENERADA
+11	PAID	status of tax stamps paid	stamps	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N	PAGO
+12	CANCELED	status of tax stamps canceled	stamps	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N	CANCELADA
+13	EXEMPT	Status of tax stamps exempted due to special conditions of the type of contributor	stamps	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N	EXENTA
+14	RECEIVED	Status of tax stamps received by the corresponding entity	stamps	2024-11-07 00:07:40.062805	2024-11-07 00:07:40.062805	\N	1	1	1	\N	RECIBIDA
 \.
 
 
@@ -5254,6 +5255,12 @@ COPY public.tax_stamp (id, code, amount, created_at, updated_at, deleted_at, "st
 962	10001000920250000510	0	2025-01-22 16:18:41.662341	2025-01-22 16:18:41.662341	\N	13	\N	\N	\N	13	9	89	1	2025
 963	20024005320250000511	4	2025-01-22 16:37:34.260452	2025-01-22 16:37:34.260452	\N	10	\N	\N	\N	12	335	89	1	2025
 964	40029007820250000512	4	2025-01-22 17:55:14.013332	2025-01-22 17:55:14.013332	\N	10	\N	\N	\N	13	360	89	1	2025
+965	40029007820250000513	4	2025-01-22 18:22:08.505807	2025-01-22 18:22:08.505807	\N	10	\N	\N	\N	13	360	89	1	2025
+966	40029007820250000514	0	2025-01-22 18:26:35.889761	2025-01-22 18:26:35.889761	\N	13	\N	\N	\N	13	360	89	1	2025
+967	40029007820250000515	0	2025-01-22 18:29:08.049067	2025-01-22 18:29:08.049067	\N	13	\N	\N	\N	13	360	89	1	2025
+968	10001000120250000516	4	2025-01-22 18:29:08.067804	2025-01-22 18:29:08.067804	\N	10	\N	\N	\N	13	1	89	1	2025
+969	10001000120250000517	4	2025-01-22 21:03:10.556431	2025-01-22 21:03:10.556431	\N	10	\N	\N	\N	13	1	89	1	2025
+970	10001000620250000518	0	2025-01-22 21:03:10.568278	2025-01-22 21:03:10.568278	\N	13	\N	\N	\N	13	6	89	1	2025
 \.
 
 
@@ -5773,7 +5780,7 @@ COPY public.users (id, email, password, identity_document_letter, identity_docum
 12	evigonzalez17@gmail.com	$2a$10$mufsqlPGyXG6cRBbam471eHhiVtNgadE3x5sa0JWuS17OcCLcVddS	J	28063607	2000-07-04	\N	Urb rafael urdaneta av   guigue sector L 12	+58 414 5944030	\N	2025-01-07 14:37:36.843822	2025-01-22 16:37:12.694186	\N	1	\N	\N	\N	3	2	285	Evimar Desiree Gonzalez Jimenez	$argon2id$v=19$m=65536,t=3,p=4$Q4Ob4/1mE7deN13gnUwueA$cC2XkI3RrQkCtwrB6/dhNyt1QpRE6gGtPwTjY2tjmBs	f	F
 4	broook.hum04@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465203	1964-02-02	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085730	\N	2024-10-14 14:54:09.9	2025-01-22 16:38:17.337427	\N	1	1	1	\N	2	1	285	Carlos Arnaldo Cárdenas Sosa	$argon2id$v=19$m=65536,t=3,p=4$88M7SMUPQfMSPGpzpEL4sA$Nk+uaaVrnG55BpnuhcklGV7dI88FnyZKxwec3coD9TE	f	M
 2	nelmerayala@gmail.com	$2a$10$wpHmJMkJYYAOWQ/OkaY02.A4BupEFscr.OosU59uwd/xqw/6BAetC	V	24297146	1965-02-02	\N	Los tamarindos	+58 414 4196316	\N	2024-06-26 23:02:27.391	2025-01-22 16:47:09.329243	\N	1	1	1	\N	2	2	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$jVH3Da3ZbarLepuwswhRFw$B17I4HL4QQCYaDBJRN7YtcYkAP5FUt/Eyvmm6cp7dtE	f	M
-13	jrligas@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	J	7208763	1962-09-29	\N	Flor  Amarillo	+58 412 4935130	\N	2025-01-22 15:31:46.185439	2025-01-22 17:23:12.272595	\N	1	\N	\N	\N	3	2	282	José Rodolfo Ligas Chacón	$argon2id$v=19$m=65536,t=3,p=4$/nessLFhuRhImFU96Ddcrw$TuMoNK2mA0Ul05IqfAvvz2va+7ZXiK2IZijL5hm4T9k	f	M
+13	jrligas@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	J	7208763	1962-09-29	\N	Flor  Amarillo	+58 412 4935130	\N	2025-01-22 15:31:46.185439	2025-01-24 01:10:53.780265	\N	1	\N	\N	\N	3	2	282	José Rodolfo Ligas Chacón	$argon2id$v=19$m=65536,t=3,p=4$YYDg60vOZVvBucqm0QmjTw$GLYoDXAr+/iOx8KWvQ6drx3n5lZD8/JXYo+a8PtZNFo	t	M
 \.
 
 
@@ -5781,7 +5788,7 @@ COPY public.users (id, email, password, identity_document_letter, identity_docum
 -- Name: annual_correlative_tax_stamps; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.annual_correlative_tax_stamps', 512, true);
+SELECT pg_catalog.setval('public.annual_correlative_tax_stamps', 518, true);
 
 
 --
@@ -5998,7 +6005,7 @@ SELECT pg_catalog.setval('public.subentity_id_seq', 29, true);
 -- Name: tax_stamp_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tax_stamp_id_seq', 964, true);
+SELECT pg_catalog.setval('public.tax_stamp_id_seq', 970, true);
 
 
 --
