@@ -63,10 +63,10 @@ ALTER TYPE public.users_gender_enum OWNER TO postgres;
 
 CREATE FUNCTION public.reset_sequence(sequence_name text) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-BEGIN
-  EXECUTE format('ALTER SEQUENCE %I RESTART WITH 1;', sequence_name);
-END;
+    AS $$
+BEGIN
+  EXECUTE format('ALTER SEQUENCE %I RESTART WITH 1;', sequence_name);
+END;
 $$;
 
 
@@ -78,25 +78,31 @@ ALTER FUNCTION public.reset_sequence(sequence_name text) OWNER TO postgres;
 
 CREATE FUNCTION public.verification_contributors_exempts() RETURNS void
     LANGUAGE plpgsql
-    AS $$
-BEGIN
-  	UPDATE users
-	SET contributor_exempt=true
-	WHERE 
-	(date_part('year', age(birthdate)) >=CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and gender='F') or
-	(date_part('year', age(birthdate)) >=CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and gender='M') or
-	(date_part('year', age(birthdate)) <=CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
-	and contributor_exempt = false
-	and "contributorTypeId" = (SELECT id FROM contributors_type WHERE code='NATURAL');
-
-  	UPDATE users
-	SET contributor_exempt=false
-	WHERE 
-	((date_part('year', age(birthdate)) <CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and gender='F') or
-	(date_part('year', age(birthdate)) <CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and gender='M')) and
-	(date_part('year', age(birthdate)) >CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
-	and "contributorTypeId" = (SELECT id FROM contributors_type WHERE code='NATURAL');
-END;
+    AS $$
+BEGIN
+	/*
+	* Actualizar usuarios como exentos 
+	*/
+  	UPDATE users
+	SET contributor_exempt=true
+	WHERE 
+	(date_part('year', age(birthdate)) >=CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and gender='F') or
+	(date_part('year', age(birthdate)) >=CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and gender='M')
+	-- or (date_part('year', age(birthdate)) <=CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
+	and contributor_exempt = false
+	and "contributorTypeId" = (SELECT id FROM contributors_type WHERE code='NATURAL');
+
+	/*
+	* Actualizar usuarios como NO exentos 
+	*/
+  	UPDATE users
+	SET contributor_exempt=false
+	WHERE 
+	((date_part('year', age(birthdate)) <CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and gender='F') or
+	(date_part('year', age(birthdate)) <CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and gender='M'))
+	-- and (date_part('year', age(birthdate)) >CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
+	and "contributorTypeId" = (SELECT id FROM contributors_type WHERE code='NATURAL');
+END;
 $$;
 
 
@@ -108,23 +114,23 @@ ALTER FUNCTION public.verification_contributors_exempts() OWNER TO postgres;
 
 CREATE FUNCTION public.verification_contributors_exempts(sequence_name text) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-BEGIN
-  	UPDATE users
-	SET contributor_exempt=true
-	WHERE 
-	(date_part('year', age(u.birthdate)) >=CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and u.gender='F') or
-	(date_part('year', age(u.birthdate)) >=CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and u.gender='M') or
-	(date_part('year', age(u.birthdate)) <=CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
-	and u.contributor_exempt = false;
-
-  	UPDATE users
-	SET contributor_exempt=false
-	WHERE 
-	((date_part('year', age(u.birthdate)) <CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and u.gender='F') or
-	(date_part('year', age(u.birthdate)) <CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and u.gender='M')) and
-	(date_part('year', age(u.birthdate)) >CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER));
-END;
+    AS $$
+BEGIN
+  	UPDATE users
+	SET contributor_exempt=true
+	WHERE 
+	(date_part('year', age(u.birthdate)) >=CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and u.gender='F') or
+	(date_part('year', age(u.birthdate)) >=CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and u.gender='M') or
+	(date_part('year', age(u.birthdate)) <=CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
+	and u.contributor_exempt = false;
+
+  	UPDATE users
+	SET contributor_exempt=false
+	WHERE 
+	((date_part('year', age(u.birthdate)) <CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and u.gender='F') or
+	(date_part('year', age(u.birthdate)) <CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and u.gender='M')) and
+	(date_part('year', age(u.birthdate)) >CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER));
+END;
 $$;
 
 
@@ -1319,7 +1325,7 @@ CREATE TABLE public.status (
     "createdById" integer,
     "updatedById" integer,
     "deletedById" integer,
-    description_interface character varying DEFAULT 'N'::character varying NOT NULL
+    description_interface character varying NOT NULL
 );
 
 
@@ -1409,7 +1415,9 @@ CREATE TABLE public.tax_stamp (
     "procedureId" integer,
     "calculationFactorId" integer,
     number_folios integer NOT NULL,
-    year character varying(4) NOT NULL
+    year character varying(4) NOT NULL,
+    generation_date date DEFAULT '2025-01-29'::date NOT NULL,
+    expiration_date date DEFAULT '2025-02-03'::date NOT NULL
 );
 
 
@@ -2012,6 +2020,8 @@ COPY public.calculation_factor (id, created_at, updated_at, deleted_at, "statusI
 87	2025-01-16 13:32:53.302301	2025-01-16 13:32:53.302301	\N	\N	\N	\N	\N	3	0.062	2025-01-16
 88	2025-01-21 18:58:10.560625	2025-01-21 18:58:10.560625	\N	\N	\N	\N	\N	3	57.3155	2025-01-21
 89	2025-01-22 13:48:23.039263	2025-01-22 13:48:23.039263	\N	\N	\N	\N	\N	3	0.2	2025-01-22
+90	2025-01-28 13:08:53.210434	2025-01-28 13:08:53.210434	\N	\N	\N	\N	\N	3	59.6689	2025-01-28
+91	2025-01-29 14:25:59.385507	2025-01-29 14:25:59.385507	\N	\N	\N	\N	\N	3	59.7956	2025-01-29
 \.
 
 
@@ -2293,31 +2303,14 @@ COPY public.country (id, code, description, created_at, updated_at, deleted_at, 
 --
 
 COPY public.document (id, path, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", number, publication_date, file_name) FROM stdin;
-1	GACETAS	Gaceta N 1 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-2	GACETAS	Gaceta N 2 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-2.pdf
-3	GACETAS	Gaceta N 3 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-3.pdf
-4	GACETAS	Gaceta N 4 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-4.pdf
-5	GACETAS	Gaceta N 5 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-5.pdf
-14	GACETAS	Gaceta N 14 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-15	GACETAS	Gaceta N 15 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-16	GACETAS	Gaceta N 16 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-17	GACETAS	Gaceta N 17 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-18	GACETAS	Gaceta N 18 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-19	GACETAS	Gaceta N 19 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-20	GACETAS	Gaceta N 20 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-21	GACETAS	Gaceta N 21 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-6	GACETAS	Gaceta N 6 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-7	GACETAS	Gaceta N 7 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-8	GACETAS	Gaceta N 8 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-9	GACETAS	Gaceta N 9 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-10	GACETAS	Gaceta N 10 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-11	GACETAS	Gaceta N 11 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-12	GACETAS	Gaceta N 12 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-13	GACETAS	Gaceta N 13 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-22	GACETAS	Gaceta N 22 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-23	GACETAS	Gaceta N 23 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-24	GACETAS	Gaceta N 24 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
-25	GACETAS	Gaceta N 25 - Ejemplo de descripcion	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	010203	2024-10-29	gaceta-1.pdf
+1	GACETAS	Alícuotas de Minerales No Metálicos en el estado Carabobo	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	9458	2023-12-04	9458.pdf
+2	GACETAS	Alícuota en Unidad De Cuenta Dinámica (UCD)	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	9436	2023-11-14	9436.pdf
+3	GACETAS	Ley de Ramos Tributarios Propios del estado Carabobo	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	9434	2023-11-13	9434.pdf
+4	GACETAS	Ley de Hacienda Pública del estado Carabobo	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	9424	2023-11-06	9424.pdf
+5	GACETAS	Reglamento Orgánico de la Secretaría de Hacienda y Finanzas de la Gobernación del estado Carabobo	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	9023	2022-12-19	9023.pdf
+6	GACETAS	Responsabilidad de retener y enterar el pago del impuesto Uno por Mil (1x1000)	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	9435	2023-11-13	9435.pdf
+7	GACETAS	Responsabilidad de retener y enterar el pago del impuesto Diez por Mil (10x1000)	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	8030	2020-12-02	8030.pdf
+8	GACETAS	Creación del Sistema Automatizado de Recaudación Tributaria de Estado Carabobo (SIARTEC)	2024-10-29 22:24:45.465	2024-10-29 22:24:45.465	\N	1	1	1	\N	6164	2017-04-26	6164.pdf
 \.
 
 
@@ -2330,6 +2323,10 @@ COPY public.entities (id, description, created_at, updated_at, deleted_at, "stat
 2	PROCURADURIA DEL ESTADO CARABOBO	2024-11-07 14:49:53.595993	2024-11-07 14:49:53.595993	\N	1	1	1	\N	2
 3	SENIAT	2024-11-07 14:49:53.595993	2024-11-07 14:49:53.595993	\N	1	1	1	\N	3
 4	GOBIERNO DE CARABOBO	2024-11-07 14:49:53.595993	2024-11-07 14:49:53.595993	\N	1	1	1	\N	4
+5	MINISTERIO DEL PODER POPULAR PARA LA EDUCACIÓN	2024-11-07 14:49:53.595993	2024-11-07 14:49:53.595993	\N	1	1	1	\N	5
+6	MINEC	2024-11-07 14:49:53.595993	2024-11-07 14:49:53.595993	\N	1	1	1	\N	6
+7	INSALUD	2024-11-07 14:49:53.595993	2024-11-07 14:49:53.595993	\N	1	1	1	\N	7
+8	EJemplo	2025-01-29 21:45:07.100148	2025-01-29 21:45:07.100148	\N	\N	\N	\N	\N	8
 \.
 
 
@@ -4460,6 +4457,14 @@ COPY public.privilege (id, code, description, created_at, updated_at, deleted_at
 9	C_GAZETTE	Gazette (create)	2024-11-11 16:34:53.536	2024-11-11 16:34:53.536	\N	1	\N	\N	\N
 10	U_USER	Modify (update) users	2024-11-11 16:34:53.536	2024-11-11 16:34:53.536	\N	1	\N	\N	\N
 11	R_REPORTS	Consult (read) reports at the box office	2024-11-11 16:34:53.536	2024-11-11 16:34:53.536	\N	1	\N	\N	\N
+12	R_REPORTS_ADMIN	Consult (read) reports at the Administrator	2024-11-11 16:34:53.536	2024-11-11 16:34:53.536	\N	1	\N	\N	\N
+13	U_GAZETTE	Gazette (update)	2025-01-29 15:10:14.769216	2025-01-29 15:10:14.769216	\N	1	\N	\N	\N
+14	C_ENTITIES	Generate (create) entities	2025-01-29 15:11:03.631629	2025-01-29 15:11:03.631629	\N	1	\N	\N	\N
+15	U_ENTITIES	Modify (Update) entities	2025-01-29 15:11:03.631629	2025-01-29 15:11:03.631629	\N	1	\N	\N	\N
+16	C_SUBENTITIES	Generate (create) subentities	2025-01-29 15:11:03.631629	2025-01-29 15:11:03.631629	\N	1	\N	\N	\N
+17	U_SUBENTITIES	Modify (Update) subentities	2025-01-29 15:11:03.631629	2025-01-29 15:11:03.631629	\N	1	\N	\N	\N
+18	C_PROCEDURE	Generate (create) procedure	2025-01-29 15:11:03.631629	2025-01-29 15:11:03.631629	\N	1	\N	\N	\N
+19	U_PROCEDURE	Modify (Update) procedure	2025-01-29 15:11:03.631629	2025-01-29 15:11:03.631629	\N	1	\N	\N	\N
 \.
 
 
@@ -4469,162 +4474,141 @@ COPY public.privilege (id, code, description, created_at, updated_at, deleted_at
 
 COPY public.procedure (id, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "subentityId", is_specific_value, value, code, is_exempt) FROM stdin;
 2	Inscripcion de sentencia de separacion de cuerpos, donde no se adjudiquen bienes inmuebles	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0002	t
-8	Inscripcion de ttulos o certificados  de profesionalizacion	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0008	t
-9	Copias certificadas de documentos inscritos.	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0009	t
-10	Copias o reproducciones simples de los documentos inscritos.	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0010	t
 12	Inscripcion de testamentos abiertos o cerrados	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0012	t
-13	Actas de remate.	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0013	t
-15	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto, renuncias o gravamenes de la propiedad.	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0015	t
 16	Decretos de interdiccion o inhabilitacion civil	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0016	t
 17	Certificacion de gravamenes	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0017	t
 18	Copias certificadas de actos o instrumentos  que reposen en los archivos de los Registros	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0018	t
 19	Actos traslativos de la propiedad de  inmuebles	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0019	t
 20	Inscripcion de capitulaciones matrimoniales	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0020	t
-21	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0021	t
 22	Documento de particiones de herencias	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0022	t
-23	Cierre de titularidad.-	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0023	t
-24	Documento de parcelamiento	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0024	t
-25	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0025	t
 26	Inscripcion de mejoras en bienhechurias y sentencias de titulo supletorio	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0026	t
-27	Por cualquier otro tipo de documento que se presente para su protocolizacion.	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0027	t
 28	Inscripcion de testamentos abiertos o cerrados	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0012	t
-29	Actas de remate.	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0013	t
-30	Otorgamiento de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0014	t
-31	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto, renuncias o gravamenes de la propiedad.	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0015	t
 32	Decretos de interdiccion o inhabilitacion civil	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0016	t
 33	Certificacion de gravamenes	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0017	t
 34	Copias certificadas de actos o instrumentos  que reposen en los archivos de los Registros	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0018	t
 35	Actos traslativos de la propiedad de  inmuebles	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0019	t
 36	Inscripcion de capitulaciones matrimoniales	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0020	t
-37	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0021	t
 38	Documento de particiones de herencias	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0022	t
-39	Cierre de titularidad.-	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0023	t
-40	Documento de parcelamiento	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0024	t
-41	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0025	t
 42	Inscripcion de mejoras en bienhechurias y sentencias de titulo supletorio	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0026	t
-43	Por cualquier otro tipo de documento que se presente para su protocolizacion.	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0027	t
 44	Inscripcion de testamentos abiertos o cerrados	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0012	t
-45	Actas de remate.	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0013	t
-46	Otorgamiento de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0014	t
 3	Inscripcion de sentencia de  nulidad de matrimonio, donde no se adjudiquen bienes inmuebles	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0003	t
 4	Estampar notas marginales de sentencias de divorcio, separaciones de cuerpos, nulidad de matrimono	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0004	t
-5	Legalizacion de firmas. 	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0005	t
 6	Declaraciones juradas de caracter academico permitidas por la Ley	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0006	t
-7	Inscripcion de ttulos o certificados academicos de profesionalizacion	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0007	t
-14	Otorgamiento de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0014	t
 49	Certificacion de gravamenes	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0017	t
 50	Copias certificadas de actos o instrumentos  que reposen en los archivos de los Registros	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0018	t
 51	Actos traslativos de la propiedad de  inmuebles	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0019	t
 52	Inscripcion de capitulaciones matrimoniales	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0020	t
-53	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0021	t
 54	Documento de particiones de herencias	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0022	t
-55	Cierre de titularidad.-	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0023	t
-56	Documento de parcelamiento	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0024	t
-57	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0025	t
 58	Inscripcion de mejoras en bienhechurias y sentencias de titulo supletorio	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0026	t
 60	Inscripcion de testamentos abiertos o cerrados	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0012	t
-61	Actas de remate.	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0013	t
 1	Inscripcion de sentencias de divorcio, donde no se adjudiquen bienes inmuebles	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0001	f
-62	Otorgamiento de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0014	t
+37	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	t	20	0021	f
+25	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0025	f
+29	Actas de remate	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0013	f
+14	Protocolizacion de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0014	t
+55	Cierre de titularidad	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0023	t
+31	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto o renuncias	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0015	t
+40	Documento de parcelamiento	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	t	20	0024	f
+56	Documento de parcelamiento	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	t	20	0024	f
+53	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	t	20	0021	f
+7	Inscripcion de titulos o certificados academicos de profesionalizacion	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0007	t
+41	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0025	f
+57	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0025	f
+45	Actas de remate	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0013	f
+24	Documento de parcelamiento	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	t	20	0024	f
+8	Inscripcion de ttulos o certificados  de profesionalizacion	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	2	1	1	\N	1	f	\N	0008	t
+9	Copias certificadas de documentos inscritos	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0009	t
+10	Copias o reproducciones simples de los documentos inscritos	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0010	t
+5	Legalizacion de firmas	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0005	t
+23	Cierre de titularidad	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0023	t
+27	Por cualquier otro tipo de documento que se presente para su protocolizacion	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0027	f
+39	Cierre de titularidad	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0023	t
+43	Por cualquier otro tipo de documento que se presente para su protocolizacion	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0027	f
+61	Actas de remate	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0013	f
+30	Protocolizacion de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:23:19.133	2024-11-04 14:23:19.133	\N	1	1	1	\N	3	f	\N	0014	t
+46	Protocolizacion de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0014	t
+62	Protocolizacion de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0014	t
 64	Decretos de interdiccion o inhabilitacion civil	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0016	t
 65	Certificacion de gravamenes	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0017	t
 66	Copias certificadas de actos o instrumentos  que reposen en los archivos de los Registros	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0018	t
 67	Actos traslativos de la propiedad de  inmuebles	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0019	t
 68	Inscripcion de capitulaciones matrimoniales	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0020	t
-69	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0021	t
 70	Documento de particiones de herencias	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0022	t
-71	Cierre de titularidad.-	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0023	t
-72	Documento de parcelamiento	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0024	t
-73	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0025	t
 74	Inscripcion de mejoras en bienhechurias y sentencias de titulo supletorio	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0026	t
-75	Por cualquier otro tipo de documento que se presente para su protocolizacion.	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0027	t
 76	Inscripcion de testamentos abiertos o cerrados	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0012	t
-77	Actas de remate.	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0013	t
-78	Otorgamiento de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0014	t
 80	Decretos de interdiccion o inhabilitacion civil	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0016	t
 81	Certificacion de gravamenes	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0017	t
 82	Copias certificadas de actos o instrumentos  que reposen en los archivos de los Registros	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0018	t
 83	Actos traslativos de la propiedad de  inmuebles	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0019	t
 84	Inscripcion de capitulaciones matrimoniales	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0020	t
-85	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0021	t
 86	Documento de particiones de herencias	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0022	t
-87	Cierre de titularidad.-	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0023	t
-88	Documento de parcelamiento	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0024	t
-89	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0025	t
 90	Inscripcion de mejoras en bienhechurias y sentencias de titulo supletorio	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0026	t
-91	Por cualquier otro tipo de documento que se presente para su protocolizacion.	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0027	t
 92	Inscripcion de testamentos abiertos o cerrados	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0012	t
-93	Actas de remate.	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0013	t
-94	Otorgamiento de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0014	t
-95	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto, renuncias o gravamenes de la propiedad.	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0015	t
 96	Decretos de interdiccion o inhabilitacion civil	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0016	t
 97	Certificacion de gravamenes	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0017	t
 98	Copias certificadas de actos o instrumentos  que reposen en los archivos de los Registros	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0018	t
 99	Actos traslativos de la propiedad de  inmuebles	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0019	t
 100	Inscripcion de capitulaciones matrimoniales	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0020	t
-101	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0021	t
 102	Documento de particiones de herencias	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0022	t
-103	Cierre de titularidad.-	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0023	t
-104	Documento de parcelamiento	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0024	t
-105	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0025	t
 106	Inscripcion de mejoras en bienhechurias y sentencias de titulo supletorio	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0026	t
 48	Decretos de interdiccion o inhabilitacion civil	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0016	t
-111	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto, renuncias o gravamenes de la propiedad.	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0015	t
 112	Decretos de interdiccion o inhabilitacion civil	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0016	t
 113	Certificacion de gravamenes	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0017	t
 114	Copias certificadas de actos o instrumentos  que reposen en los archivos de los Registros	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0018	t
 115	Actos traslativos de la propiedad de  inmuebles	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0019	t
 116	Inscripcion de capitulaciones matrimoniales	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0020	t
-117	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0021	t
 118	Documento de particiones de herencias	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0022	t
-119	Cierre de titularidad.-	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0023	t
-120	Documento de parcelamiento	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0024	t
-121	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0025	t
 122	Inscripcion de mejoras en bienhechurias y sentencias de titulo supletorio	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0026	t
-123	Por cualquier otro tipo de documento que se presente para su protocolizacion.	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0027	t
 124	Inscripcion de testamentos abiertos o cerrados	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0012	t
-125	Actas de remate.	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0013	t
-126	Otorgamiento de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0014	t
+103	Cierre de titularidad	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0023	t
+111	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto o renuncias	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0015	t
+88	Documento de parcelamiento	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	t	20	0024	f
+104	Documento de parcelamiento	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	t	20	0024	f
+120	Documento de parcelamiento	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	t	20	0024	f
+85	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	t	20	0021	f
+101	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	t	20	0021	f
+117	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	t	20	0021	f
+71	Cierre de titularidad	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0023	t
+73	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0025	f
+89	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0025	f
+105	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0025	f
+121	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0025	f
+87	Cierre de titularidad	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0023	t
+93	Actas de remate	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0013	f
+125	Actas de remate	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0013	f
+72	Documento de parcelamiento	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	t	20	0024	f
+75	Por cualquier otro tipo de documento que se presente para su protocolizacion	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0027	f
+91	Por cualquier otro tipo de documento que se presente para su protocolizacion	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0027	f
+78	Protocolizacion de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0014	t
+119	Cierre de titularidad	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0023	t
+123	Por cualquier otro tipo de documento que se presente para su protocolizacion	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0027	f
+94	Protocolizacion de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0014	t
+126	Protocolizacion de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0014	t
 128	Decretos de interdiccion o inhabilitacion civil	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0016	t
 129	Certificacion de gravamenes	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0017	t
 130	Copias certificadas de actos o instrumentos  que reposen en los archivos de los Registros	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0018	t
 131	Actos traslativos de la propiedad de  inmuebles	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0019	t
 132	Inscripcion de capitulaciones matrimoniales	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0020	t
-133	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0021	t
 134	Documento de particiones de herencias	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0022	t
-135	Cierre de titularidad.-	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0023	t
-136	Documento de parcelamiento	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0024	t
-137	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0025	t
 138	Inscripcion de mejoras en bienhechurias y sentencias de titulo supletorio	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0026	t
-139	Por cualquier otro tipo de documento que se presente para su protocolizacion.	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0027	t
 140	Inscripcion de cualquier tipo de sociedades, firmas personales y asociaciones de cuentas en participacion	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0028	t
 142	Actas en las cuales se declare  disolucion, liquidacion, extincion o prorroga de  la duracion de cualquier tipo de sociedades	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0030	t
 143	Inscripcion de sociedades extranjeras, domiciliaciones o establecimientos de agencias, representaciones, o sucursales de las mismas	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0031	t
 144	Inscripcion de documentos de ventas de cuotas de participacion, de fondos de comercio, cesion de firmas personales	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0032	t
-145	Inscripcion de poderes, factores mercantiles, sentencias emanada de cualquier organismo o autoridad.	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0033	t
 146	Por agregar documentos y anexos a los expedientes	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0034	t
 147	Por estampar cada nota marginal	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0035	t
-148	Sellado de libros y cualquier tipo de papeles mercantiles.	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0036	t
-149	Por cualquier otro tipo de documento no incluido anteriormente.	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0037	t
 150	Inscripcion de cualquier tipo de sociedades, firmas personales y asociaciones de cuentas en participacion	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0028	t
 152	Actas en las cuales se declare  disolucion, liquidacion, extincion o prorroga de  la duracion de cualquier tipo de sociedades	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0030	t
 153	Inscripcion de sociedades extranjeras, domiciliaciones o establecimientos de agencias, representaciones, o sucursales de las mismas	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0031	t
 154	Inscripcion de documentos de ventas de cuotas de participacion, de fondos de comercio, cesion de firmas personales	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0032	t
-155	Inscripcion de poderes, factores mercantiles, sentencias emanada de cualquier organismo o autoridad.	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0033	t
 156	Por agregar documentos y anexos a los expedientes	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0034	t
 157	Por estampar cada nota marginal	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0035	t
-158	Sellado de libros y cualquier tipo de papeles mercantiles.	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0036	t
-159	Por cualquier otro tipo de documento no incluido anteriormente.	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0037	t
 160	Inscripcion de cualquier tipo de sociedades, firmas personales y asociaciones de cuentas en participacion	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0028	t
 161	Inscripcion de  Acta de asamblea o junta directiva; modificaciones al documento constitutivo de firmas personales o de cuentas de participacion y 	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0029	t
 344	Solvencia Sucesoral	2024-11-04 15:32:10.352	2024-11-04 15:32:10.352	\N	1	1	1	\N	25	f	\N	0062	t
-109	Actas de remate.	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0013	t
 164	Inscripcion de documentos de ventas de cuotas de participacion, de fondos de comercio, cesion de firmas personales	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0032	t
-165	Inscripcion de poderes, factores mercantiles, sentencias emanada de cualquier organismo o autoridad.	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0033	t
 166	Por agregar documentos y anexos a los expedientes	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0034	t
 167	Por estampar cada nota marginal	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0035	t
-168	Sellado de libros y cualquier tipo de papeles mercantiles.	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0036	t
-169	Por cualquier otro tipo de documento no incluido anteriormente.	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0037	t
 170	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0038	t
 171	Otorgamiento de autorizaciones	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0039	t
 172	Otorgamiento de justificativo	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0040	t
@@ -4636,9 +4620,22 @@ COPY public.procedure (id, description, created_at, updated_at, deleted_at, "sta
 179	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0047	t
 180	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0048	t
 181	Actas notariales	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0049	t
-182	Por estampar cada nota marginal.	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0050	t
-183	Documentos autenticados,	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0051	t
-184	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0052	t
+183	Documentos autenticados	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0051	t
+137	Documento de adjudicacion de bienes inmuebles en remate judicial	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0025	f
+145	Inscripcion de poderes, factores mercantiles, sentencias emanada de cualquier organismo o autoridad	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0033	t
+136	Documento de parcelamiento	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	t	20	0024	f
+182	Por estampar cada nota marginal	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0050	t
+135	Cierre de titularidad	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0023	t
+139	Por cualquier otro tipo de documento que se presente para su protocolizacion	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0027	f
+148	Sellado de libros y cualquier tipo de papeles mercantiles	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0036	t
+149	Por cualquier otro tipo de documento no incluido anteriormente	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0037	t
+155	Inscripcion de poderes, factores mercantiles, sentencias emanada de cualquier organismo o autoridad	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0033	t
+158	Sellado de libros y cualquier tipo de papeles mercantiles	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0036	t
+159	Por cualquier otro tipo de documento no incluido anteriormente	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0037	t
+165	Inscripcion de poderes, factores mercantiles, sentencias emanada de cualquier organismo o autoridad	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0033	t
+168	Sellado de libros y cualquier tipo de papeles mercantiles	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0036	t
+169	Por cualquier otro tipo de documento no incluido anteriormente	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0037	t
+184	Por cualquier otro tipo de documento que se presente para su inscripcion	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0052	t
 185	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0038	t
 186	Otorgamiento de autorizaciones	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0039	t
 187	Otorgamiento de justificativo	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0040	t
@@ -4650,9 +4647,6 @@ COPY public.procedure (id, description, created_at, updated_at, deleted_at, "sta
 194	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0047	t
 195	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0048	t
 196	Actas notariales	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0049	t
-197	Por estampar cada nota marginal.	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0050	t
-198	Documentos autenticados,	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0051	t
-199	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0052	t
 200	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0038	t
 201	Otorgamiento de autorizaciones	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0039	t
 202	Otorgamiento de justificativo	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0040	t
@@ -4664,9 +4658,6 @@ COPY public.procedure (id, description, created_at, updated_at, deleted_at, "sta
 209	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0047	t
 210	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0048	t
 211	Actas notariales	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0049	t
-212	Por estampar cada nota marginal.	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0050	t
-213	Documentos autenticados,	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0051	t
-214	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0052	t
 215	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0038	t
 216	Otorgamiento de autorizaciones	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0039	t
 217	Otorgamiento de justificativo	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0040	t
@@ -4678,9 +4669,6 @@ COPY public.procedure (id, description, created_at, updated_at, deleted_at, "sta
 224	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0047	t
 225	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0048	t
 226	Actas notariales	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0049	t
-227	Por estampar cada nota marginal.	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0050	t
-228	Documentos autenticados,	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0051	t
-229	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0052	t
 230	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0038	t
 231	Otorgamiento de autorizaciones	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0039	t
 232	Otorgamiento de justificativo	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0040	t
@@ -4691,23 +4679,27 @@ COPY public.procedure (id, description, created_at, updated_at, deleted_at, "sta
 239	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0047	t
 240	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0048	t
 241	Actas notariales	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0049	t
-242	Por estampar cada nota marginal.	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0050	t
-243	Documentos autenticados,	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0051	t
-244	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0052	t
 245	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0038	t
 236	Nombramiento de curadores, salvo en los casos previstos en la Ley Organica de Proteccion de Niños, Niñas y Adolescentes	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0044	t
 246	Otorgamiento de autorizaciones	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0039	t
 247	Otorgamiento de justificativo	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0040	t
 248	Aprobacion de una particion	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0041	t
+213	Documentos autenticados	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0051	t
+228	Documentos autenticados	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0051	t
+243	Documentos autenticados	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0051	t
+197	Por estampar cada nota marginal	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0050	t
+212	Por estampar cada nota marginal	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0050	t
+227	Por estampar cada nota marginal	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0050	t
+242	Por estampar cada nota marginal	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0050	t
+214	Por cualquier otro tipo de documento que se presente para su inscripcion	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0052	t
+229	Por cualquier otro tipo de documento que se presente para su inscripcion	2024-11-04 15:20:03.118	2024-11-04 15:20:03.118	\N	1	1	1	\N	16	f	\N	0052	t
+244	Por cualquier otro tipo de documento que se presente para su inscripcion	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0052	t
 249	Otorgamiento de poderes, revocatoria, renuncia y/o sustituciones	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0042	t
 250	Actuaciones para dar fecha cierta de cualquier tipo de documentos	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0043	t
 253	Por las copias certificadas de documentos autenticados	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0046	t
 254	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0047	t
 255	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0048	t
 256	Actas notariales	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0049	t
-257	Por estampar cada nota marginal.	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0050	t
-258	Documentos autenticados,	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0051	t
-259	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0052	t
 260	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0038	t
 261	Otorgamiento de autorizaciones	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0039	t
 262	Otorgamiento de justificativo	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0040	t
@@ -4719,9 +4711,6 @@ COPY public.procedure (id, description, created_at, updated_at, deleted_at, "sta
 269	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0047	t
 270	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0048	t
 271	Actas notariales	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0049	t
-272	Por estampar cada nota marginal.	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0050	t
-273	Documentos autenticados,	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0051	t
-274	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0052	t
 276	Otorgamiento de autorizaciones	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0039	t
 277	Otorgamiento de justificativo	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0040	t
 278	Aprobacion de una particion	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0041	t
@@ -4733,8 +4722,6 @@ COPY public.procedure (id, description, created_at, updated_at, deleted_at, "sta
 284	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0047	t
 285	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0048	t
 286	Actas notariales	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0049	t
-287	Por estampar cada nota marginal.	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0050	t
-288	Documentos autenticados,	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0051	t
 290	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0038	t
 291	Otorgamiento de autorizaciones	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0039	t
 292	Otorgamiento de justificativo	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0040	t
@@ -4746,9 +4733,6 @@ COPY public.procedure (id, description, created_at, updated_at, deleted_at, "sta
 299	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0047	t
 300	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0048	t
 301	Actas notariales	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0049	t
-302	Por estampar cada nota marginal.	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0050	t
-303	Documentos autenticados,	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0051	t
-304	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0052	t
 305	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0038	t
 306	Otorgamiento de autorizaciones	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0039	t
 307	Otorgamiento de justificativo	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0040	t
@@ -4758,11 +4742,18 @@ COPY public.procedure (id, description, created_at, updated_at, deleted_at, "sta
 312	Por la trascripcion de un documento manuscrito al sistema computarizado o por su digitalizacion	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0045	t
 313	Por las copias certificadas de documentos autenticados	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0046	t
 314	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0047	t
+258	Documentos autenticados	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0051	t
+273	Documentos autenticados	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0051	t
+288	Documentos autenticados	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0051	t
+303	Documentos autenticados	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0051	t
+272	Por estampar cada nota marginal	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0050	t
+287	Por estampar cada nota marginal	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0050	t
+302	Por estampar cada nota marginal	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0050	t
+259	Por cualquier otro tipo de documento que se presente para su inscripcion	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0052	t
+274	Por cualquier otro tipo de documento que se presente para su inscripcion	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0052	t
+304	Por cualquier otro tipo de documento que se presente para su inscripcion	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0052	t
 315	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0048	t
 316	Actas notariales	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0049	t
-317	Por estampar cada nota marginal.	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0050	t
-318	Documentos autenticados,	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0051	t
-319	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0052	t
 320	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0038	t
 321	Otorgamiento de autorizaciones	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0039	t
 322	Otorgamiento de justificativo	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0040	t
@@ -4774,14 +4765,9 @@ COPY public.procedure (id, description, created_at, updated_at, deleted_at, "sta
 329	Por las copias o reproducciones simples de los documentos autenticados	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0047	t
 330	Documentos anexos o complementarios a los que se autentiquen	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0048	t
 331	Actas notariales	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0049	t
-332	Por estampar cada nota marginal.	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0050	t
-333	Documentos autenticados,	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0051	t
-334	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0052	t
 335	Consultas/solicitudes  sobre la aplicacion de las normas que integran el ordenamiento juridico vigente	2024-11-04 15:28:46.921	2024-11-04 15:28:46.921	\N	1	1	1	\N	24	f	\N	0053	t
 336	Contratos relacionados con los ingresos publicos estadales	2024-11-04 15:28:46.921	2024-11-04 15:28:46.921	\N	1	1	1	\N	24	f	\N	0054	t
-337	Contratos relativos a inmuebles propiedad del estado	2024-11-04 15:28:46.921	2024-11-04 15:28:46.921	\N	1	1	1	\N	24	f	\N	0055	t
 338	Expedicion de copias certificadas sobre asuntos que cursen en sus archivos	2024-11-04 15:28:46.921	2024-11-04 15:28:46.921	\N	1	1	1	\N	24	f	\N	0056	t
-339	Solicitudes, escritos 	2024-11-04 15:32:10.352	2024-11-04 15:32:10.352	\N	1	1	1	\N	25	f	\N	0057	t
 340	Copias certificadas	2024-11-04 15:32:10.352	2024-11-04 15:32:10.352	\N	1	1	1	\N	25	f	\N	0058	t
 341	Escritos para interposicion de recursos 	2024-11-04 15:32:10.352	2024-11-04 15:32:10.352	\N	1	1	1	\N	25	f	\N	0059	t
 282	Por la trascripcion de un documento manuscrito al sistema computarizado o por su digitalizacion	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0045	t
@@ -4790,8 +4776,6 @@ COPY public.procedure (id, description, created_at, updated_at, deleted_at, "sta
 350	Solicitud de Tramite de Exportacion	2024-11-05 09:16:30.732	2024-11-05 09:16:30.732	\N	1	1	1	\N	27	f	\N	0068	t
 351	Solicitud de Tramite de Transito Aduanero	2024-11-05 09:18:39.308	2024-11-05 09:18:39.308	\N	1	1	1	\N	27	f	\N	0069	t
 352	Otras solicitudes dirigidas a las autoridades Aduaneras, Portuarias y de Navegacion	2024-11-05 09:23:04.759	2024-11-05 09:23:04.759	\N	1	1	1	\N	27	f	\N	0070	t
-353	Solicitudes  sobre actividades de minerales no metalicos.	2024-11-05 09:31:04.445	2024-11-05 09:31:04.445	\N	1	1	1	\N	28	f	\N	0071	t
-354	Autorizaciones eventuales o temporales sobre actividades de M.N.M.	2024-11-05 09:31:04.445	2024-11-05 09:31:04.445	\N	1	1	1	\N	28	f	\N	0072	t
 355	Revocatoria del derecho minero otorgado	2024-11-05 09:31:04.445	2024-11-05 09:31:04.445	\N	1	1	1	\N	28	f	\N	0073	t
 356	Solicitud de Ocupacion de Territorio	2024-11-05 09:31:04.445	2024-11-05 09:31:04.445	\N	1	1	1	\N	28	f	\N	0074	t
 357	Otorgamiento de  Autorizacion para la Ocupacion del Territorio	2024-11-05 09:31:04.445	2024-11-05 09:31:04.445	\N	1	1	1	\N	28	f	\N	0075	t
@@ -4799,27 +4783,33 @@ COPY public.procedure (id, description, created_at, updated_at, deleted_at, "sta
 359	Otras solicitudes y consultas emitidas en el ambito de competencia	2024-11-05 09:31:04.445	2024-11-05 09:31:04.445	\N	1	1	1	\N	28	f	\N	0077	t
 360	Actos o documentos dirigido a Organos y Entes	2024-11-05 09:33:00.57	2024-11-05 09:33:00.57	\N	1	1	1	\N	29	f	\N	0078	t
 361	Sellado Libro deL Control de Extraccion de Minerales No Metalicos	2024-11-05 09:33:00.57	2024-11-05 09:33:00.57	\N	1	1	1	\N	29	f	\N	0079	t
-47	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto, renuncias o gravamenes de la propiedad.	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0015	t
-59	Por cualquier otro tipo de documento que se presente para su protocolizacion.	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0027	t
-63	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto, renuncias o gravamenes de la propiedad.	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0015	t
-79	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto, renuncias o gravamenes de la propiedad.	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0015	t
-107	Por cualquier otro tipo de documento que se presente para su protocolizacion.	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0027	t
 108	Inscripcion de testamentos abiertos o cerrados	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0012	t
-110	Otorgamiento de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0014	t
-127	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto, renuncias o gravamenes de la propiedad.	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0015	t
-141	Inscripcion de  Acta de asamblea o junta directiva; modificaciones al documento constitutivo de firmas personales o de cuentas de participacion y 	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0029	t
-151	Inscripcion de  Acta de asamblea o junta directiva; modificaciones al documento constitutivo de firmas personales o de cuentas de participacion y 	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0029	t
 162	Actas en las cuales se declare  disolucion, liquidacion, extincion o prorroga de  la duracion de cualquier tipo de sociedades	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0030	t
 163	Inscripcion de sociedades extranjeras, domiciliaciones o establecimientos de agencias, representaciones, o sucursales de las mismas	2024-11-04 15:14:05.476	2024-11-04 15:14:05.476	\N	1	1	1	\N	12	f	\N	0031	t
 235	Actuaciones para dar fecha cierta de cualquier tipo de documentos	2024-11-04 15:20:45.457	2024-11-04 15:20:45.457	\N	1	1	1	\N	17	f	\N	0043	t
+110	Protocolizacion de Poderes, sustituciones, renuncias y revocatorias de los mismos	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0014	t
+337	Contratos relativos a inmuebles, propiedad del estado	2024-11-04 15:28:46.921	2024-11-04 15:28:46.921	\N	1	1	1	\N	24	f	\N	0055	t
+339	Otras solicitudes y escritos 	2024-11-04 15:32:10.352	2024-11-04 15:32:10.352	\N	1	1	1	\N	25	f	\N	0057	t
+318	Documentos autenticados	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0051	t
+333	Documentos autenticados	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0051	t
+317	Por estampar cada nota marginal	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0050	t
+332	Por estampar cada nota marginal	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0050	t
+63	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto o renuncias	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	f	\N	0015	t
+79	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto o renuncias	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0015	t
+127	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto o renuncias	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	f	\N	0015	t
+107	Por cualquier otro tipo de documento que se presente para su protocolizacion	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0027	f
+319	Por cualquier otro tipo de documento que se presente para su inscripcion	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0052	t
+334	Por cualquier otro tipo de documento que se presente para su inscripcion	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0052	t
+353	Solicitudes  sobre actividades de minerales no metalicos	2024-11-05 09:31:04.445	2024-11-05 09:31:04.445	\N	1	1	1	\N	28	f	\N	0071	t
+354	Autorizaciones eventuales o temporales sobre actividades de M.N.M	2024-11-05 09:31:04.445	2024-11-05 09:31:04.445	\N	1	1	1	\N	28	f	\N	0072	t
+47	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto o renuncias	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0015	t
+151	Inscripcion de  Acta de Asamblea o Junta Directiva	2024-11-04 15:13:34.905	2024-11-04 15:13:34.905	\N	1	1	1	\N	11	f	\N	0029	t
 252	Por la trascripcion de un documento manuscrito al sistema computarizado o por su digitalizacion	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0045	t
 275	Procesamiento de documento original presentado para su autenticacion	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0038	t
-289	Por cualquier otro tipo de documento que se presente para su inscripcion.	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0052	t
 310	Actuaciones para dar fecha cierta de cualquier tipo de documentos	2024-11-04 15:24:04.82	2024-11-04 15:24:04.82	\N	1	1	1	\N	22	f	\N	0043	t
 345	Solicitud para prescripcion de Declaracion Sucesoral	2024-11-04 15:32:10.352	2024-11-04 15:32:10.352	\N	1	1	1	\N	25	f	\N	0063	t
 346	Solicitudes, consultas, escritos y correspondencia	2024-11-05 09:01:12.799	2024-11-05 09:01:12.799	\N	1	1	1	\N	26	f	\N	0064	t
 347	Bulto Postal	2024-11-05 09:01:54.096	2024-11-05 09:01:54.096	\N	1	1	1	\N	26	f	\N	0065	t
-11	Inscripcion de asociaciones y sociedades civiles de caracter privado.	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	t	20	0011	t
 206	Nombramiento de curadores, salvo en los casos previstos en la Ley Organica de Proteccion de Niños, Niñas y Adolescentes	2024-11-04 15:19:28.475	2024-11-04 15:19:28.475	\N	1	1	1	\N	15	f	\N	0044	t
 266	Nombramiento de curadores, salvo en los casos previstos en la Ley Organica de Proteccion de Niños, Niñas y Adolescentes	2024-11-04 15:21:53.645	2024-11-04 15:21:53.645	\N	1	1	1	\N	19	f	\N	0044	t
 176	Nombramiento de curadores, salvo en los casos previstos en la Ley Organica de Proteccion de Niños, Niñas y Adolescentes	2024-11-04 15:18:08.162	2024-11-04 15:18:08.162	\N	1	1	1	\N	13	f	\N	0044	t
@@ -4829,6 +4819,33 @@ COPY public.procedure (id, description, created_at, updated_at, deleted_at, "sta
 281	Nombramiento de curadores, salvo en los casos previstos en la Ley Organica de Proteccion de Niños, Niñas y Adolescentes	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0044	t
 296	Nombramiento de curadores, salvo en los casos previstos en la Ley Organica de Proteccion de Niños, Niñas y Adolescentes	2024-11-04 15:23:30.4	2024-11-04 15:23:30.4	\N	1	1	1	\N	21	f	\N	0044	t
 326	Nombramiento de curadores, salvo en los casos previstos en la Ley Organica de Proteccion de Niños, Niñas y Adolescentes	2024-11-04 15:24:44.621	2024-11-04 15:24:44.621	\N	1	1	1	\N	23	f	\N	0044	t
+289	Por cualquier otro tipo de documento que se presente para su inscripcion	2024-11-04 15:22:39.824	2024-11-04 15:22:39.824	\N	1	1	1	\N	20	f	\N	0052	t
+366	Autorizacion de inscripcion para estudiantes que proceden de otro pais	2024-12-18 13:54:40.273776	2024-12-18 13:54:40.273776	\N	1	1	1	\N	31	f	\N	0084	t
+367	Por cualquier otro tipo de documento que se presente	2024-12-18 14:02:22.527589	2024-12-18 14:02:22.527589	\N	1	1	1	\N	31	f	\N	0085	t
+368	Por cualquier otro tipo de documento que se presente	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	f	\N	0011	t
+372	Solvencia de Minerales no Metalicos	2024-11-05 09:33:00.57	2024-11-05 09:33:00.57	\N	1	1	1	\N	29	t	50	0079	f
+21	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	t	20	0021	f
+69	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:55:34.393	2024-11-04 14:55:34.393	\N	1	1	1	\N	5	t	20	0021	f
+133	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:59:39.709	2024-11-04 14:59:39.709	\N	1	1	1	\N	9	t	20	0021	f
+141	Inscripcion de  Acta de Asamblea o Junta Directiva	2024-11-04 15:12:28.958	2024-11-04 15:12:28.958	\N	1	1	1	\N	10	f	\N	0029	t
+362	Titulos de Bachiller	2024-12-18 13:46:29.982054	2024-12-18 13:46:29.982054	\N	1	1	1	\N	30	f	\N	0080	t
+370	Notas certificadas	2024-12-18 13:46:29.982054	2024-12-18 13:46:29.982054	\N	1	1	1	\N	30	f	\N	0080	t
+11	Inscripcion de asociaciones y sociedades civiles de caracter privado	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	1	t	20	0011	f
+198	Documentos autenticados	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0051	t
+257	Por estampar cada nota marginal	2024-11-04 15:21:14.865	2024-11-04 15:21:14.865	\N	1	1	1	\N	18	f	\N	0050	t
+13	Actas de remate	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0013	f
+59	Por cualquier otro tipo de documento que se presente para su protocolizacion	2024-11-04 14:37:01.949	2024-11-04 14:37:01.949	\N	1	1	1	\N	4	f	\N	0027	f
+77	Actas de remate	2024-11-04 14:57:36.882	2024-11-04 14:57:36.882	\N	1	1	1	\N	6	f	\N	0013	f
+109	Actas de remate	2024-11-04 14:59:07.573	2024-11-04 14:59:07.573	\N	1	1	1	\N	8	f	\N	0013	f
+199	Por cualquier otro tipo de documento que se presente para su inscripcion	2024-11-04 15:18:50.81	2024-11-04 15:18:50.81	\N	1	1	1	\N	14	f	\N	0052	t
+371	Permiso de habitabilidad	2024-12-18 13:46:29.982054	2024-12-18 13:46:29.982054	\N	1	1	1	\N	33	t	20	0080	f
+369	Inscripción en el registro de Actividades capaces de degradar el ambiente	2024-11-04 14:15:36.846	2024-11-04 14:15:36.846	\N	1	1	1	\N	32	t	20	0032	f
+363	Legalizacion de titulos y notas	2024-12-18 13:47:43.166655	2024-12-18 13:47:43.166655	\N	1	1	1	\N	31	f	\N	0081	t
+364	Autenticidad de titulo	2024-12-18 13:48:53.544261	2024-12-18 13:48:53.544261	\N	1	1	1	\N	31	f	\N	0082	t
+365	Notas de planteles cerrados	2024-12-18 13:50:37.519757	2024-12-18 13:50:37.519757	\N	1	1	1	\N	31	f	\N	0083	t
+373	Solicitudes, escritos o correspondencia	2024-11-05 09:33:00.57	2024-11-05 09:33:00.57	\N	1	1	1	\N	29	f	\N	0079	t
+15	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto o renuncias	2024-11-04 14:21:32.192	2024-11-04 14:21:32.192	\N	1	1	1	\N	2	f	\N	0015	t
+95	Documentos que contengan declaraciones de limitaciones, transmisiones, derecho de retracto o renuncias	2024-11-04 14:58:15.675	2024-11-04 14:58:15.675	\N	1	1	1	\N	7	f	\N	0015	t
 \.
 
 
@@ -4844,6 +4861,7 @@ COPY public.role (id, code, description, created_at, updated_at, deleted_at, "st
 2	ADMINISTRATOR	ROLE WITH THE PRIVILEGES REQUIRED FOR A ADMINISTRATOR OF COLLECTION	2024-07-15 15:07:29.546634	2024-07-15 15:07:29.546634	\N	1	\N	\N	\N
 6	SIGNATURE	ROLE WITH THE PRIVILEGES REQUIRED FOR A PERSONAL SIGNATURE CONTRIBUTOR	2024-10-14 22:29:30.954244	2024-10-14 22:29:30.954244	\N	\N	\N	\N	\N
 7	SUCCESSION	ROLE WITH THE PRIVILEGES REQUIRED FOR A LEGAL CONTRIBUTOR OF SUCCESSION	2024-10-14 22:31:59.348198	2024-10-14 22:31:59.348198	\N	\N	\N	\N	\N
+8	FISCAL	ROLE WITH THE PRIVILEGES REQUIRED FOR A FISCAL	2024-07-15 15:07:29.546634	2024-07-15 15:07:29.546634	\N	1	\N	\N	\N
 \.
 
 
@@ -4860,19 +4878,11 @@ COPY public.roles_privilege (id, "roleId", "privilegeId", created_at, updated_at
 6	1	6	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
 7	1	7	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
 8	1	8	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
-9	2	1	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
-10	2	2	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
-11	2	6	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
-12	2	7	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
-13	2	8	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
 14	3	1	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
 15	3	2	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
 16	3	3	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
 17	3	4	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
 18	3	5	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
-19	2	9	2024-11-11 16:34:53.536	2024-11-11 16:34:53.536	\N	1	\N	\N	\N
-20	2	10	2024-11-11 16:34:53.536	2024-11-11 16:34:53.536	\N	1	\N	\N	\N
-21	2	11	2024-11-11 16:34:53.536	2024-11-11 16:34:53.536	\N	1	\N	\N	\N
 22	4	1	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
 23	4	2	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
 24	4	3	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
@@ -4893,6 +4903,25 @@ COPY public.roles_privilege (id, "roleId", "privilegeId", created_at, updated_at
 39	7	3	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
 40	7	4	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
 41	7	5	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
+9	8	1	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
+10	8	2	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
+11	8	6	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
+12	8	7	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
+13	8	8	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
+20	8	10	2024-11-11 16:34:53.536	2024-11-11 16:34:53.536	\N	1	\N	\N	\N
+21	8	11	2024-11-11 16:34:53.536	2024-11-11 16:34:53.536	\N	1	\N	\N	\N
+42	2	1	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
+45	2	2	2024-07-15 16:46:22.606653	2024-07-15 16:46:22.606653	\N	1	\N	\N	\N
+46	2	9	2024-11-11 16:34:53.536	2024-11-11 16:34:53.536	\N	1	\N	\N	\N
+47	2	10	2024-11-11 16:34:53.536	2024-11-11 16:34:53.536	\N	1	\N	\N	\N
+48	2	12	2024-11-11 16:34:53.536	2024-11-11 16:34:53.536	\N	1	\N	\N	\N
+49	2	13	2025-01-29 15:15:40.673218	2025-01-29 15:15:40.673218	\N	1	\N	\N	\N
+50	2	14	2025-01-29 15:16:42.732215	2025-01-29 15:16:42.732215	\N	1	\N	\N	\N
+51	2	15	2025-01-29 15:16:42.740956	2025-01-29 15:16:42.740956	\N	1	\N	\N	\N
+52	2	16	2025-01-29 15:16:42.744534	2025-01-29 15:16:42.744534	\N	1	\N	\N	\N
+53	2	17	2025-01-29 15:16:42.747856	2025-01-29 15:16:42.747856	\N	1	\N	\N	\N
+54	2	18	2025-01-29 15:16:42.75091	2025-01-29 15:16:42.75091	\N	1	\N	\N	\N
+55	2	19	2025-01-29 15:16:42.753543	2025-01-29 15:16:42.753543	\N	1	\N	\N	\N
 \.
 
 
@@ -4960,7 +4989,6 @@ COPY public.subentity (id, description, created_at, updated_at, deleted_at, "sta
 27	ADUANA PRINCIPAL PUERTO CABELLO	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	3	0027
 28	SOTARN	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	4	0028
 29	SECRETARIA DE HACIENDA Y FINANZAS	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	4	0029
-1	REGISTRO PRINCIPAL CIVIL 	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0001
 2	REGISTRO PUBLICO PRIMER CIRCUITO DE VALENCIA	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0002
 3	REGISTRO PUBLICO SEGUNDO CIRCUITO DE VALENCIA	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0003
 5	REGISTRO PUBLICO DE LOS MUNICIPIOS NAGUANAGUA Y SAN DIEGO	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0005
@@ -4984,6 +5012,12 @@ COPY public.subentity (id, description, created_at, updated_at, deleted_at, "sta
 23	NOTARIA PUBLICA DE BEJUMA	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0023
 24	URB. GUAPARO,  AV. LOS COLEGIOS	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	2	0024
 4	REGISTRO PUBLICO DE LOS MUNICIPIOS GUACARA, SAN JOAQUIN Y DIEGO IBARRA	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0004
+1	REGISTRO PRINCIPAL	2024-11-07 14:51:10.776857	2024-11-07 14:51:10.776857	\N	1	1	1	\N	1	0001
+30	INSTITUCIONES EDUCATIVAS	2024-12-18 13:44:35.276311	2024-12-18 13:44:35.276311	\N	1	1	1	\N	5	0030
+31	ZONA EDUCATIVA	2024-12-18 13:45:08.88455	2024-12-18 13:45:08.88455	\N	1	1	1	\N	5	0031
+32	RACDA	2024-12-18 13:45:08.88455	2024-12-18 13:45:08.88455	\N	1	1	1	\N	6	0032
+33	SANEAMIENTO AMBIENTAL	2024-12-18 13:45:08.88455	2024-12-18 13:45:08.88455	\N	1	1	1	\N	7	0033
+38	EJemplo	2025-01-29 22:29:54.985836	2025-01-29 22:36:19.211268	\N	\N	\N	\N	\N	3	0034
 \.
 
 
@@ -4991,276 +5025,278 @@ COPY public.subentity (id, description, created_at, updated_at, deleted_at, "sta
 -- Data for Name: tax_stamp; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.tax_stamp (id, code, amount, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "userId", "procedureId", "calculationFactorId", number_folios, year) FROM stdin;
-728	20024005420240000276	258.5455	2024-12-11 22:35:07.94082	2024-12-11 22:35:07.94082	\N	11	\N	\N	\N	5	336	\N	1	2024
-732	10001000120240000280	1056.6419999999998	2024-12-16 21:24:03.741277	2024-12-16 21:24:03.741277	\N	11	\N	\N	\N	2	1	79	1	2024
-700	40029007820240000248	258.5455	2024-12-10 20:49:40.28	2024-12-10 21:42:06.043597	\N	11	\N	\N	\N	5	360	\N	1	2024
-702	40029007920240000250	258.5455	2024-12-10 20:49:40.322	2024-12-10 21:42:06.110794	\N	11	\N	\N	\N	5	361	\N	1	2024
-703	30026006520240000251	258.5455	2024-12-10 20:49:40.328	2024-12-10 21:42:06.112471	\N	11	\N	\N	\N	5	347	\N	1	2024
-701	30026006520240000249	258.5455	2024-12-10 20:49:40.319	2024-12-10 21:49:17.134366	\N	11	\N	\N	\N	5	347	\N	1	2024
-733	10001000420240000281	0	2024-12-16 21:24:03.785082	2024-12-16 21:24:03.785082	\N	13	\N	\N	\N	2	4	79	1	2024
-704	30026006520240000252	258.5455	2024-12-10 20:49:40.333	2024-12-10 21:57:41.064619	\N	11	\N	\N	\N	5	347	\N	1	2024
-734	10001000220240000282	0	2024-12-16 21:24:03.891602	2024-12-16 21:24:03.891602	\N	13	\N	\N	\N	2	2	79	1	2024
-699	40029007820240000247	258.5455	2024-12-10 20:49:40.27	2024-12-10 22:01:59.786138	\N	11	\N	\N	\N	5	360	\N	1	2024
-705	30026006420240000253	258.5455	2024-12-10 22:03:55.328	2024-12-10 22:04:52.65919	\N	11	\N	\N	\N	5	346	\N	1	2024
-706	40028007520240000254	258.5455	2024-12-10 22:15:49.064	2024-12-10 22:16:27.814136	\N	11	\N	\N	\N	5	357	\N	1	2024
-707	40029007820240000255	258.5455	2024-12-10 23:07:47.873	2024-12-10 23:07:47.873	\N	11	\N	\N	\N	5	360	\N	1	2024
-708	40029007820240000256	258.5455	2024-12-10 23:39:51.611	2024-12-10 23:39:51.611	\N	11	\N	\N	\N	5	360	\N	1	2024
-710	40028007220240000258	258.5455	2024-12-10 23:39:51.692	2024-12-10 23:39:51.692	\N	11	\N	\N	\N	5	354	\N	1	2024
-737	10001000220240000285	0	2024-12-16 22:16:29.409387	2024-12-16 22:16:29.409387	\N	13	\N	\N	\N	2	2	\N	1	2024
-738	10001000420240000286	0	2024-12-16 22:16:29.415097	2024-12-16 22:16:29.415097	\N	13	\N	\N	\N	2	4	\N	1	2024
-739	10001000220240000287	0	2024-12-16 22:16:29.425738	2024-12-16 22:16:29.425738	\N	13	\N	\N	\N	2	2	\N	1	2024
-740	10001000220240000288	0	2024-12-16 22:16:29.431677	2024-12-16 22:16:29.431677	\N	13	\N	\N	\N	2	2	\N	1	2024
-743	10001000220240000291	0	2024-12-16 22:28:52.25218	2024-12-16 22:28:52.25218	\N	13	\N	\N	\N	2	2	\N	1	2024
-744	10001000420240000292	0	2024-12-16 22:28:52.253384	2024-12-16 22:28:52.253384	\N	13	\N	\N	\N	2	4	\N	1	2024
-745	10001000220240000293	0	2024-12-16 22:28:52.271263	2024-12-16 22:28:52.271263	\N	13	\N	\N	\N	2	2	\N	1	2024
-746	10001000220240000294	0	2024-12-16 22:28:52.2783	2024-12-16 22:28:52.2783	\N	13	\N	\N	\N	2	2	\N	1	2024
-712	40028007220240000260	258.5455	2024-12-10 23:39:51.704	2024-12-10 23:39:51.704	\N	11	\N	\N	\N	2	354	\N	1	2024
-709	40029007920240000257	258.5455	2024-12-10 23:39:51.687	2024-12-10 23:39:51.687	\N	11	\N	\N	\N	5	361	\N	1	2024
-711	40029007920240000259	258.5455	2024-12-10 23:39:51.699	2024-12-10 23:39:51.699	\N	11	\N	\N	\N	5	361	\N	1	2024
-775	40029007820240000323	1068.802	2024-12-18 19:47:35.388675	2024-12-18 19:47:55.312277	\N	11	\N	\N	\N	2	360	\N	1	2024
-776	40029007820240000324	1068.802	2024-12-18 19:48:41.355803	2024-12-18 19:48:49.204149	\N	11	\N	\N	\N	2	360	\N	1	2024
-777	40029007820240000325	1068.802	2024-12-18 19:54:38.741172	2024-12-18 19:54:48.877642	\N	11	\N	\N	\N	2	360	\N	1	2024
-778	40029007820240000326	1068.802	2024-12-18 19:57:15.389121	2024-12-18 19:57:21.375244	\N	11	\N	\N	\N	2	360	\N	1	2024
-779	40029007820240000327	1068.802	2024-12-18 19:59:54.746994	2024-12-18 19:59:54.746994	\N	11	\N	\N	\N	2	360	\N	1	2024
-735	10001000120240000283	1056.642	2024-12-16 22:16:29.346022	2024-12-16 22:16:29.346022	\N	11	\N	\N	\N	2	1	\N	1	2024
-736	10001000120240000284	1056.642	2024-12-16 22:16:29.362349	2024-12-16 22:16:29.362349	\N	11	\N	\N	\N	2	1	\N	1	2024
-741	10001000120240000289	1056.642	2024-12-16 22:28:52.178272	2024-12-16 22:28:52.178272	\N	11	\N	\N	\N	2	1	\N	1	2024
-742	10001000120240000290	1056.642	2024-12-16 22:28:52.193735	2024-12-16 22:28:52.193735	\N	11	\N	\N	\N	2	1	\N	1	2024
-747	40029007820240000295	1068.802	2024-12-18 17:53:56.532575	2024-12-18 17:53:56.532575	\N	11	\N	\N	\N	2	360	\N	1	2024
-748	40029007820240000296	1068.802	2024-12-18 18:23:01.817191	2024-12-18 18:23:01.817191	\N	11	\N	\N	\N	2	360	\N	1	2024
-749	40029007820240000297	1068.802	2024-12-18 18:34:25.129596	2024-12-18 18:34:25.129596	\N	11	\N	\N	\N	2	360	\N	1	2024
-750	20024005320240000298	1068.802	2024-12-18 18:49:44.404254	2024-12-18 18:49:44.404254	\N	11	\N	\N	\N	2	335	\N	1	2024
-751	40029007820240000299	1068.802	2024-12-18 18:51:52.352335	2024-12-18 18:51:52.352335	\N	11	\N	\N	\N	2	360	\N	1	2024
-765	40029007820240000313	1068.802	2024-12-18 19:35:12.567217	2024-12-18 19:35:12.567217	\N	11	\N	\N	\N	2	360	\N	1	2024
-714	40029007820240000262	258.5455	2024-12-11 22:25:49.796913	2024-12-11 22:25:49.796913	\N	11	\N	\N	\N	5	360	\N	1	2024
-715	40029007820240000263	258.5455	2024-12-11 22:25:49.805169	2024-12-11 22:25:49.805169	\N	11	\N	\N	\N	5	360	\N	1	2024
-716	40029007820240000264	258.5455	2024-12-11 22:25:49.813337	2024-12-11 22:25:49.813337	\N	11	\N	\N	\N	5	360	\N	1	2024
-795	40029007820240000343	1068.802	2024-12-18 21:17:46.385257	2024-12-18 21:17:54.329438	\N	11	\N	\N	\N	2	360	\N	1	2024
-796	40029007820240000344	1068.802	2024-12-18 21:17:46.398227	2024-12-18 21:17:54.330357	\N	11	\N	\N	\N	2	360	\N	1	2024
-797	40029007820240000345	1068.802	2024-12-18 21:17:46.404112	2024-12-18 21:17:54.33229	\N	11	\N	\N	\N	2	360	\N	1	2024
-798	40029007820240000346	1068.802	2024-12-18 21:17:46.411686	2024-12-18 21:17:54.334177	\N	11	\N	\N	\N	2	360	\N	1	2024
-799	40029007820240000347	1068.802	2024-12-18 21:17:46.41743	2024-12-18 21:17:54.33592	\N	11	\N	\N	\N	2	360	\N	1	2024
-800	40029007820240000348	1068.802	2024-12-18 21:17:46.421768	2024-12-18 21:17:54.336989	\N	11	\N	\N	\N	2	360	\N	1	2024
-801	40029007820240000349	1068.802	2024-12-18 21:17:46.425536	2024-12-18 21:17:54.340053	\N	11	\N	\N	\N	2	360	\N	1	2024
-802	40029007820240000350	1068.802	2024-12-18 21:17:46.430857	2024-12-18 21:17:54.341947	\N	11	\N	\N	\N	2	360	\N	1	2024
-803	40029007820240000351	1068.802	2024-12-18 21:17:46.437183	2024-12-18 21:17:54.344342	\N	11	\N	\N	\N	2	360	\N	1	2024
-804	40029007820240000352	1068.802	2024-12-18 21:17:46.442998	2024-12-18 21:17:54.34681	\N	11	\N	\N	\N	2	360	\N	1	2024
-805	40029007820240000353	1068.802	2024-12-18 21:17:46.448739	2024-12-18 21:17:54.348194	\N	11	\N	\N	\N	2	360	\N	1	2024
-806	40029007820240000354	1068.802	2024-12-18 21:17:46.453681	2024-12-18 21:17:54.350201	\N	11	\N	\N	\N	2	360	\N	1	2024
-717	40029007820240000265	258.5455	2024-12-11 22:25:49.819318	2024-12-11 22:25:49.819318	\N	11	\N	\N	\N	5	360	\N	1	2024
-718	40029007820240000266	258.5455	2024-12-11 22:25:49.825884	2024-12-11 22:25:49.825884	\N	11	\N	\N	\N	5	360	\N	1	2024
-780	40029007820240000328	1068.802	2024-12-18 20:10:15.397807	2024-12-18 20:10:15.397807	\N	11	\N	\N	\N	2	360	\N	1	2024
-811	40029007820240000359	1068.802	2024-12-18 21:22:07.983485	2024-12-18 21:22:14.657029	\N	11	\N	\N	\N	2	360	\N	1	2024
-812	40029007820240000360	1068.802	2024-12-18 21:22:51.512589	2024-12-18 21:22:59.276208	\N	11	\N	\N	\N	2	360	\N	1	2024
-813	40029007820240000361	1068.802	2024-12-18 21:24:14.87991	2024-12-18 21:24:22.344735	\N	11	\N	\N	\N	2	360	\N	1	2024
-815	40029007820240000363	1068.802	2024-12-18 21:32:57.959509	2024-12-18 21:33:14.691722	\N	11	\N	\N	\N	2	360	\N	1	2024
-820	40029007820240000368	1068.802	2024-12-18 21:39:09.598968	2024-12-18 21:39:14.427977	\N	11	\N	\N	\N	2	360	\N	1	2024
-816	40029007820240000364	1068.802	2024-12-18 21:34:14.53542	2024-12-18 21:36:04.340236	\N	11	\N	\N	\N	2	360	\N	1	2024
-817	40029007820240000365	1068.802	2024-12-18 21:36:09.923758	2024-12-18 21:36:16.07714	\N	11	\N	\N	\N	2	360	\N	1	2024
-818	40029007820240000366	1068.802	2024-12-18 21:36:51.541224	2024-12-18 21:36:56.562714	\N	11	\N	\N	\N	2	360	\N	1	2024
-819	40029007820240000367	1068.802	2024-12-18 21:37:35.410952	2024-12-18 21:37:41.081014	\N	11	\N	\N	\N	2	360	\N	1	2024
-821	40029007820240000369	1068.802	2024-12-18 21:43:30.056398	2024-12-18 21:43:36.06395	\N	11	\N	\N	\N	2	360	\N	1	2024
-822	40029007820240000370	1068.802	2024-12-18 21:44:24.898113	2024-12-18 21:44:33.302806	\N	11	\N	\N	\N	2	360	\N	1	2024
-823	40029007820240000371	1068.802	2024-12-18 21:44:46.408545	2024-12-18 21:44:50.893793	\N	11	\N	\N	\N	2	360	\N	1	2024
-824	40029007820240000372	1	2024-12-18 22:12:14.076445	2024-12-18 22:12:34.607637	\N	11	\N	\N	\N	11	360	\N	1	2024
-825	40029007820240000373	1	2024-12-18 22:16:01.824055	2024-12-18 22:16:10.982403	\N	11	\N	\N	\N	11	360	\N	1	2024
-826	40029007820240000374	1	2024-12-18 22:16:01.831326	2024-12-18 22:16:11.020732	\N	11	\N	\N	\N	11	360	\N	1	2024
-827	40029007820240000375	1	2024-12-18 22:16:40.617521	2024-12-18 22:16:50.426645	\N	11	\N	\N	\N	11	360	\N	1	2024
-828	40029007820240000376	1	2024-12-18 22:16:40.625522	2024-12-18 22:16:50.463604	\N	11	\N	\N	\N	11	360	\N	1	2024
-829	40029007820240000377	1	2024-12-18 22:17:29.167274	2024-12-18 22:17:39.08544	\N	11	\N	\N	\N	11	360	\N	1	2024
-830	40029007820240000378	1	2024-12-18 22:17:29.180625	2024-12-18 22:17:39.122156	\N	11	\N	\N	\N	11	360	\N	1	2024
-831	40029007820240000379	270.53450000000004	2024-12-29 14:06:47.389	2024-12-29 14:06:47.389	\N	11	\N	\N	\N	2	360	81	1	2024
-719	40029007820240000267	258.5455	2024-12-11 22:28:45.795287	2024-12-11 22:28:45.795287	\N	11	\N	\N	\N	5	360	\N	1	2024
-720	40029007820240000268	258.5455	2024-12-11 22:28:45.80634	2024-12-11 22:28:45.80634	\N	11	\N	\N	\N	5	360	\N	1	2024
-721	40029007820240000269	258.5455	2024-12-11 22:28:45.813297	2024-12-11 22:28:45.813297	\N	11	\N	\N	\N	5	360	\N	1	2024
-722	40029007820240000270	258.5455	2024-12-11 22:28:45.821007	2024-12-11 22:28:45.821007	\N	11	\N	\N	\N	5	360	\N	1	2024
-723	40029007820240000271	258.5455	2024-12-11 22:28:45.8274	2024-12-11 22:28:45.8274	\N	11	\N	\N	\N	5	360	\N	1	2024
-724	40029007920240000272	258.5455	2024-12-11 22:32:57.706616	2024-12-11 22:32:57.706616	\N	11	\N	\N	\N	5	361	\N	1	2024
-725	40029007920240000273	258.5455	2024-12-11 22:32:57.714833	2024-12-11 22:32:57.714833	\N	11	\N	\N	\N	5	361	\N	1	2024
-726	40029007820240000274	258.5455	2024-12-11 22:34:09.719339	2024-12-11 22:34:09.719339	\N	11	\N	\N	\N	5	360	\N	1	2024
-727	40029007820240000275	258.5455	2024-12-11 22:34:09.81972	2024-12-11 22:34:09.81972	\N	11	\N	\N	\N	5	360	\N	1	2024
-752	40029007820240000300	1068.802	2024-12-18 18:59:07.0134	2024-12-18 18:59:07.0134	\N	11	\N	\N	\N	2	360	\N	1	2024
-753	40029007820240000301	1068.802	2024-12-18 19:02:04.405248	2024-12-18 19:02:04.405248	\N	11	\N	\N	\N	2	360	\N	1	2024
-754	40029007820240000302	1068.802	2024-12-18 19:02:56.764503	2024-12-18 19:02:56.764503	\N	11	\N	\N	\N	2	360	\N	1	2024
-755	40029007820240000303	1068.802	2024-12-18 19:09:50.823512	2024-12-18 19:09:50.823512	\N	11	\N	\N	\N	2	360	\N	1	2024
-756	40029007820240000304	1068.802	2024-12-18 19:23:24.451724	2024-12-18 19:23:24.451724	\N	11	\N	\N	\N	2	360	\N	1	2024
-757	40029007820240000305	1068.802	2024-12-18 19:24:11.218972	2024-12-18 19:24:11.218972	\N	11	\N	\N	\N	2	360	\N	1	2024
-758	40029007820240000306	1068.802	2024-12-18 19:24:11.221682	2024-12-18 19:24:11.221682	\N	11	\N	\N	\N	2	360	\N	1	2024
-759	40029007820240000307	1068.802	2024-12-18 19:24:27.911602	2024-12-18 19:24:27.911602	\N	11	\N	\N	\N	2	360	\N	1	2024
-760	40029007820240000308	1068.802	2024-12-18 19:24:53.685872	2024-12-18 19:24:53.685872	\N	11	\N	\N	\N	2	360	\N	1	2024
-761	40029007820240000309	1068.802	2024-12-18 19:25:12.15642	2024-12-18 19:25:12.15642	\N	11	\N	\N	\N	2	360	\N	1	2024
-762	40029007820240000310	1068.802	2024-12-18 19:28:45.357096	2024-12-18 19:28:45.357096	\N	11	\N	\N	\N	2	360	\N	1	2024
-763	40029007820240000311	1068.802	2024-12-18 19:32:43.949058	2024-12-18 19:32:43.949058	\N	11	\N	\N	\N	2	360	\N	1	2024
-764	40029007820240000312	1068.802	2024-12-18 19:33:44.418535	2024-12-18 19:33:44.418535	\N	11	\N	\N	\N	2	360	\N	1	2024
-766	40029007820240000314	1068.802	2024-12-18 19:35:17.152912	2024-12-18 19:35:17.152912	\N	11	\N	\N	\N	2	360	\N	1	2024
-767	40029007820240000315	1068.802	2024-12-18 19:37:18.419418	2024-12-18 19:37:18.419418	\N	11	\N	\N	\N	2	360	\N	1	2024
-768	40029007820240000316	1068.802	2024-12-18 19:37:20.979345	2024-12-18 19:37:20.979345	\N	11	\N	\N	\N	2	360	\N	1	2024
-769	40029007820240000317	1068.802	2024-12-18 19:37:23.209947	2024-12-18 19:37:23.209947	\N	11	\N	\N	\N	2	360	\N	1	2024
-770	40029007820240000318	1068.802	2024-12-18 19:37:54.696282	2024-12-18 19:37:54.696282	\N	11	\N	\N	\N	2	360	\N	1	2024
-771	40029007820240000319	1068.802	2024-12-18 19:40:12.378196	2024-12-18 19:40:12.378196	\N	11	\N	\N	\N	2	360	\N	1	2024
-772	40029007820240000320	1068.802	2024-12-18 19:41:09.091119	2024-12-18 19:41:09.091119	\N	11	\N	\N	\N	2	360	\N	1	2024
-773	40029007820240000321	1068.802	2024-12-18 19:43:13.188774	2024-12-18 19:43:13.188774	\N	11	\N	\N	\N	2	360	\N	1	2024
-774	40029007820240000322	1068.802	2024-12-18 19:44:42.678139	2024-12-18 19:44:42.678139	\N	11	\N	\N	\N	2	360	\N	1	2024
-713	40029007820240000261	270.53450000000004	2024-12-11 22:23:20.273	2024-12-11 22:23:20.273	\N	11	\N	\N	\N	5	360	\N	1	2024
-781	40029007820240000329	1068.802	2024-12-18 20:13:19.609251	2024-12-18 20:13:19.609251	\N	11	\N	\N	\N	2	360	\N	1	2024
-782	40029007820240000330	1068.802	2024-12-18 20:16:17.215473	2024-12-18 20:16:17.215473	\N	11	\N	\N	\N	2	360	\N	1	2024
-783	40029007920240000331	1068.802	2024-12-18 20:44:48.238707	2024-12-18 20:44:48.238707	\N	11	\N	\N	\N	2	361	\N	1	2024
-784	40029007920240000332	1068.802	2024-12-18 20:44:48.250757	2024-12-18 20:44:48.250757	\N	11	\N	\N	\N	2	361	\N	1	2024
-785	40029007820240000333	1068.802	2024-12-18 20:52:13.190695	2024-12-18 20:52:13.190695	\N	11	\N	\N	\N	2	360	\N	1	2024
-786	40029007820240000334	1068.802	2024-12-18 20:55:12.178658	2024-12-18 20:55:12.178658	\N	11	\N	\N	\N	2	360	\N	1	2024
-787	40029007820240000335	1068.802	2024-12-18 20:55:24.584834	2024-12-18 20:55:24.584834	\N	11	\N	\N	\N	2	360	\N	1	2024
-788	40029007820240000336	1068.802	2024-12-18 20:55:34.679674	2024-12-18 20:55:34.679674	\N	11	\N	\N	\N	2	360	\N	1	2024
-789	40029007820240000337	1068.802	2024-12-18 20:56:10.444784	2024-12-18 20:56:10.444784	\N	11	\N	\N	\N	2	360	\N	1	2024
-790	40029007820240000338	1068.802	2024-12-18 21:00:46.014401	2024-12-18 21:00:46.014401	\N	11	\N	\N	\N	2	360	\N	1	2024
-791	40029007820240000339	1068.802	2024-12-18 21:03:28.620406	2024-12-18 21:03:28.620406	\N	11	\N	\N	\N	2	360	\N	1	2024
-792	40029007820240000340	1068.802	2024-12-18 21:07:07.219992	2024-12-18 21:07:07.219992	\N	11	\N	\N	\N	2	360	\N	1	2024
-793	40029007820240000341	1068.802	2024-12-18 21:09:00.190894	2024-12-18 21:09:00.190894	\N	11	\N	\N	\N	2	360	\N	1	2024
-794	40029007820240000342	1068.802	2024-12-18 21:15:10.67279	2024-12-18 21:15:10.67279	\N	11	\N	\N	\N	2	360	\N	1	2024
-807	20024005320240000355	1068.802	2024-12-18 21:18:59.795242	2024-12-18 21:18:59.795242	\N	11	\N	\N	\N	2	335	\N	1	2024
-808	20024005320240000356	1068.802	2024-12-18 21:18:59.807482	2024-12-18 21:18:59.807482	\N	11	\N	\N	\N	2	335	\N	1	2024
-809	20024005320240000357	1068.802	2024-12-18 21:19:26.613237	2024-12-18 21:19:26.613237	\N	11	\N	\N	\N	2	335	\N	1	2024
-810	20024005320240000358	1068.802	2024-12-18 21:19:26.625028	2024-12-18 21:19:26.625028	\N	11	\N	\N	\N	2	335	\N	1	2024
-814	40029007820240000362	1068.802	2024-12-18 21:25:35.335027	2024-12-18 21:25:35.335027	\N	11	\N	\N	\N	2	360	\N	1	2024
-832	30025006220250000380	272.5055	2025-01-07 14:42:50.30867	2025-01-07 14:42:50.30867	\N	10	\N	\N	\N	12	344	82	1	2025
-833	40029007820250000381	1.25	2025-01-07 16:55:01.215135	2025-01-07 16:55:01.215135	\N	10	\N	\N	\N	12	360	\N	1	2025
-834	20024005320250000382	1.25	2025-01-07 17:00:49.593759	2025-01-07 17:00:49.593759	\N	10	\N	\N	\N	12	335	\N	1	2025
-835	40028007620250000383	1.25	2025-01-07 19:21:46.452161	2025-01-07 19:21:46.452161	\N	10	\N	\N	\N	5	358	\N	1	2025
-836	40029007820250000384	1.25	2025-01-07 19:54:42.039277	2025-01-07 19:54:42.039277	\N	10	\N	\N	\N	12	360	\N	1	2025
-837	20024005320250000385	1.25	2025-01-07 19:55:25.384796	2025-01-07 19:55:25.384796	\N	10	\N	\N	\N	12	335	\N	1	2025
-838	40029007820250000386	1.25	2025-01-08 14:29:25.353154	2025-01-08 14:29:25.353154	\N	10	\N	\N	\N	12	360	\N	1	2025
-839	20024005420250000387	1.25	2025-01-08 14:35:47.026019	2025-01-08 14:35:47.026019	\N	10	\N	\N	\N	12	336	\N	1	2025
-840	20024005320250000388	1.25	2025-01-08 14:38:30.863986	2025-01-08 14:38:30.863986	\N	10	\N	\N	\N	12	335	\N	1	2025
-841	20024005320250000389	1.25	2025-01-08 14:39:58.095793	2025-01-08 14:39:58.095793	\N	10	\N	\N	\N	12	335	\N	1	2025
-842	20024005320250000390	1.25	2025-01-08 14:42:21.100804	2025-01-08 14:42:21.100804	\N	10	\N	\N	\N	12	335	\N	1	2025
-843	20024005320250000391	1.25	2025-01-08 14:46:04.562592	2025-01-08 14:46:04.562592	\N	10	\N	\N	\N	12	335	\N	1	2025
-844	20024005320250000392	1.25	2025-01-08 14:53:00.373848	2025-01-08 14:53:30.984571	\N	11	\N	\N	\N	12	335	\N	1	2025
-845	20024005320250000393	1	2025-01-08 14:56:52.322616	2025-01-08 15:02:22.316792	\N	11	\N	\N	\N	12	335	\N	1	2025
-846	20024005320250000394	1	2025-01-08 15:04:08.413183	2025-01-08 15:04:08.413183	\N	10	\N	\N	\N	12	335	\N	1	2025
-847	20024005320250000395	1	2025-01-08 15:05:46.392149	2025-01-08 15:05:46.392149	\N	10	\N	\N	\N	12	335	\N	1	2025
-848	30026006520250000396	1	2025-01-08 15:15:29.179649	2025-01-08 15:15:29.179649	\N	10	\N	\N	\N	12	347	\N	1	2025
-849	20024005320250000397	1	2025-01-08 15:20:42.370608	2025-01-08 15:20:42.370608	\N	10	\N	\N	\N	12	335	\N	1	2025
-850	20024005320250000398	1	2025-01-08 15:22:39.758721	2025-01-08 15:22:39.758721	\N	10	\N	\N	\N	12	335	\N	1	2025
-851	20024005320250000399	1	2025-01-08 15:29:31.065444	2025-01-08 15:29:31.065444	\N	10	\N	\N	\N	12	335	\N	1	2025
-852	20024005320250000400	1	2025-01-08 15:33:14.719389	2025-01-08 15:33:14.719389	\N	10	\N	\N	\N	12	335	\N	1	2025
-853	40029007820250000401	1	2025-01-08 15:36:14.101424	2025-01-08 15:37:42.678965	\N	11	\N	\N	\N	12	360	\N	1	2025
-854	40029007920250000402	1	2025-01-08 15:43:24.220279	2025-01-08 15:43:24.220279	\N	10	\N	\N	\N	12	361	\N	1	2025
-855	40028007620250000403	1	2025-01-08 17:18:35.171812	2025-01-08 17:18:35.171812	\N	10	\N	\N	\N	12	358	\N	1	2025
-856	40028007620250000404	1	2025-01-08 17:31:54.308036	2025-01-08 17:31:54.308036	\N	10	\N	\N	\N	12	358	\N	1	2025
-857	40028007620250000405	1	2025-01-08 17:33:13.306262	2025-01-08 17:34:15.193696	\N	11	\N	\N	\N	12	358	\N	1	2025
-858	40029007820250000406	1	2025-01-08 17:36:56.82113	2025-01-08 17:36:56.82113	\N	10	\N	\N	\N	12	360	\N	1	2025
-859	20024005420250000407	1	2025-01-08 17:41:01.625006	2025-01-08 17:41:01.625006	\N	10	\N	\N	\N	12	336	\N	1	2025
-861	20024005320250000409	255	2025-01-08 18:04:36.174999	2025-01-08 18:04:36.174999	\N	10	\N	\N	\N	12	335	\N	1	2025
-862	30026006520250000410	250	2025-01-08 18:14:46.997622	2025-01-08 18:14:46.997622	\N	10	\N	\N	\N	12	347	\N	1	2025
-863	40029007820250000411	0	2025-01-08 18:20:33.987097	2025-01-08 18:20:33.987097	\N	13	\N	\N	\N	5	360	83	1	2025
-864	20024005320250000412	250	2025-01-08 18:24:10.094338	2025-01-08 18:24:10.094338	\N	10	\N	\N	\N	12	335	\N	1	2025
-865	20024005420250000413	250	2025-01-08 18:25:55.444736	2025-01-08 18:25:55.444736	\N	10	\N	\N	\N	12	336	\N	1	2025
-866	20024005420250000414	250	2025-01-08 18:29:18.36873	2025-01-08 18:29:18.36873	\N	10	\N	\N	\N	12	336	\N	1	2025
-867	20024005320250000415	1	2025-01-08 18:32:59.70157	2025-01-08 18:36:56.526911	\N	11	\N	\N	\N	12	335	\N	1	2025
-868	20024005320250000416	1.25	2025-01-13 14:01:59.28288	2025-01-13 14:01:59.28288	\N	10	\N	\N	\N	12	335	\N	1	2025
-869	40029007820250000417	1.25	2025-01-13 14:04:47.281386	2025-01-13 14:05:18.573159	\N	11	\N	\N	\N	12	360	\N	1	2025
-870	20024005320250000418	1.25	2025-01-13 15:53:09.383473	2025-01-13 15:53:09.383473	\N	10	\N	\N	\N	12	335	\N	1	2025
-872	20024005320250000420	1.25	2025-01-13 15:56:49.181146	2025-01-13 15:56:49.181146	\N	10	\N	\N	\N	12	335	\N	1	2025
-873	20024005320250000421	1.25	2025-01-13 15:58:51.156994	2025-01-13 15:58:51.156994	\N	10	\N	\N	\N	12	335	\N	1	2025
-871	20024005320250000419	12.5	2025-01-13 15:56:18.644	2025-01-13 15:56:18.644	\N	10	\N	\N	\N	12	335	\N	1	2025
-876	30027007020250000424	12.5	2025-01-13 19:47:55.822579	2025-01-13 19:47:55.822579	\N	10	\N	\N	\N	12	352	\N	1	2025
-878	20024005320250000426	2	2025-01-14 13:46:30.270882	2025-01-14 13:48:13.201692	\N	11	\N	\N	\N	12	335	\N	1	2025
-879	40029007820250000427	2	2025-01-14 13:52:21.156197	2025-01-14 13:52:21.156197	\N	10	\N	\N	\N	12	360	\N	1	2025
-880	20024005420250000428	2	2025-01-14 13:54:15.878178	2025-01-14 13:54:15.878178	\N	10	\N	\N	\N	12	336	\N	1	2025
-881	20024005320250000429	2	2025-01-14 13:56:05.296062	2025-01-14 13:56:05.296062	\N	10	\N	\N	\N	12	335	\N	1	2025
-882	20024005320250000430	2	2025-01-14 14:01:46.229328	2025-01-14 14:02:13.557873	\N	11	\N	\N	\N	12	335	\N	1	2025
-883	10014004820250000431	2	2025-01-14 14:23:46.414199	2025-01-14 14:23:46.414199	\N	10	\N	\N	\N	12	195	\N	1	2025
-884	20024005320250000432	2	2025-01-14 14:26:50.416835	2025-01-14 14:26:50.416835	\N	10	\N	\N	\N	12	335	\N	1	2025
-885	20024005320250000433	2	2025-01-14 14:29:36.537078	2025-01-14 14:29:36.537078	\N	10	\N	\N	\N	12	335	\N	1	2025
-887	30026006420250000435	2	2025-01-14 14:34:49.705621	2025-01-14 14:34:49.705621	\N	10	\N	\N	\N	12	346	\N	1	2025
-888	40029007820250000436	2	2025-01-14 14:51:38.225634	2025-01-14 14:51:38.225634	\N	10	\N	\N	\N	12	360	\N	1	2025
-889	40029007820250000437	2	2025-01-14 14:52:02.327218	2025-01-14 14:52:27.069553	\N	11	\N	\N	\N	12	360	\N	1	2025
-890	40029007820250000438	2	2025-01-14 14:55:31.375333	2025-01-14 14:55:31.375333	\N	10	\N	\N	\N	12	360	\N	1	2025
-891	40029007820250000439	2	2025-01-14 17:26:20.044334	2025-01-14 17:26:20.044334	\N	10	\N	\N	\N	12	360	\N	1	2025
-899	40029007820250000447	2	2025-01-16 13:46:55.47817	2025-01-16 13:46:55.47817	\N	10	\N	\N	\N	12	360	\N	1	2025
-886	40028007620250000434	2	2025-01-14 14:34:07.696	2025-01-14 18:04:28.63585	\N	11	\N	\N	\N	12	358	\N	1	2025
-860	40028007620250000408	2	2025-01-08 18:02:19.032	2025-01-08 18:02:19.032	\N	10	\N	\N	\N	12	358	\N	1	2025
-900	40029007820250000448	2	2025-01-16 13:47:48.539563	2025-01-16 13:47:48.539563	\N	10	\N	\N	\N	12	360	\N	1	2025
-901	40029007820250000449	2	2025-01-16 13:52:58.882713	2025-01-16 13:52:58.882713	\N	10	\N	\N	\N	12	360	\N	1	2025
-902	40029007820250000450	2	2025-01-16 13:55:34.706841	2025-01-16 13:55:34.706841	\N	10	\N	\N	\N	12	360	\N	1	2025
-903	40029007820250000451	2	2025-01-16 13:55:41.521664	2025-01-16 13:55:41.521664	\N	10	\N	\N	\N	12	360	\N	1	2025
-904	40029007820250000452	2	2025-01-16 13:56:07.68199	2025-01-16 13:56:07.68199	\N	10	\N	\N	\N	12	360	\N	1	2025
-877	20024005320250000425	2	2025-01-14 13:44:32.155	2025-01-14 13:44:32.155	\N	10	\N	\N	\N	12	335	85	1	2025
-905	40029007820250000453	2	2025-01-16 13:57:14.457618	2025-01-16 13:57:14.457618	\N	10	\N	\N	\N	12	360	\N	1	2025
-906	40029007820250000454	2	2025-01-16 13:57:53.552164	2025-01-16 13:57:53.552164	\N	10	\N	\N	\N	12	360	\N	1	2025
-874	20024005320250000422	2	2025-01-13 16:01:29.138	2025-01-14 18:20:43.471727	\N	11	\N	\N	\N	12	335	\N	1	2025
-875	20024005320250000423	2	2025-01-13 16:01:57.296	2025-01-14 18:20:43.481991	\N	11	\N	\N	\N	12	335	\N	1	2025
-892	20024005320250000440	2	2025-01-16 13:36:28.412148	2025-01-16 13:36:28.412148	\N	10	\N	\N	\N	12	335	\N	1	2025
-893	20024005320250000441	2	2025-01-16 13:36:55.421867	2025-01-16 13:36:55.421867	\N	10	\N	\N	\N	12	335	\N	1	2025
-894	20024005320250000442	2	2025-01-16 13:42:10.725798	2025-01-16 13:42:10.725798	\N	10	\N	\N	\N	12	335	\N	1	2025
-895	40029007820250000443	2	2025-01-16 13:42:49.925905	2025-01-16 13:42:49.925905	\N	10	\N	\N	\N	12	360	\N	1	2025
-896	40029007820250000444	2	2025-01-16 13:43:27.178642	2025-01-16 13:43:27.178642	\N	10	\N	\N	\N	12	360	\N	1	2025
-897	40029007820250000445	2	2025-01-16 13:46:16.414955	2025-01-16 13:46:16.414955	\N	10	\N	\N	\N	12	360	\N	1	2025
-898	40029007820250000446	2	2025-01-16 13:46:46.970699	2025-01-16 13:46:46.970699	\N	10	\N	\N	\N	12	360	\N	1	2025
-907	40029007820250000455	2	2025-01-16 13:59:28.978387	2025-01-16 13:59:28.978387	\N	10	\N	\N	\N	12	360	\N	1	2025
-908	40029007820250000456	2	2025-01-16 14:01:15.498532	2025-01-16 14:01:15.498532	\N	10	\N	\N	\N	12	360	\N	1	2025
-909	40029007820250000457	2	2025-01-16 14:06:27.191059	2025-01-16 14:06:27.191059	\N	10	\N	\N	\N	12	360	\N	1	2025
-910	40029007820250000458	2	2025-01-16 14:11:21.364144	2025-01-16 14:11:21.364144	\N	10	\N	\N	\N	12	360	\N	1	2025
-911	40029007820250000459	2	2025-01-16 14:20:02.148221	2025-01-16 14:20:02.148221	\N	10	\N	\N	\N	12	360	\N	1	2025
-912	40029007820250000460	2	2025-01-16 17:43:11.757476	2025-01-16 17:43:11.757476	\N	10	\N	\N	\N	12	360	\N	1	2025
-913	40029007820250000461	2	2025-01-16 17:43:24.881223	2025-01-16 17:43:24.881223	\N	10	\N	\N	\N	12	360	\N	1	2025
-914	40029007820250000462	2	2025-01-16 17:45:10.34242	2025-01-16 17:45:10.34242	\N	10	\N	\N	\N	12	360	\N	1	2025
-915	20024005320250000463	2	2025-01-16 17:49:02.817171	2025-01-16 17:49:02.817171	\N	10	\N	\N	\N	12	335	\N	1	2025
-916	20024005320250000464	2	2025-01-16 17:49:26.495079	2025-01-16 17:49:26.495079	\N	10	\N	\N	\N	12	335	\N	1	2025
-917	20024005320250000465	2	2025-01-16 17:50:17.110616	2025-01-16 17:50:17.110616	\N	10	\N	\N	\N	12	335	\N	1	2025
-918	20024005320250000466	2	2025-01-16 17:51:28.793028	2025-01-16 17:51:28.793028	\N	10	\N	\N	\N	12	335	\N	1	2025
-919	20024005320250000467	2	2025-01-16 17:53:18.60897	2025-01-16 17:53:18.60897	\N	10	\N	\N	\N	12	335	\N	1	2025
-920	20024005320250000468	2	2025-01-16 17:54:03.240869	2025-01-16 17:54:03.240869	\N	10	\N	\N	\N	12	335	\N	1	2025
-921	20024005320250000469	2	2025-01-16 17:56:31.154981	2025-01-16 17:56:31.154981	\N	10	\N	\N	\N	12	335	\N	1	2025
-922	20024005320250000470	2	2025-01-16 18:01:14.135278	2025-01-16 18:01:14.135278	\N	10	\N	\N	\N	12	335	\N	1	2025
-923	20024005320250000471	2	2025-01-16 18:01:44.708087	2025-01-16 18:01:44.708087	\N	10	\N	\N	\N	12	335	\N	1	2025
-924	40029007820250000472	5	2025-01-16 18:04:22.914426	2025-01-16 18:04:22.914426	\N	10	\N	\N	\N	5	360	\N	1	2025
-925	30026006520250000473	2	2025-01-16 18:04:36.504473	2025-01-16 18:04:36.504473	\N	10	\N	\N	\N	12	347	\N	1	2025
-926	30026006520250000474	2	2025-01-16 18:05:56.274405	2025-01-16 18:05:56.274405	\N	10	\N	\N	\N	12	347	\N	1	2025
-927	30026006520250000475	2	2025-01-16 18:06:33.680302	2025-01-16 18:06:33.680302	\N	10	\N	\N	\N	12	347	\N	1	2025
-928	40028007620250000476	5	2025-01-16 18:06:51.700205	2025-01-16 18:06:51.700205	\N	10	\N	\N	\N	5	358	\N	1	2025
-929	30026006520250000477	2	2025-01-16 18:07:42.973302	2025-01-16 18:07:42.973302	\N	10	\N	\N	\N	12	347	\N	1	2025
-930	30026006520250000478	2	2025-01-16 18:07:56.395506	2025-01-16 18:07:56.395506	\N	10	\N	\N	\N	12	347	\N	1	2025
-931	40028007620250000479	5	2025-01-16 18:07:59.629598	2025-01-16 18:08:34.225875	\N	11	\N	\N	\N	5	358	\N	1	2025
-932	30026006520250000480	2	2025-01-16 18:08:17.865986	2025-01-16 18:14:02.906018	\N	11	\N	\N	\N	12	347	\N	1	2025
-933	40029007820250000481	2	2025-01-16 18:50:28.373291	2025-01-16 18:50:28.373291	\N	10	\N	\N	\N	12	360	\N	1	2025
-934	40029007820250000482	2	2025-01-16 18:50:50.057696	2025-01-16 18:50:50.057696	\N	10	\N	\N	\N	12	360	\N	1	2025
-935	40029007820250000483	2	2025-01-16 18:53:33.193616	2025-01-16 18:53:33.193616	\N	10	\N	\N	\N	12	360	\N	1	2025
-936	20024005320250000484	2	2025-01-16 18:55:43.925838	2025-01-16 18:55:43.925838	\N	10	\N	\N	\N	12	335	\N	1	2025
-937	20024005320250000485	2	2025-01-16 18:55:54.697357	2025-01-16 18:55:54.697357	\N	10	\N	\N	\N	12	335	\N	1	2025
-938	20024005320250000486	2	2025-01-16 18:56:04.541911	2025-01-16 18:56:52.793591	\N	11	\N	\N	\N	12	335	\N	1	2025
-939	40029007820250000487	2.5	2025-01-16 19:10:17.120662	2025-01-16 19:10:17.120662	\N	10	\N	\N	\N	12	360	\N	1	2025
-940	40029007820250000488	2.5	2025-01-16 19:12:31.785629	2025-01-16 19:12:31.785629	\N	10	\N	\N	\N	12	360	\N	1	2025
-941	40029007820250000489	2.5	2025-01-16 19:12:53.944053	2025-01-16 19:12:53.944053	\N	10	\N	\N	\N	12	360	\N	1	2025
-942	40029007820250000490	2.5	2025-01-16 19:19:30.741562	2025-01-16 19:19:30.741562	\N	10	\N	\N	\N	12	360	\N	1	2025
-943	40029007820250000491	2.5	2025-01-16 19:20:43.364335	2025-01-16 19:20:43.364335	\N	10	\N	\N	\N	12	360	\N	1	2025
-944	40029007820250000492	2.5	2025-01-16 19:20:53.621429	2025-01-16 19:20:53.621429	\N	10	\N	\N	\N	12	360	\N	1	2025
-945	40029007820250000493	2.5	2025-01-16 19:21:10.281602	2025-01-16 19:21:10.281602	\N	10	\N	\N	\N	12	360	\N	1	2025
-946	40029007820250000494	2.5	2025-01-16 19:21:22.24398	2025-01-16 19:21:57.583749	\N	11	\N	\N	\N	12	360	\N	1	2025
-947	40029007820250000495	2.5	2025-01-16 19:25:24.618225	2025-01-16 19:25:24.618225	\N	10	\N	\N	\N	12	360	\N	1	2025
-948	40029007820250000496	2.5	2025-01-16 19:25:59.490718	2025-01-16 19:25:59.490718	\N	10	\N	\N	\N	12	360	\N	1	2025
-949	40029007820250000497	2.5	2025-01-16 19:27:49.615659	2025-01-16 19:27:49.615659	\N	10	\N	\N	\N	12	360	\N	1	2025
-950	40029007820250000498	2.5	2025-01-16 19:27:59.177506	2025-01-16 19:27:59.177506	\N	10	\N	\N	\N	12	360	\N	1	2025
-951	20024005320250000499	2.5	2025-01-16 19:29:48.689688	2025-01-16 19:29:48.689688	\N	10	\N	\N	\N	12	335	\N	1	2025
-952	40028007620250000500	2.5	2025-01-16 19:33:10.654452	2025-01-16 19:33:10.654452	\N	10	\N	\N	\N	12	358	\N	1	2025
-953	40028007620250000501	2.5	2025-01-16 19:33:19.81958	2025-01-16 19:33:19.81958	\N	10	\N	\N	\N	12	358	\N	1	2025
-954	40028007620250000502	2.5	2025-01-16 19:33:27.819181	2025-01-16 19:34:17.532748	\N	11	\N	\N	\N	12	358	\N	1	2025
-955	20024005320250000503	2	2025-01-16 19:36:20.743881	2025-01-16 19:37:03.19463	\N	11	\N	\N	\N	12	335	\N	1	2025
-956	20024005320250000504	2	2025-01-16 19:38:41.096034	2025-01-16 19:38:41.096034	\N	10	\N	\N	\N	12	335	\N	1	2025
-957	20024005320250000505	2	2025-01-16 19:39:33.855958	2025-01-16 19:39:33.855958	\N	10	\N	\N	\N	12	335	\N	1	2025
-958	20024005320250000506	2	2025-01-16 19:40:05.091789	2025-01-16 19:40:05.091789	\N	10	\N	\N	\N	12	335	\N	1	2025
-959	40029007820250000507	1.24	2025-01-16 19:57:09.932844	2025-01-16 19:57:33.649202	\N	11	\N	\N	\N	12	360	\N	1	2025
-960	20024005320250000508	1	2025-01-22 15:52:32.733305	2025-01-22 15:52:32.733305	\N	10	\N	\N	\N	13	335	89	1	2025
-961	40029007820250000509	1	2025-01-22 15:54:16.459462	2025-01-22 15:55:23.317077	\N	11	\N	\N	\N	13	360	\N	1	2025
-962	10001000920250000510	0	2025-01-22 16:18:41.662341	2025-01-22 16:18:41.662341	\N	13	\N	\N	\N	13	9	89	1	2025
-963	20024005320250000511	4	2025-01-22 16:37:34.260452	2025-01-22 16:37:34.260452	\N	10	\N	\N	\N	12	335	89	1	2025
-964	40029007820250000512	4	2025-01-22 17:55:14.013332	2025-01-22 17:55:14.013332	\N	10	\N	\N	\N	13	360	89	1	2025
-965	40029007820250000513	4	2025-01-22 18:22:08.505807	2025-01-22 18:22:08.505807	\N	10	\N	\N	\N	13	360	89	1	2025
-966	40029007820250000514	0	2025-01-22 18:26:35.889761	2025-01-22 18:26:35.889761	\N	13	\N	\N	\N	13	360	89	1	2025
-967	40029007820250000515	0	2025-01-22 18:29:08.049067	2025-01-22 18:29:08.049067	\N	13	\N	\N	\N	13	360	89	1	2025
-968	10001000120250000516	4	2025-01-22 18:29:08.067804	2025-01-22 18:29:08.067804	\N	10	\N	\N	\N	13	1	89	1	2025
-969	10001000120250000517	4	2025-01-22 21:03:10.556431	2025-01-22 21:03:10.556431	\N	10	\N	\N	\N	13	1	89	1	2025
-970	10001000620250000518	0	2025-01-22 21:03:10.568278	2025-01-22 21:03:10.568278	\N	13	\N	\N	\N	13	6	89	1	2025
+COPY public.tax_stamp (id, code, amount, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "userId", "procedureId", "calculationFactorId", number_folios, year, generation_date, expiration_date) FROM stdin;
+728	20024005420240000276	258.5455	2024-12-11 22:35:07.94082	2024-12-11 22:35:07.94082	\N	11	\N	\N	\N	5	336	\N	1	2024	2025-01-29	2025-02-03
+732	10001000120240000280	1056.6419999999998	2024-12-16 21:24:03.741277	2024-12-16 21:24:03.741277	\N	11	\N	\N	\N	2	1	79	1	2024	2025-01-29	2025-02-03
+700	40029007820240000248	258.5455	2024-12-10 20:49:40.28	2024-12-10 21:42:06.043597	\N	11	\N	\N	\N	5	360	\N	1	2024	2025-01-29	2025-02-03
+702	40029007920240000250	258.5455	2024-12-10 20:49:40.322	2024-12-10 21:42:06.110794	\N	11	\N	\N	\N	5	361	\N	1	2024	2025-01-29	2025-02-03
+703	30026006520240000251	258.5455	2024-12-10 20:49:40.328	2024-12-10 21:42:06.112471	\N	11	\N	\N	\N	5	347	\N	1	2024	2025-01-29	2025-02-03
+701	30026006520240000249	258.5455	2024-12-10 20:49:40.319	2024-12-10 21:49:17.134366	\N	11	\N	\N	\N	5	347	\N	1	2024	2025-01-29	2025-02-03
+733	10001000420240000281	0	2024-12-16 21:24:03.785082	2024-12-16 21:24:03.785082	\N	13	\N	\N	\N	2	4	79	1	2024	2025-01-29	2025-02-03
+704	30026006520240000252	258.5455	2024-12-10 20:49:40.333	2024-12-10 21:57:41.064619	\N	11	\N	\N	\N	5	347	\N	1	2024	2025-01-29	2025-02-03
+734	10001000220240000282	0	2024-12-16 21:24:03.891602	2024-12-16 21:24:03.891602	\N	13	\N	\N	\N	2	2	79	1	2024	2025-01-29	2025-02-03
+699	40029007820240000247	258.5455	2024-12-10 20:49:40.27	2024-12-10 22:01:59.786138	\N	11	\N	\N	\N	5	360	\N	1	2024	2025-01-29	2025-02-03
+705	30026006420240000253	258.5455	2024-12-10 22:03:55.328	2024-12-10 22:04:52.65919	\N	11	\N	\N	\N	5	346	\N	1	2024	2025-01-29	2025-02-03
+706	40028007520240000254	258.5455	2024-12-10 22:15:49.064	2024-12-10 22:16:27.814136	\N	11	\N	\N	\N	5	357	\N	1	2024	2025-01-29	2025-02-03
+707	40029007820240000255	258.5455	2024-12-10 23:07:47.873	2024-12-10 23:07:47.873	\N	11	\N	\N	\N	5	360	\N	1	2024	2025-01-29	2025-02-03
+708	40029007820240000256	258.5455	2024-12-10 23:39:51.611	2024-12-10 23:39:51.611	\N	11	\N	\N	\N	5	360	\N	1	2024	2025-01-29	2025-02-03
+710	40028007220240000258	258.5455	2024-12-10 23:39:51.692	2024-12-10 23:39:51.692	\N	11	\N	\N	\N	5	354	\N	1	2024	2025-01-29	2025-02-03
+737	10001000220240000285	0	2024-12-16 22:16:29.409387	2024-12-16 22:16:29.409387	\N	13	\N	\N	\N	2	2	\N	1	2024	2025-01-29	2025-02-03
+738	10001000420240000286	0	2024-12-16 22:16:29.415097	2024-12-16 22:16:29.415097	\N	13	\N	\N	\N	2	4	\N	1	2024	2025-01-29	2025-02-03
+739	10001000220240000287	0	2024-12-16 22:16:29.425738	2024-12-16 22:16:29.425738	\N	13	\N	\N	\N	2	2	\N	1	2024	2025-01-29	2025-02-03
+740	10001000220240000288	0	2024-12-16 22:16:29.431677	2024-12-16 22:16:29.431677	\N	13	\N	\N	\N	2	2	\N	1	2024	2025-01-29	2025-02-03
+743	10001000220240000291	0	2024-12-16 22:28:52.25218	2024-12-16 22:28:52.25218	\N	13	\N	\N	\N	2	2	\N	1	2024	2025-01-29	2025-02-03
+744	10001000420240000292	0	2024-12-16 22:28:52.253384	2024-12-16 22:28:52.253384	\N	13	\N	\N	\N	2	4	\N	1	2024	2025-01-29	2025-02-03
+745	10001000220240000293	0	2024-12-16 22:28:52.271263	2024-12-16 22:28:52.271263	\N	13	\N	\N	\N	2	2	\N	1	2024	2025-01-29	2025-02-03
+746	10001000220240000294	0	2024-12-16 22:28:52.2783	2024-12-16 22:28:52.2783	\N	13	\N	\N	\N	2	2	\N	1	2024	2025-01-29	2025-02-03
+712	40028007220240000260	258.5455	2024-12-10 23:39:51.704	2024-12-10 23:39:51.704	\N	11	\N	\N	\N	2	354	\N	1	2024	2025-01-29	2025-02-03
+709	40029007920240000257	258.5455	2024-12-10 23:39:51.687	2024-12-10 23:39:51.687	\N	11	\N	\N	\N	5	361	\N	1	2024	2025-01-29	2025-02-03
+711	40029007920240000259	258.5455	2024-12-10 23:39:51.699	2024-12-10 23:39:51.699	\N	11	\N	\N	\N	5	361	\N	1	2024	2025-01-29	2025-02-03
+775	40029007820240000323	1068.802	2024-12-18 19:47:35.388675	2024-12-18 19:47:55.312277	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+776	40029007820240000324	1068.802	2024-12-18 19:48:41.355803	2024-12-18 19:48:49.204149	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+777	40029007820240000325	1068.802	2024-12-18 19:54:38.741172	2024-12-18 19:54:48.877642	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+778	40029007820240000326	1068.802	2024-12-18 19:57:15.389121	2024-12-18 19:57:21.375244	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+779	40029007820240000327	1068.802	2024-12-18 19:59:54.746994	2024-12-18 19:59:54.746994	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+735	10001000120240000283	1056.642	2024-12-16 22:16:29.346022	2024-12-16 22:16:29.346022	\N	11	\N	\N	\N	2	1	\N	1	2024	2025-01-29	2025-02-03
+736	10001000120240000284	1056.642	2024-12-16 22:16:29.362349	2024-12-16 22:16:29.362349	\N	11	\N	\N	\N	2	1	\N	1	2024	2025-01-29	2025-02-03
+741	10001000120240000289	1056.642	2024-12-16 22:28:52.178272	2024-12-16 22:28:52.178272	\N	11	\N	\N	\N	2	1	\N	1	2024	2025-01-29	2025-02-03
+742	10001000120240000290	1056.642	2024-12-16 22:28:52.193735	2024-12-16 22:28:52.193735	\N	11	\N	\N	\N	2	1	\N	1	2024	2025-01-29	2025-02-03
+747	40029007820240000295	1068.802	2024-12-18 17:53:56.532575	2024-12-18 17:53:56.532575	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+748	40029007820240000296	1068.802	2024-12-18 18:23:01.817191	2024-12-18 18:23:01.817191	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+749	40029007820240000297	1068.802	2024-12-18 18:34:25.129596	2024-12-18 18:34:25.129596	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+750	20024005320240000298	1068.802	2024-12-18 18:49:44.404254	2024-12-18 18:49:44.404254	\N	11	\N	\N	\N	2	335	\N	1	2024	2025-01-29	2025-02-03
+751	40029007820240000299	1068.802	2024-12-18 18:51:52.352335	2024-12-18 18:51:52.352335	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+765	40029007820240000313	1068.802	2024-12-18 19:35:12.567217	2024-12-18 19:35:12.567217	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+714	40029007820240000262	258.5455	2024-12-11 22:25:49.796913	2024-12-11 22:25:49.796913	\N	11	\N	\N	\N	5	360	\N	1	2024	2025-01-29	2025-02-03
+715	40029007820240000263	258.5455	2024-12-11 22:25:49.805169	2024-12-11 22:25:49.805169	\N	11	\N	\N	\N	5	360	\N	1	2024	2025-01-29	2025-02-03
+716	40029007820240000264	258.5455	2024-12-11 22:25:49.813337	2024-12-11 22:25:49.813337	\N	11	\N	\N	\N	5	360	\N	1	2024	2025-01-29	2025-02-03
+795	40029007820240000343	1068.802	2024-12-18 21:17:46.385257	2024-12-18 21:17:54.329438	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+796	40029007820240000344	1068.802	2024-12-18 21:17:46.398227	2024-12-18 21:17:54.330357	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+797	40029007820240000345	1068.802	2024-12-18 21:17:46.404112	2024-12-18 21:17:54.33229	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+798	40029007820240000346	1068.802	2024-12-18 21:17:46.411686	2024-12-18 21:17:54.334177	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+799	40029007820240000347	1068.802	2024-12-18 21:17:46.41743	2024-12-18 21:17:54.33592	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+800	40029007820240000348	1068.802	2024-12-18 21:17:46.421768	2024-12-18 21:17:54.336989	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+801	40029007820240000349	1068.802	2024-12-18 21:17:46.425536	2024-12-18 21:17:54.340053	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+802	40029007820240000350	1068.802	2024-12-18 21:17:46.430857	2024-12-18 21:17:54.341947	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+803	40029007820240000351	1068.802	2024-12-18 21:17:46.437183	2024-12-18 21:17:54.344342	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+804	40029007820240000352	1068.802	2024-12-18 21:17:46.442998	2024-12-18 21:17:54.34681	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+805	40029007820240000353	1068.802	2024-12-18 21:17:46.448739	2024-12-18 21:17:54.348194	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+806	40029007820240000354	1068.802	2024-12-18 21:17:46.453681	2024-12-18 21:17:54.350201	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+717	40029007820240000265	258.5455	2024-12-11 22:25:49.819318	2024-12-11 22:25:49.819318	\N	11	\N	\N	\N	5	360	\N	1	2024	2025-01-29	2025-02-03
+718	40029007820240000266	258.5455	2024-12-11 22:25:49.825884	2024-12-11 22:25:49.825884	\N	11	\N	\N	\N	5	360	\N	1	2024	2025-01-29	2025-02-03
+780	40029007820240000328	1068.802	2024-12-18 20:10:15.397807	2024-12-18 20:10:15.397807	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+811	40029007820240000359	1068.802	2024-12-18 21:22:07.983485	2024-12-18 21:22:14.657029	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+812	40029007820240000360	1068.802	2024-12-18 21:22:51.512589	2024-12-18 21:22:59.276208	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+813	40029007820240000361	1068.802	2024-12-18 21:24:14.87991	2024-12-18 21:24:22.344735	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+815	40029007820240000363	1068.802	2024-12-18 21:32:57.959509	2024-12-18 21:33:14.691722	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+820	40029007820240000368	1068.802	2024-12-18 21:39:09.598968	2024-12-18 21:39:14.427977	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+816	40029007820240000364	1068.802	2024-12-18 21:34:14.53542	2024-12-18 21:36:04.340236	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+817	40029007820240000365	1068.802	2024-12-18 21:36:09.923758	2024-12-18 21:36:16.07714	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+818	40029007820240000366	1068.802	2024-12-18 21:36:51.541224	2024-12-18 21:36:56.562714	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+819	40029007820240000367	1068.802	2024-12-18 21:37:35.410952	2024-12-18 21:37:41.081014	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+821	40029007820240000369	1068.802	2024-12-18 21:43:30.056398	2024-12-18 21:43:36.06395	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+822	40029007820240000370	1068.802	2024-12-18 21:44:24.898113	2024-12-18 21:44:33.302806	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+823	40029007820240000371	1068.802	2024-12-18 21:44:46.408545	2024-12-18 21:44:50.893793	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+826	40029007820240000374	1	2024-12-18 22:16:01.831326	2024-12-18 22:16:11.020732	\N	11	\N	\N	\N	8	360	\N	1	2024	2025-01-29	2025-02-03
+827	40029007820240000375	1	2024-12-18 22:16:40.617521	2024-12-18 22:16:50.426645	\N	11	\N	\N	\N	8	360	\N	1	2024	2025-01-29	2025-02-03
+825	40029007820240000373	1	2024-12-18 22:16:01.824055	2024-12-18 22:16:10.982403	\N	11	\N	\N	\N	8	360	\N	1	2024	2025-01-29	2025-02-03
+831	40029007820240000379	270.53450000000004	2024-12-29 14:06:47.389	2024-12-29 14:06:47.389	\N	11	\N	\N	\N	2	360	81	1	2024	2025-01-29	2025-02-03
+719	40029007820240000267	258.5455	2024-12-11 22:28:45.795287	2024-12-11 22:28:45.795287	\N	11	\N	\N	\N	5	360	\N	1	2024	2025-01-29	2025-02-03
+720	40029007820240000268	258.5455	2024-12-11 22:28:45.80634	2024-12-11 22:28:45.80634	\N	11	\N	\N	\N	5	360	\N	1	2024	2025-01-29	2025-02-03
+721	40029007820240000269	258.5455	2024-12-11 22:28:45.813297	2024-12-11 22:28:45.813297	\N	11	\N	\N	\N	5	360	\N	1	2024	2025-01-29	2025-02-03
+722	40029007820240000270	258.5455	2024-12-11 22:28:45.821007	2024-12-11 22:28:45.821007	\N	11	\N	\N	\N	5	360	\N	1	2024	2025-01-29	2025-02-03
+723	40029007820240000271	258.5455	2024-12-11 22:28:45.8274	2024-12-11 22:28:45.8274	\N	11	\N	\N	\N	5	360	\N	1	2024	2025-01-29	2025-02-03
+724	40029007920240000272	258.5455	2024-12-11 22:32:57.706616	2024-12-11 22:32:57.706616	\N	11	\N	\N	\N	5	361	\N	1	2024	2025-01-29	2025-02-03
+725	40029007920240000273	258.5455	2024-12-11 22:32:57.714833	2024-12-11 22:32:57.714833	\N	11	\N	\N	\N	5	361	\N	1	2024	2025-01-29	2025-02-03
+726	40029007820240000274	258.5455	2024-12-11 22:34:09.719339	2024-12-11 22:34:09.719339	\N	11	\N	\N	\N	5	360	\N	1	2024	2025-01-29	2025-02-03
+727	40029007820240000275	258.5455	2024-12-11 22:34:09.81972	2024-12-11 22:34:09.81972	\N	11	\N	\N	\N	5	360	\N	1	2024	2025-01-29	2025-02-03
+752	40029007820240000300	1068.802	2024-12-18 18:59:07.0134	2024-12-18 18:59:07.0134	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+753	40029007820240000301	1068.802	2024-12-18 19:02:04.405248	2024-12-18 19:02:04.405248	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+754	40029007820240000302	1068.802	2024-12-18 19:02:56.764503	2024-12-18 19:02:56.764503	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+755	40029007820240000303	1068.802	2024-12-18 19:09:50.823512	2024-12-18 19:09:50.823512	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+756	40029007820240000304	1068.802	2024-12-18 19:23:24.451724	2024-12-18 19:23:24.451724	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+757	40029007820240000305	1068.802	2024-12-18 19:24:11.218972	2024-12-18 19:24:11.218972	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+758	40029007820240000306	1068.802	2024-12-18 19:24:11.221682	2024-12-18 19:24:11.221682	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+759	40029007820240000307	1068.802	2024-12-18 19:24:27.911602	2024-12-18 19:24:27.911602	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+760	40029007820240000308	1068.802	2024-12-18 19:24:53.685872	2024-12-18 19:24:53.685872	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+761	40029007820240000309	1068.802	2024-12-18 19:25:12.15642	2024-12-18 19:25:12.15642	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+762	40029007820240000310	1068.802	2024-12-18 19:28:45.357096	2024-12-18 19:28:45.357096	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+763	40029007820240000311	1068.802	2024-12-18 19:32:43.949058	2024-12-18 19:32:43.949058	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+764	40029007820240000312	1068.802	2024-12-18 19:33:44.418535	2024-12-18 19:33:44.418535	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+766	40029007820240000314	1068.802	2024-12-18 19:35:17.152912	2024-12-18 19:35:17.152912	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+767	40029007820240000315	1068.802	2024-12-18 19:37:18.419418	2024-12-18 19:37:18.419418	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+768	40029007820240000316	1068.802	2024-12-18 19:37:20.979345	2024-12-18 19:37:20.979345	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+769	40029007820240000317	1068.802	2024-12-18 19:37:23.209947	2024-12-18 19:37:23.209947	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+770	40029007820240000318	1068.802	2024-12-18 19:37:54.696282	2024-12-18 19:37:54.696282	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+771	40029007820240000319	1068.802	2024-12-18 19:40:12.378196	2024-12-18 19:40:12.378196	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+772	40029007820240000320	1068.802	2024-12-18 19:41:09.091119	2024-12-18 19:41:09.091119	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+773	40029007820240000321	1068.802	2024-12-18 19:43:13.188774	2024-12-18 19:43:13.188774	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+774	40029007820240000322	1068.802	2024-12-18 19:44:42.678139	2024-12-18 19:44:42.678139	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+713	40029007820240000261	270.53450000000004	2024-12-11 22:23:20.273	2024-12-11 22:23:20.273	\N	11	\N	\N	\N	5	360	\N	1	2024	2025-01-29	2025-02-03
+781	40029007820240000329	1068.802	2024-12-18 20:13:19.609251	2024-12-18 20:13:19.609251	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+782	40029007820240000330	1068.802	2024-12-18 20:16:17.215473	2024-12-18 20:16:17.215473	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+783	40029007920240000331	1068.802	2024-12-18 20:44:48.238707	2024-12-18 20:44:48.238707	\N	11	\N	\N	\N	2	361	\N	1	2024	2025-01-29	2025-02-03
+784	40029007920240000332	1068.802	2024-12-18 20:44:48.250757	2024-12-18 20:44:48.250757	\N	11	\N	\N	\N	2	361	\N	1	2024	2025-01-29	2025-02-03
+785	40029007820240000333	1068.802	2024-12-18 20:52:13.190695	2024-12-18 20:52:13.190695	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+786	40029007820240000334	1068.802	2024-12-18 20:55:12.178658	2024-12-18 20:55:12.178658	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+787	40029007820240000335	1068.802	2024-12-18 20:55:24.584834	2024-12-18 20:55:24.584834	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+788	40029007820240000336	1068.802	2024-12-18 20:55:34.679674	2024-12-18 20:55:34.679674	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+789	40029007820240000337	1068.802	2024-12-18 20:56:10.444784	2024-12-18 20:56:10.444784	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+790	40029007820240000338	1068.802	2024-12-18 21:00:46.014401	2024-12-18 21:00:46.014401	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+791	40029007820240000339	1068.802	2024-12-18 21:03:28.620406	2024-12-18 21:03:28.620406	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+792	40029007820240000340	1068.802	2024-12-18 21:07:07.219992	2024-12-18 21:07:07.219992	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+793	40029007820240000341	1068.802	2024-12-18 21:09:00.190894	2024-12-18 21:09:00.190894	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+794	40029007820240000342	1068.802	2024-12-18 21:15:10.67279	2024-12-18 21:15:10.67279	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+807	20024005320240000355	1068.802	2024-12-18 21:18:59.795242	2024-12-18 21:18:59.795242	\N	11	\N	\N	\N	2	335	\N	1	2024	2025-01-29	2025-02-03
+808	20024005320240000356	1068.802	2024-12-18 21:18:59.807482	2024-12-18 21:18:59.807482	\N	11	\N	\N	\N	2	335	\N	1	2024	2025-01-29	2025-02-03
+809	20024005320240000357	1068.802	2024-12-18 21:19:26.613237	2024-12-18 21:19:26.613237	\N	11	\N	\N	\N	2	335	\N	1	2024	2025-01-29	2025-02-03
+810	20024005320240000358	1068.802	2024-12-18 21:19:26.625028	2024-12-18 21:19:26.625028	\N	11	\N	\N	\N	2	335	\N	1	2024	2025-01-29	2025-02-03
+814	40029007820240000362	1068.802	2024-12-18 21:25:35.335027	2024-12-18 21:25:35.335027	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
+835	40028007620250000383	1.25	2025-01-07 19:21:46.452161	2025-01-07 19:21:46.452161	\N	10	\N	\N	\N	5	358	\N	1	2025	2025-01-29	2025-02-03
+834	20024005320250000382	1.25	2025-01-07 17:00:49.593759	2025-01-07 17:00:49.593759	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+836	40029007820250000384	1.25	2025-01-07 19:54:42.039277	2025-01-07 19:54:42.039277	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+837	20024005320250000385	1.25	2025-01-07 19:55:25.384796	2025-01-07 19:55:25.384796	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+838	40029007820250000386	1.25	2025-01-08 14:29:25.353154	2025-01-08 14:29:25.353154	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+839	20024005420250000387	1.25	2025-01-08 14:35:47.026019	2025-01-08 14:35:47.026019	\N	10	\N	\N	\N	7	336	\N	1	2025	2025-01-29	2025-02-03
+840	20024005320250000388	1.25	2025-01-08 14:38:30.863986	2025-01-08 14:38:30.863986	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+841	20024005320250000389	1.25	2025-01-08 14:39:58.095793	2025-01-08 14:39:58.095793	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+842	20024005320250000390	1.25	2025-01-08 14:42:21.100804	2025-01-08 14:42:21.100804	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+843	20024005320250000391	1.25	2025-01-08 14:46:04.562592	2025-01-08 14:46:04.562592	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+844	20024005320250000392	1.25	2025-01-08 14:53:00.373848	2025-01-08 14:53:30.984571	\N	11	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+846	20024005320250000394	1	2025-01-08 15:04:08.413183	2025-01-08 15:04:08.413183	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+847	20024005320250000395	1	2025-01-08 15:05:46.392149	2025-01-08 15:05:46.392149	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+848	30026006520250000396	1	2025-01-08 15:15:29.179649	2025-01-08 15:15:29.179649	\N	10	\N	\N	\N	7	347	\N	1	2025	2025-01-29	2025-02-03
+849	20024005320250000397	1	2025-01-08 15:20:42.370608	2025-01-08 15:20:42.370608	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+850	20024005320250000398	1	2025-01-08 15:22:39.758721	2025-01-08 15:22:39.758721	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+851	20024005320250000399	1	2025-01-08 15:29:31.065444	2025-01-08 15:29:31.065444	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+829	40029007820240000377	1	2024-12-18 22:17:29.167274	2024-12-18 22:17:39.08544	\N	11	\N	\N	\N	8	360	\N	1	2024	2025-01-29	2025-02-03
+833	40029007820250000381	1.25	2025-01-07 16:55:01.215135	2025-01-07 16:55:01.215135	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+830	40029007820240000378	1	2024-12-18 22:17:29.180625	2024-12-18 22:17:39.122156	\N	11	\N	\N	\N	8	360	\N	1	2024	2025-01-29	2025-02-03
+828	40029007820240000376	1	2024-12-18 22:16:40.625522	2024-12-18 22:16:50.463604	\N	11	\N	\N	\N	8	360	\N	1	2024	2025-01-29	2025-02-03
+863	40029007820250000411	0	2025-01-08 18:20:33.987097	2025-01-08 18:20:33.987097	\N	13	\N	\N	\N	5	360	83	1	2025	2025-01-29	2025-02-03
+924	40029007820250000472	5	2025-01-16 18:04:22.914426	2025-01-16 18:04:22.914426	\N	10	\N	\N	\N	5	360	\N	1	2025	2025-01-29	2025-02-03
+854	40029007920250000402	1	2025-01-08 15:43:24.220279	2025-01-08 15:43:24.220279	\N	10	\N	\N	\N	7	361	\N	1	2025	2025-01-29	2025-02-03
+855	40028007620250000403	1	2025-01-08 17:18:35.171812	2025-01-08 17:18:35.171812	\N	10	\N	\N	\N	7	358	\N	1	2025	2025-01-29	2025-02-03
+856	40028007620250000404	1	2025-01-08 17:31:54.308036	2025-01-08 17:31:54.308036	\N	10	\N	\N	\N	7	358	\N	1	2025	2025-01-29	2025-02-03
+857	40028007620250000405	1	2025-01-08 17:33:13.306262	2025-01-08 17:34:15.193696	\N	11	\N	\N	\N	7	358	\N	1	2025	2025-01-29	2025-02-03
+858	40029007820250000406	1	2025-01-08 17:36:56.82113	2025-01-08 17:36:56.82113	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+859	20024005420250000407	1	2025-01-08 17:41:01.625006	2025-01-08 17:41:01.625006	\N	10	\N	\N	\N	7	336	\N	1	2025	2025-01-29	2025-02-03
+861	20024005320250000409	255	2025-01-08 18:04:36.174999	2025-01-08 18:04:36.174999	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+862	30026006520250000410	250	2025-01-08 18:14:46.997622	2025-01-08 18:14:46.997622	\N	10	\N	\N	\N	7	347	\N	1	2025	2025-01-29	2025-02-03
+864	20024005320250000412	250	2025-01-08 18:24:10.094338	2025-01-08 18:24:10.094338	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+865	20024005420250000413	250	2025-01-08 18:25:55.444736	2025-01-08 18:25:55.444736	\N	10	\N	\N	\N	7	336	\N	1	2025	2025-01-29	2025-02-03
+866	20024005420250000414	250	2025-01-08 18:29:18.36873	2025-01-08 18:29:18.36873	\N	10	\N	\N	\N	7	336	\N	1	2025	2025-01-29	2025-02-03
+867	20024005320250000415	1	2025-01-08 18:32:59.70157	2025-01-08 18:36:56.526911	\N	11	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+869	40029007820250000417	1.25	2025-01-13 14:04:47.281386	2025-01-13 14:05:18.573159	\N	11	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+870	20024005320250000418	1.25	2025-01-13 15:53:09.383473	2025-01-13 15:53:09.383473	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+872	20024005320250000420	1.25	2025-01-13 15:56:49.181146	2025-01-13 15:56:49.181146	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+873	20024005320250000421	1.25	2025-01-13 15:58:51.156994	2025-01-13 15:58:51.156994	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+871	20024005320250000419	12.5	2025-01-13 15:56:18.644	2025-01-13 15:56:18.644	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+876	30027007020250000424	12.5	2025-01-13 19:47:55.822579	2025-01-13 19:47:55.822579	\N	10	\N	\N	\N	7	352	\N	1	2025	2025-01-29	2025-02-03
+878	20024005320250000426	2	2025-01-14 13:46:30.270882	2025-01-14 13:48:13.201692	\N	11	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+879	40029007820250000427	2	2025-01-14 13:52:21.156197	2025-01-14 13:52:21.156197	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+880	20024005420250000428	2	2025-01-14 13:54:15.878178	2025-01-14 13:54:15.878178	\N	10	\N	\N	\N	7	336	\N	1	2025	2025-01-29	2025-02-03
+881	20024005320250000429	2	2025-01-14 13:56:05.296062	2025-01-14 13:56:05.296062	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+882	20024005320250000430	2	2025-01-14 14:01:46.229328	2025-01-14 14:02:13.557873	\N	11	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+883	10014004820250000431	2	2025-01-14 14:23:46.414199	2025-01-14 14:23:46.414199	\N	10	\N	\N	\N	7	195	\N	1	2025	2025-01-29	2025-02-03
+884	20024005320250000432	2	2025-01-14 14:26:50.416835	2025-01-14 14:26:50.416835	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+885	20024005320250000433	2	2025-01-14 14:29:36.537078	2025-01-14 14:29:36.537078	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+887	30026006420250000435	2	2025-01-14 14:34:49.705621	2025-01-14 14:34:49.705621	\N	10	\N	\N	\N	7	346	\N	1	2025	2025-01-29	2025-02-03
+888	40029007820250000436	2	2025-01-14 14:51:38.225634	2025-01-14 14:51:38.225634	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+889	40029007820250000437	2	2025-01-14 14:52:02.327218	2025-01-14 14:52:27.069553	\N	11	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+890	40029007820250000438	2	2025-01-14 14:55:31.375333	2025-01-14 14:55:31.375333	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+891	40029007820250000439	2	2025-01-14 17:26:20.044334	2025-01-14 17:26:20.044334	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+899	40029007820250000447	2	2025-01-16 13:46:55.47817	2025-01-16 13:46:55.47817	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+886	40028007620250000434	2	2025-01-14 14:34:07.696	2025-01-14 18:04:28.63585	\N	11	\N	\N	\N	7	358	\N	1	2025	2025-01-29	2025-02-03
+860	40028007620250000408	2	2025-01-08 18:02:19.032	2025-01-08 18:02:19.032	\N	10	\N	\N	\N	7	358	\N	1	2025	2025-01-29	2025-02-03
+900	40029007820250000448	2	2025-01-16 13:47:48.539563	2025-01-16 13:47:48.539563	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+901	40029007820250000449	2	2025-01-16 13:52:58.882713	2025-01-16 13:52:58.882713	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+902	40029007820250000450	2	2025-01-16 13:55:34.706841	2025-01-16 13:55:34.706841	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+903	40029007820250000451	2	2025-01-16 13:55:41.521664	2025-01-16 13:55:41.521664	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+877	20024005320250000425	2	2025-01-14 13:44:32.155	2025-01-14 13:44:32.155	\N	10	\N	\N	\N	7	335	85	1	2025	2025-01-29	2025-02-03
+905	40029007820250000453	2	2025-01-16 13:57:14.457618	2025-01-16 13:57:14.457618	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+906	40029007820250000454	2	2025-01-16 13:57:53.552164	2025-01-16 13:57:53.552164	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+874	20024005320250000422	2	2025-01-13 16:01:29.138	2025-01-14 18:20:43.471727	\N	11	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+875	20024005320250000423	2	2025-01-13 16:01:57.296	2025-01-14 18:20:43.481991	\N	11	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+892	20024005320250000440	2	2025-01-16 13:36:28.412148	2025-01-16 13:36:28.412148	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+893	20024005320250000441	2	2025-01-16 13:36:55.421867	2025-01-16 13:36:55.421867	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+894	20024005320250000442	2	2025-01-16 13:42:10.725798	2025-01-16 13:42:10.725798	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+895	40029007820250000443	2	2025-01-16 13:42:49.925905	2025-01-16 13:42:49.925905	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+896	40029007820250000444	2	2025-01-16 13:43:27.178642	2025-01-16 13:43:27.178642	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+897	40029007820250000445	2	2025-01-16 13:46:16.414955	2025-01-16 13:46:16.414955	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+898	40029007820250000446	2	2025-01-16 13:46:46.970699	2025-01-16 13:46:46.970699	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+907	40029007820250000455	2	2025-01-16 13:59:28.978387	2025-01-16 13:59:28.978387	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+908	40029007820250000456	2	2025-01-16 14:01:15.498532	2025-01-16 14:01:15.498532	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+909	40029007820250000457	2	2025-01-16 14:06:27.191059	2025-01-16 14:06:27.191059	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+910	40029007820250000458	2	2025-01-16 14:11:21.364144	2025-01-16 14:11:21.364144	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+911	40029007820250000459	2	2025-01-16 14:20:02.148221	2025-01-16 14:20:02.148221	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+912	40029007820250000460	2	2025-01-16 17:43:11.757476	2025-01-16 17:43:11.757476	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+913	40029007820250000461	2	2025-01-16 17:43:24.881223	2025-01-16 17:43:24.881223	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+914	40029007820250000462	2	2025-01-16 17:45:10.34242	2025-01-16 17:45:10.34242	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+915	20024005320250000463	2	2025-01-16 17:49:02.817171	2025-01-16 17:49:02.817171	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+916	20024005320250000464	2	2025-01-16 17:49:26.495079	2025-01-16 17:49:26.495079	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+917	20024005320250000465	2	2025-01-16 17:50:17.110616	2025-01-16 17:50:17.110616	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+918	20024005320250000466	2	2025-01-16 17:51:28.793028	2025-01-16 17:51:28.793028	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+919	20024005320250000467	2	2025-01-16 17:53:18.60897	2025-01-16 17:53:18.60897	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+920	20024005320250000468	2	2025-01-16 17:54:03.240869	2025-01-16 17:54:03.240869	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+922	20024005320250000470	2	2025-01-16 18:01:14.135278	2025-01-16 18:01:14.135278	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+923	20024005320250000471	2	2025-01-16 18:01:44.708087	2025-01-16 18:01:44.708087	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+925	30026006520250000473	2	2025-01-16 18:04:36.504473	2025-01-16 18:04:36.504473	\N	10	\N	\N	\N	7	347	\N	1	2025	2025-01-29	2025-02-03
+926	30026006520250000474	2	2025-01-16 18:05:56.274405	2025-01-16 18:05:56.274405	\N	10	\N	\N	\N	7	347	\N	1	2025	2025-01-29	2025-02-03
+853	40029007820250000401	1	2025-01-08 15:36:14.101424	2025-01-08 15:37:42.678965	\N	11	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+928	40028007620250000476	5	2025-01-16 18:06:51.700205	2025-01-16 18:06:51.700205	\N	10	\N	\N	\N	5	358	\N	1	2025	2025-01-29	2025-02-03
+931	40028007620250000479	5	2025-01-16 18:07:59.629598	2025-01-16 18:08:34.225875	\N	11	\N	\N	\N	5	358	\N	1	2025	2025-01-29	2025-02-03
+970	10001000620250000518	0	2025-01-22 21:03:10.568278	2025-01-22 21:03:10.568278	\N	13	\N	\N	\N	6	6	89	1	2025	2025-01-29	2025-02-03
+971	40029007820250000519	0	2025-01-28 13:09:29.09638	2025-01-28 13:09:29.09638	\N	13	\N	\N	\N	6	360	90	1	2025	2025-01-29	2025-02-03
+932	30026006520250000480	2	2025-01-16 18:08:17.865986	2025-01-16 18:14:02.906018	\N	11	\N	\N	\N	7	347	\N	1	2025	2025-01-29	2025-02-03
+946	40029007820250000494	2.5	2025-01-16 19:21:22.24398	2025-01-16 19:21:57.583749	\N	11	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+947	40029007820250000495	2.5	2025-01-16 19:25:24.618225	2025-01-16 19:25:24.618225	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+960	20024005320250000508	1	2025-01-22 15:52:32.733305	2025-01-22 15:52:32.733305	\N	10	\N	\N	\N	6	335	89	1	2025	2025-01-29	2025-02-03
+961	40029007820250000509	1	2025-01-22 15:54:16.459462	2025-01-22 15:55:23.317077	\N	11	\N	\N	\N	6	360	\N	1	2025	2025-01-29	2025-02-03
+962	10001000920250000510	0	2025-01-22 16:18:41.662341	2025-01-22 16:18:41.662341	\N	13	\N	\N	\N	6	9	89	1	2025	2025-01-29	2025-02-03
+964	40029007820250000512	4	2025-01-22 17:55:14.013332	2025-01-22 17:55:14.013332	\N	10	\N	\N	\N	6	360	89	1	2025	2025-01-29	2025-02-03
+965	40029007820250000513	4	2025-01-22 18:22:08.505807	2025-01-22 18:22:08.505807	\N	10	\N	\N	\N	6	360	89	1	2025	2025-01-29	2025-02-03
+966	40029007820250000514	0	2025-01-22 18:26:35.889761	2025-01-22 18:26:35.889761	\N	13	\N	\N	\N	6	360	89	1	2025	2025-01-29	2025-02-03
+967	40029007820250000515	0	2025-01-22 18:29:08.049067	2025-01-22 18:29:08.049067	\N	13	\N	\N	\N	6	360	89	1	2025	2025-01-29	2025-02-03
+968	10001000120250000516	4	2025-01-22 18:29:08.067804	2025-01-22 18:29:08.067804	\N	10	\N	\N	\N	6	1	89	1	2025	2025-01-29	2025-02-03
+969	10001000120250000517	4	2025-01-22 21:03:10.556431	2025-01-22 21:03:10.556431	\N	10	\N	\N	\N	6	1	89	1	2025	2025-01-29	2025-02-03
+933	40029007820250000481	2	2025-01-16 18:50:28.373291	2025-01-16 18:50:28.373291	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+934	40029007820250000482	2	2025-01-16 18:50:50.057696	2025-01-16 18:50:50.057696	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+948	40029007820250000496	2.5	2025-01-16 19:25:59.490718	2025-01-16 19:25:59.490718	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+949	40029007820250000497	2.5	2025-01-16 19:27:49.615659	2025-01-16 19:27:49.615659	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+950	40029007820250000498	2.5	2025-01-16 19:27:59.177506	2025-01-16 19:27:59.177506	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+951	20024005320250000499	2.5	2025-01-16 19:29:48.689688	2025-01-16 19:29:48.689688	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+952	40028007620250000500	2.5	2025-01-16 19:33:10.654452	2025-01-16 19:33:10.654452	\N	10	\N	\N	\N	7	358	\N	1	2025	2025-01-29	2025-02-03
+953	40028007620250000501	2.5	2025-01-16 19:33:19.81958	2025-01-16 19:33:19.81958	\N	10	\N	\N	\N	7	358	\N	1	2025	2025-01-29	2025-02-03
+954	40028007620250000502	2.5	2025-01-16 19:33:27.819181	2025-01-16 19:34:17.532748	\N	11	\N	\N	\N	7	358	\N	1	2025	2025-01-29	2025-02-03
+955	20024005320250000503	2	2025-01-16 19:36:20.743881	2025-01-16 19:37:03.19463	\N	11	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+956	20024005320250000504	2	2025-01-16 19:38:41.096034	2025-01-16 19:38:41.096034	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+957	20024005320250000505	2	2025-01-16 19:39:33.855958	2025-01-16 19:39:33.855958	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+958	20024005320250000506	2	2025-01-16 19:40:05.091789	2025-01-16 19:40:05.091789	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+959	40029007820250000507	1.24	2025-01-16 19:57:09.932844	2025-01-16 19:57:33.649202	\N	11	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+963	20024005320250000511	4	2025-01-22 16:37:34.260452	2025-01-22 16:37:34.260452	\N	10	\N	\N	\N	7	335	89	1	2025	2025-01-29	2025-02-03
+972	10012002920250000520	1195.912	2025-01-29 14:49:16.939511	2025-01-29 14:49:16.939511	\N	10	\N	\N	\N	7	161	91	1	2025	2025-01-29	2025-02-03
+824	40029007820240000372	1	2024-12-18 22:12:14.076445	2024-12-18 22:12:34.607637	\N	11	\N	\N	\N	8	360	\N	1	2024	2025-01-29	2025-02-03
+832	30025006220250000380	272.5055	2025-01-07 14:42:50.30867	2025-01-07 14:42:50.30867	\N	10	\N	\N	\N	7	344	82	1	2025	2025-01-29	2025-02-03
+845	20024005320250000393	1	2025-01-08 14:56:52.322616	2025-01-08 15:02:22.316792	\N	11	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+852	20024005320250000400	1	2025-01-08 15:33:14.719389	2025-01-08 15:33:14.719389	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+868	20024005320250000416	1.25	2025-01-13 14:01:59.28288	2025-01-13 14:01:59.28288	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+904	40029007820250000452	2	2025-01-16 13:56:07.68199	2025-01-16 13:56:07.68199	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+921	20024005320250000469	2	2025-01-16 17:56:31.154981	2025-01-16 17:56:31.154981	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+927	30026006520250000475	2	2025-01-16 18:06:33.680302	2025-01-16 18:06:33.680302	\N	10	\N	\N	\N	7	347	\N	1	2025	2025-01-29	2025-02-03
+929	30026006520250000477	2	2025-01-16 18:07:42.973302	2025-01-16 18:07:42.973302	\N	10	\N	\N	\N	7	347	\N	1	2025	2025-01-29	2025-02-03
+930	30026006520250000478	2	2025-01-16 18:07:56.395506	2025-01-16 18:07:56.395506	\N	10	\N	\N	\N	7	347	\N	1	2025	2025-01-29	2025-02-03
+935	40029007820250000483	2	2025-01-16 18:53:33.193616	2025-01-16 18:53:33.193616	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+936	20024005320250000484	2	2025-01-16 18:55:43.925838	2025-01-16 18:55:43.925838	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+937	20024005320250000485	2	2025-01-16 18:55:54.697357	2025-01-16 18:55:54.697357	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+938	20024005320250000486	2	2025-01-16 18:56:04.541911	2025-01-16 18:56:52.793591	\N	11	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
+939	40029007820250000487	2.5	2025-01-16 19:10:17.120662	2025-01-16 19:10:17.120662	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+940	40029007820250000488	2.5	2025-01-16 19:12:31.785629	2025-01-16 19:12:31.785629	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+941	40029007820250000489	2.5	2025-01-16 19:12:53.944053	2025-01-16 19:12:53.944053	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+942	40029007820250000490	2.5	2025-01-16 19:19:30.741562	2025-01-16 19:19:30.741562	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+943	40029007820250000491	2.5	2025-01-16 19:20:43.364335	2025-01-16 19:20:43.364335	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+944	40029007820250000492	2.5	2025-01-16 19:20:53.621429	2025-01-16 19:20:53.621429	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+945	40029007820250000493	2.5	2025-01-16 19:21:10.281602	2025-01-16 19:21:10.281602	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
 \.
 
 
@@ -5524,226 +5560,226 @@ COPY public.tax_stamps_payment (id, created_at, updated_at, deleted_at, "statusI
 --
 
 COPY public.transaction (id, reference, amount, date, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "transactionTypeId", "bankAccountId", "paymentId") FROM stdin;
-283	2024121800000272	1068.8	2024-12-18 23:24:27.941+00	2024-12-18 19:24:27.95308	2024-12-18 19:24:27.95308	\N	5	\N	\N	\N	1	1	236
-284	2024121800000273	1068.8	2024-12-18 23:24:53.711+00	2024-12-18 19:24:53.723397	2024-12-18 19:24:53.723397	\N	5	\N	\N	\N	1	1	237
-285	2024121800000274	1068.8	2024-12-18 23:25:12.179+00	2024-12-18 19:25:12.189962	2024-12-18 19:25:12.189962	\N	5	\N	\N	\N	1	1	238
-286	2024121800000275	1068.8	2024-12-18 23:28:45.376+00	2024-12-18 19:28:45.385367	2024-12-18 19:28:45.385367	\N	5	\N	\N	\N	1	1	239
-287	2024121800000276	1068.8	2024-12-18 23:32:43.971+00	2024-12-18 19:32:43.98073	2024-12-18 19:32:43.98073	\N	5	\N	\N	\N	1	1	240
-288	2024121800000277	1068.8	2024-12-18 23:33:44.441+00	2024-12-18 19:33:44.450155	2024-12-18 19:33:44.450155	\N	5	\N	\N	\N	1	1	241
-289	2024121800000278	1068.8	2024-12-18 23:35:12.589+00	2024-12-18 19:35:12.59977	2024-12-18 19:35:12.59977	\N	5	\N	\N	\N	1	1	242
-290	2024121800000279	1068.8	2024-12-18 23:35:17.189+00	2024-12-18 19:35:17.206018	2024-12-18 19:35:17.206018	\N	5	\N	\N	\N	1	1	243
-291	2024121800000280	1068.8	2024-12-18 23:37:18.442+00	2024-12-18 19:37:18.454162	2024-12-18 19:37:18.454162	\N	5	\N	\N	\N	1	1	244
-292	2024121800000281	1068.8	2024-12-18 23:37:21.01+00	2024-12-18 19:37:21.028176	2024-12-18 19:37:21.028176	\N	5	\N	\N	\N	1	1	245
-293	2024121800000282	1068.8	2024-12-18 23:37:23.237+00	2024-12-18 19:37:23.253508	2024-12-18 19:37:23.253508	\N	5	\N	\N	\N	1	1	246
-294	2024121800000283	1068.8	2024-12-18 23:37:54.731+00	2024-12-18 19:37:54.747273	2024-12-18 19:37:54.747273	\N	5	\N	\N	\N	1	1	247
-295	2024121800000284	1068.8	2024-12-18 23:40:12.398+00	2024-12-18 19:40:12.408286	2024-12-18 19:40:12.408286	\N	5	\N	\N	\N	1	1	248
-296	2024121800000285	1068.8	2024-12-18 23:41:09.114+00	2024-12-18 19:41:09.125204	2024-12-18 19:41:09.125204	\N	5	\N	\N	\N	1	1	249
-253	2024121000000245	775.6365000000001	2024-12-11 01:40:22.045+00	2024-12-10 21:40:22.064279	2024-12-10 21:42:06.10905	\N	6	\N	\N	\N	1	1	197
-297	2024121800000286	1068.8	2024-12-18 23:43:13.219+00	2024-12-18 19:43:13.238253	2024-12-18 19:43:13.238253	\N	5	\N	\N	\N	1	1	250
-254	2024121000000248	258.5455	2024-12-11 01:49:03.799+00	2024-12-10 21:49:03.816955	2024-12-10 21:49:17.177882	\N	6	\N	\N	\N	1	1	198
-298	2024121800000287	1068.8	2024-12-18 23:44:42.697+00	2024-12-18 19:44:42.710435	2024-12-18 19:44:42.710435	\N	5	\N	\N	\N	1	1	251
-255	2024121000000250	258.5455	2024-12-11 01:57:27.21+00	2024-12-10 21:57:27.22872	2024-12-10 21:57:41.108276	\N	6	\N	\N	\N	1	1	199
-256	2024121000000252	258.5455	2024-12-11 02:01:52.188+00	2024-12-10 22:01:52.207446	2024-12-10 22:01:59.831208	\N	6	\N	\N	\N	1	1	200
-257	2024121000000254	258.5455	2024-12-11 02:04:45.069+00	2024-12-10 22:04:45.085813	2024-12-10 22:04:52.790431	\N	6	\N	\N	\N	1	1	201
-258	34501177	258.5455	2024-12-11 02:16:21.296+00	2024-12-10 22:16:21.317229	2024-12-10 22:16:27.850771	\N	6	\N	\N	\N	1	1	202
-259	123456987	258.5455	2024-12-10 04:00:00+00	2024-12-10 23:36:10.771396	2024-12-10 23:36:10.771396	\N	5	\N	\N	\N	2	2	203
-260	123434	258.5455	2024-12-11 04:00:00+00	2024-12-11 00:20:16.661524	2024-12-11 00:20:16.661524	\N	5	\N	\N	\N	2	2	211
-261	123434	258.5455	2024-12-11 04:00:00+00	2024-12-11 00:25:34.289194	2024-12-11 00:25:34.289194	\N	5	\N	\N	\N	2	2	212
-262	123434	258.5455	2024-12-11 04:00:00+00	2024-12-11 00:27:34.968093	2024-12-11 00:27:34.968093	\N	5	\N	\N	\N	2	2	213
-263	123434	258.5455	2024-12-11 04:00:00+00	2024-12-11 00:31:00.718884	2024-12-11 00:31:00.718884	\N	5	\N	\N	\N	2	2	214
-264	123434	258.5455	2024-12-11 04:00:00+00	2024-12-11 00:32:12.34768	2024-12-11 00:32:12.34768	\N	5	\N	\N	\N	2	2	215
-265	123434	258.5455	2024-12-11 04:00:00+00	2024-12-11 00:32:48.791252	2024-12-11 00:32:48.791252	\N	5	\N	\N	\N	2	2	216
-266	123434	258.5455	2024-12-11 04:00:00+00	2024-12-11 00:33:39.966555	2024-12-11 00:33:39.966555	\N	5	\N	\N	\N	2	2	217
-267	123434	258.5455	2024-12-11 04:00:00+00	2024-12-11 00:35:08.869367	2024-12-11 00:35:08.869367	\N	5	\N	\N	\N	2	2	218
-268	22222	517.091	2024-12-11 04:00:00+00	2024-12-11 00:36:48.534059	2024-12-11 00:36:48.534059	\N	5	\N	\N	\N	3	2	221
-269	2024121600000258	2113.28	2024-12-17 02:16:29.534+00	2024-12-16 22:16:29.551791	2024-12-16 22:16:29.551791	\N	5	\N	\N	\N	1	1	222
-270	2024121600000259	2113.28	2024-12-17 02:28:52.326+00	2024-12-16 22:28:52.346365	2024-12-16 22:28:52.346365	\N	5	\N	\N	\N	1	1	223
-271	2024121800000260	1068.8	2024-12-18 21:53:56.573+00	2024-12-18 17:53:56.596106	2024-12-18 17:53:56.596106	\N	5	\N	\N	\N	1	1	224
-272	2024121800000261	1068.8	2024-12-18 22:23:01.87+00	2024-12-18 18:23:01.894273	2024-12-18 18:23:01.894273	\N	5	\N	\N	\N	1	1	225
-273	2024121800000262	1068.8	2024-12-18 22:34:25.164+00	2024-12-18 18:34:25.184264	2024-12-18 18:34:25.184264	\N	5	\N	\N	\N	1	1	226
-274	2024121800000263	1068.8	2024-12-18 22:49:44.445+00	2024-12-18 18:49:44.470173	2024-12-18 18:49:44.470173	\N	5	\N	\N	\N	1	1	227
-275	2024121800000264	1068.8	2024-12-18 22:51:52.392+00	2024-12-18 18:51:52.410014	2024-12-18 18:51:52.410014	\N	5	\N	\N	\N	1	1	228
-276	2024121800000265	1068.8	2024-12-18 22:59:07.035+00	2024-12-18 18:59:07.046989	2024-12-18 18:59:07.046989	\N	5	\N	\N	\N	1	1	229
-277	2024121800000266	1068.8	2024-12-18 23:02:04.436+00	2024-12-18 19:02:04.454306	2024-12-18 19:02:04.454306	\N	5	\N	\N	\N	1	1	230
-278	2024121800000267	1068.8	2024-12-18 23:02:56.818+00	2024-12-18 19:02:56.851132	2024-12-18 19:02:56.851132	\N	5	\N	\N	\N	1	1	231
-279	2024121800000268	1068.8	2024-12-18 23:09:50.856+00	2024-12-18 19:09:50.875622	2024-12-18 19:09:50.875622	\N	5	\N	\N	\N	1	1	232
-280	2024121800000269	1068.8	2024-12-18 23:23:24.478+00	2024-12-18 19:23:24.491398	2024-12-18 19:23:24.491398	\N	5	\N	\N	\N	1	1	233
-281	2024121800000270	1068.8	2024-12-18 23:24:11.251+00	2024-12-18 19:24:11.267575	2024-12-18 19:24:11.267575	\N	5	\N	\N	\N	1	1	234
-282	2024121800000271	1068.8	2024-12-18 23:24:11.254+00	2024-12-18 19:24:11.271739	2024-12-18 19:24:11.271739	\N	5	\N	\N	\N	1	1	235
-299	35301257	1068.8	2024-12-18 23:47:35.424+00	2024-12-18 19:47:35.44283	2024-12-18 19:47:55.34236	\N	6	\N	\N	\N	1	1	252
-300	35301258	1068.8	2024-12-18 23:48:41.392+00	2024-12-18 19:48:41.407871	2024-12-18 19:48:49.23294	\N	6	\N	\N	\N	1	1	253
-301	35301259	1068.8	2024-12-18 23:54:38.774+00	2024-12-18 19:54:38.788054	2024-12-18 19:54:48.906514	\N	6	\N	\N	\N	1	1	254
-302	35301260	1068.8	2024-12-18 23:57:15.416+00	2024-12-18 19:57:15.430952	2024-12-18 19:57:21.406592	\N	6	\N	\N	\N	1	1	255
-303	2024121800000296	1068.8	2024-12-18 23:59:54.774+00	2024-12-18 19:59:54.790901	2024-12-18 19:59:54.790901	\N	5	\N	\N	\N	1	1	256
-304	2024121800000298	1068.8	2024-12-19 00:10:15.422+00	2024-12-18 20:10:15.433677	2024-12-18 20:10:15.433677	\N	5	\N	\N	\N	1	1	257
-305	2024121800000300	1068.8	2024-12-19 00:13:19.64+00	2024-12-18 20:13:19.661621	2024-12-18 20:13:19.661621	\N	5	\N	\N	\N	1	1	258
-306	2024121800000302	1068.8	2024-12-19 00:16:17.256+00	2024-12-18 20:16:17.269131	2024-12-18 20:16:17.269131	\N	5	\N	\N	\N	1	1	259
-307	2024121800000304	2137.6	2024-12-19 00:44:48.324+00	2024-12-18 20:44:48.342623	2024-12-18 20:44:48.342623	\N	5	\N	\N	\N	1	1	260
-308	2024121800000308	1068.8	2024-12-19 00:52:13.254+00	2024-12-18 20:52:13.274589	2024-12-18 20:52:13.274589	\N	5	\N	\N	\N	1	1	261
-309	2024121800000316	1068.8	2024-12-19 00:55:12.205+00	2024-12-18 20:55:12.218597	2024-12-18 20:55:12.218597	\N	5	\N	\N	\N	1	1	262
-310	2024121800000318	1068.8	2024-12-19 00:55:24.612+00	2024-12-18 20:55:24.627144	2024-12-18 20:55:24.627144	\N	5	\N	\N	\N	1	1	263
-311	2024121800000320	1068.8	2024-12-19 00:55:34.713+00	2024-12-18 20:55:34.731346	2024-12-18 20:55:34.731346	\N	5	\N	\N	\N	1	1	264
-312	2024121800000322	1068.8	2024-12-19 00:56:10.49+00	2024-12-18 20:56:10.514323	2024-12-18 20:56:10.514323	\N	5	\N	\N	\N	1	1	265
-313	2024121800000324	1068.8	2024-12-19 01:00:46.045+00	2024-12-18 21:00:46.070347	2024-12-18 21:00:46.070347	\N	5	\N	\N	\N	1	1	266
-314	2024121800000326	1068.8	2024-12-19 01:03:28.655+00	2024-12-18 21:03:28.672688	2024-12-18 21:03:28.672688	\N	5	\N	\N	\N	1	1	267
-315	2024121800000327	1068.8	2024-12-19 01:07:07.253+00	2024-12-18 21:07:07.267472	2024-12-18 21:07:07.267472	\N	5	\N	\N	\N	1	1	268
-316	2024121800000328	1068.8	2024-12-19 01:09:00.226+00	2024-12-18 21:09:00.245095	2024-12-18 21:09:00.245095	\N	5	\N	\N	\N	1	1	269
-317	2024121800000329	1068.8	2024-12-19 01:15:10.707+00	2024-12-18 21:15:10.726398	2024-12-18 21:15:10.726398	\N	5	\N	\N	\N	1	1	270
-318	35301261	12825.62	2024-12-19 01:17:46.613+00	2024-12-18 21:17:46.629779	2024-12-18 21:17:54.352188	\N	6	\N	\N	\N	1	1	271
-319	2024121800000332	2137.6	2024-12-19 01:18:59.886+00	2024-12-18 21:18:59.90529	2024-12-18 21:18:59.90529	\N	5	\N	\N	\N	1	1	272
-320	2024121800000334	2137.6	2024-12-19 01:19:26.696+00	2024-12-18 21:19:26.71171	2024-12-18 21:19:26.71171	\N	5	\N	\N	\N	1	1	273
-321	35301262	1068.8	2024-12-19 01:22:08.016+00	2024-12-18 21:22:08.037581	2024-12-18 21:22:14.693951	\N	6	\N	\N	\N	1	1	274
-322	35301263	1068.8	2024-12-19 01:22:51.553+00	2024-12-18 21:22:51.56959	2024-12-18 21:22:59.314	\N	6	\N	\N	\N	1	1	275
-323	35301264	1068.8	2024-12-19 01:24:14.922+00	2024-12-18 21:24:14.94107	2024-12-18 21:24:22.385998	\N	6	\N	\N	\N	1	1	276
-324	2024121800000342	1068.8	2024-12-19 01:25:35.373+00	2024-12-18 21:25:35.398264	2024-12-18 21:25:35.398264	\N	5	\N	\N	\N	1	1	277
-325	35301265	1068.8	2024-12-19 01:32:58+00	2024-12-18 21:32:58.023428	2024-12-18 21:33:14.728091	\N	6	\N	\N	\N	1	1	278
-326	35301267	1068.8	2024-12-19 01:34:14.573+00	2024-12-18 21:34:14.590744	2024-12-18 21:36:04.374986	\N	6	\N	\N	\N	1	1	279
-327	35301268	1068.8	2024-12-19 01:36:09.958+00	2024-12-18 21:36:09.976864	2024-12-18 21:36:16.112899	\N	6	\N	\N	\N	1	1	280
-328	35301269	1068.8	2024-12-19 01:36:51.569+00	2024-12-18 21:36:51.580255	2024-12-18 21:36:56.604357	\N	6	\N	\N	\N	1	1	281
-329	35301270	1068.8	2024-12-19 01:37:35.446+00	2024-12-18 21:37:35.466331	2024-12-18 21:37:41.118068	\N	6	\N	\N	\N	1	1	282
-330	35301271	1068.8	2024-12-19 01:39:09.624+00	2024-12-18 21:39:09.634357	2024-12-18 21:39:14.466063	\N	6	\N	\N	\N	1	1	283
-331	35301272	1068.8	2024-12-19 01:43:30.085+00	2024-12-18 21:43:30.108372	2024-12-18 21:43:36.214581	\N	6	\N	\N	\N	1	1	284
-332	35301273	1068.8	2024-12-19 01:44:24.934+00	2024-12-18 21:44:24.954181	2024-12-18 21:44:33.339133	\N	6	\N	\N	\N	1	1	285
-333	35301274	1068.8	2024-12-19 01:44:46.43+00	2024-12-18 21:44:46.441812	2024-12-18 21:44:50.929783	\N	6	\N	\N	\N	1	1	286
-334	35301275	1	2024-12-19 02:12:14.121+00	2024-12-18 22:12:14.141154	2024-12-18 22:12:34.647027	\N	6	\N	\N	\N	1	1	287
-335	35301276	2	2024-12-19 02:16:01.889+00	2024-12-18 22:16:01.903662	2024-12-18 22:16:11.021961	\N	6	\N	\N	\N	1	1	288
-336	35301277	2	2024-12-19 02:16:40.686+00	2024-12-18 22:16:40.698513	2024-12-18 22:16:50.465618	\N	6	\N	\N	\N	1	1	289
-337	35301278	2	2024-12-19 02:17:29.263+00	2024-12-18 22:17:29.282565	2024-12-18 22:17:39.12457	\N	6	\N	\N	\N	1	1	290
-338	1234	270.53	2024-12-29 04:00:00+00	2024-12-29 14:42:12.974707	2024-12-29 14:42:12.974707	\N	6	\N	\N	\N	2	2	295
-339	4125	270.53	2024-12-29 04:00:00+00	2024-12-29 15:48:16.749781	2024-12-29 15:48:16.749781	\N	6	\N	\N	\N	2	2	296
-340	2025010700000370	1.25	2025-01-07 16:55:01.228+00	2025-01-07 16:55:01.23374	2025-01-07 16:55:01.23374	\N	5	\N	\N	\N	1	1	297
-341	2025010700000373	1.25	2025-01-07 17:00:49.605+00	2025-01-07 17:00:49.609087	2025-01-07 17:00:49.609087	\N	5	\N	\N	\N	1	1	298
-342	2025010700000379	1.25	2025-01-07 19:21:46.461+00	2025-01-07 19:21:46.464955	2025-01-07 19:21:46.464955	\N	5	\N	\N	\N	1	1	299
-343	2025010700000382	1.25	2025-01-07 19:54:42.05+00	2025-01-07 19:54:42.055133	2025-01-07 19:54:42.055133	\N	5	\N	\N	\N	1	1	300
-344	2025010700000383	1.25	2025-01-07 19:55:25.4+00	2025-01-07 19:55:25.403995	2025-01-07 19:55:25.403995	\N	5	\N	\N	\N	1	1	301
-345	2025010800000386	1.25	2025-01-08 14:29:25.362+00	2025-01-08 14:29:25.366877	2025-01-08 14:29:25.366877	\N	5	\N	\N	\N	1	1	302
-346	2025010800000388	1.25	2025-01-08 14:35:47.036+00	2025-01-08 14:35:47.040029	2025-01-08 14:35:47.040029	\N	5	\N	\N	\N	1	1	303
-347	2025010800000390	1.25	2025-01-08 14:38:30.873+00	2025-01-08 14:38:30.877651	2025-01-08 14:39:21.030445	\N	6	\N	\N	\N	1	1	304
-348	2025010800000392	1.25	2025-01-08 14:39:58.105+00	2025-01-08 14:39:58.108328	2025-01-08 14:40:18.767146	\N	6	\N	\N	\N	1	1	305
-349	2025010800000394	1.25	2025-01-08 14:42:21.118+00	2025-01-08 14:42:21.121814	2025-01-08 14:42:45.976167	\N	6	\N	\N	\N	1	1	306
-350	2025010800000395	1.25	2025-01-08 14:46:04.573+00	2025-01-08 14:46:04.576711	2025-01-08 14:46:04.576711	\N	5	\N	\N	\N	1	1	307
-351	40806609	1.25	2025-01-08 14:53:00.384+00	2025-01-08 14:53:00.38811	2025-01-08 14:53:30.989657	\N	6	\N	\N	\N	1	1	308
-352	40806612	1	2025-01-08 14:56:52.337+00	2025-01-08 14:56:52.340546	2025-01-08 15:02:22.321294	\N	6	\N	\N	\N	1	1	309
-353	2025010800000402	1	2025-01-08 15:04:08.423+00	2025-01-08 15:04:08.426624	2025-01-08 15:04:08.426624	\N	5	\N	\N	\N	1	1	310
-354	2025010800000403	1	2025-01-08 15:05:46.402+00	2025-01-08 15:05:46.405925	2025-01-08 15:05:46.405925	\N	5	\N	\N	\N	1	1	311
-355	2025010800000405	1	2025-01-08 15:15:29.189+00	2025-01-08 15:15:29.193236	2025-01-08 15:15:29.193236	\N	5	\N	\N	\N	1	1	312
-356	2025010800000406	1	2025-01-08 15:20:42.38+00	2025-01-08 15:20:42.383788	2025-01-08 15:20:42.383788	\N	5	\N	\N	\N	1	1	313
-357	2025010800000407	1	2025-01-08 15:22:39.769+00	2025-01-08 15:22:39.773507	2025-01-08 15:22:39.773507	\N	5	\N	\N	\N	1	1	314
-358	2025010800000408	1	2025-01-08 15:29:31.075+00	2025-01-08 15:29:31.079232	2025-01-08 15:29:31.079232	\N	5	\N	\N	\N	1	1	315
-359	2025010800000409	1	2025-01-08 15:33:14.735+00	2025-01-08 15:33:14.738821	2025-01-08 15:33:14.738821	\N	5	\N	\N	\N	1	1	316
-360	40806622	1	2025-01-08 15:36:14.111+00	2025-01-08 15:36:14.115943	2025-01-08 15:37:42.683742	\N	6	\N	\N	\N	1	1	317
-361	2025010800000412	1	2025-01-08 15:43:24.233+00	2025-01-08 15:43:24.23758	2025-01-08 15:43:24.23758	\N	5	\N	\N	\N	1	1	318
-362	2025010800000414	1	2025-01-08 17:18:35.187+00	2025-01-08 17:18:35.192046	2025-01-08 17:18:35.192046	\N	5	\N	\N	\N	1	1	319
-363	2025010800000415	1	2025-01-08 17:31:54.319+00	2025-01-08 17:31:54.323325	2025-01-08 17:31:54.323325	\N	5	\N	\N	\N	1	1	320
-364	40806627	1	2025-01-08 17:33:13.314+00	2025-01-08 17:33:13.318588	2025-01-08 17:34:15.201166	\N	6	\N	\N	\N	1	1	321
-365	2025010800000418	1	2025-01-08 17:36:56.835+00	2025-01-08 17:36:56.838526	2025-01-08 17:36:56.838526	\N	5	\N	\N	\N	1	1	322
-366	2025010800000419	1	2025-01-08 17:41:01.639+00	2025-01-08 17:41:01.643048	2025-01-08 17:41:01.643048	\N	5	\N	\N	\N	1	1	323
-367	2025010800000420	255	2025-01-08 18:02:19.041+00	2025-01-08 18:02:19.04482	2025-01-08 18:02:19.04482	\N	5	\N	\N	\N	1	1	324
-368	2025010800000422	255	2025-01-08 18:04:36.183+00	2025-01-08 18:04:36.187189	2025-01-08 18:05:08.504651	\N	6	\N	\N	\N	1	1	325
-369	2025010800000423	250	2025-01-08 18:14:47.007+00	2025-01-08 18:14:47.011604	2025-01-08 18:14:47.011604	\N	5	\N	\N	\N	1	1	326
-370	2025010800000424	250	2025-01-08 18:24:10.108+00	2025-01-08 18:24:10.112516	2025-01-08 18:24:10.112516	\N	5	\N	\N	\N	1	1	327
-371	2025010800000426	250	2025-01-08 18:25:55.453+00	2025-01-08 18:25:55.457543	2025-01-08 18:26:16.240066	\N	6	\N	\N	\N	1	1	328
-372	2025010800000428	250	2025-01-08 18:29:18.379+00	2025-01-08 18:29:18.384218	2025-01-08 18:30:42.237071	\N	6	\N	\N	\N	1	1	329
-373	40806640	1	2025-01-08 18:32:59.71+00	2025-01-08 18:32:59.713997	2025-01-08 18:36:56.532124	\N	6	\N	\N	\N	1	1	330
-374	2025011300000431	1.25	2025-01-13 14:01:59.296+00	2025-01-13 14:01:59.302603	2025-01-13 14:01:59.302603	\N	5	\N	\N	\N	1	1	331
-375	41306707	1.25	2025-01-13 14:04:47.292+00	2025-01-13 14:04:47.297421	2025-01-13 14:05:18.57792	\N	6	\N	\N	\N	1	1	332
-376	2025011300000434	1.25	2025-01-13 15:53:09.393+00	2025-01-13 15:53:09.397796	2025-01-13 15:53:09.397796	\N	5	\N	\N	\N	1	1	333
-377	2025011300000435	1.25	2025-01-13 15:56:18.656+00	2025-01-13 15:56:18.660142	2025-01-13 15:56:18.660142	\N	5	\N	\N	\N	1	1	334
-378	2025011300000437	1.25	2025-01-13 15:56:49.192+00	2025-01-13 15:56:49.196071	2025-01-13 15:57:15.668329	\N	6	\N	\N	\N	1	1	335
-379	2025011300000439	1.25	2025-01-13 15:58:51.176+00	2025-01-13 15:58:51.181399	2025-01-13 15:59:00.407491	\N	6	\N	\N	\N	1	1	336
-380	2025011300000440	1.25	2025-01-13 16:01:29.15+00	2025-01-13 16:01:29.154598	2025-01-13 16:01:29.154598	\N	5	\N	\N	\N	1	1	337
-381	2025011300000442	1.25	2025-01-13 16:01:57.311+00	2025-01-13 16:01:57.315195	2025-01-13 16:02:08.868989	\N	6	\N	\N	\N	1	1	338
-382	2025011300000444	12.5	2025-01-13 19:26:08.13+00	2025-01-13 19:26:08.134489	2025-01-13 19:27:26.943417	\N	6	\N	\N	\N	1	1	339
-383	2025011300000445	12.5	2025-01-13 19:47:55.832+00	2025-01-13 19:47:55.835909	2025-01-13 19:47:55.835909	\N	5	\N	\N	\N	1	1	340
-384	41406730	2	2025-01-14 13:46:30.287+00	2025-01-14 13:46:30.292091	2025-01-14 13:48:13.207192	\N	6	\N	\N	\N	1	1	341
-385	2025011400000450	2	2025-01-14 13:52:21.165+00	2025-01-14 13:52:21.168719	2025-01-14 13:52:53.600645	\N	6	\N	\N	\N	1	1	342
-386	2025011400000452	2	2025-01-14 13:54:15.888+00	2025-01-14 13:54:15.892856	2025-01-14 13:54:32.791705	\N	6	\N	\N	\N	1	1	343
-387	2025011400000453	2	2025-01-14 13:56:05.305+00	2025-01-14 13:56:05.309744	2025-01-14 13:56:05.309744	\N	5	\N	\N	\N	1	1	344
-388	41406737	2	2025-01-14 14:01:46.24+00	2025-01-14 14:01:46.24426	2025-01-14 14:02:13.566736	\N	6	\N	\N	\N	1	1	345
-389	2025011400000456	2	2025-01-14 14:23:46.424+00	2025-01-14 14:23:46.428267	2025-01-14 14:23:46.428267	\N	5	\N	\N	\N	1	1	346
-390	2025011400000457	2	2025-01-14 14:26:50.426+00	2025-01-14 14:26:50.429786	2025-01-14 14:26:50.429786	\N	5	\N	\N	\N	1	1	347
-391	2025011400000458	2	2025-01-14 14:29:36.547+00	2025-01-14 14:29:36.551098	2025-01-14 14:29:36.551098	\N	5	\N	\N	\N	1	1	348
-392	2025011400000459	2	2025-01-14 14:34:07.704+00	2025-01-14 14:34:07.708822	2025-01-14 14:34:07.708822	\N	5	\N	\N	\N	1	1	349
-393	2025011400000461	2	2025-01-14 14:34:49.714+00	2025-01-14 14:34:49.718149	2025-01-14 14:34:59.646865	\N	6	\N	\N	\N	1	1	350
-394	2025011400000462	2	2025-01-14 14:51:38.234+00	2025-01-14 14:51:38.237988	2025-01-14 14:51:38.237988	\N	5	\N	\N	\N	1	1	351
-395	41406755	2	2025-01-14 14:52:02.337+00	2025-01-14 14:52:02.340325	2025-01-14 14:52:27.074605	\N	6	\N	\N	\N	1	1	352
-396	2025011400000466	2	2025-01-14 14:55:31.386+00	2025-01-14 14:55:31.389955	2025-01-14 14:55:31.389955	\N	5	\N	\N	\N	1	1	353
-397	2025011400000469	2	2025-01-14 17:26:20.053+00	2025-01-14 17:26:20.057227	2025-01-14 17:26:20.057227	\N	5	\N	\N	\N	1	1	354
-398	41406771	2	2025-01-14 18:04:01.337+00	2025-01-14 18:04:01.341597	2025-01-14 18:04:28.640807	\N	6	\N	\N	\N	1	1	355
-399	2025011400000473	2	2025-01-14 18:06:54.898+00	2025-01-14 18:06:54.902182	2025-01-14 18:07:04.598448	\N	6	\N	\N	\N	1	1	356
-400	2025011400000474	4	2025-01-14 18:16:14.083+00	2025-01-14 18:16:14.089534	2025-01-14 18:16:14.089534	\N	5	\N	\N	\N	1	1	357
-401	2025011400000476	4	2025-01-14 18:16:42.608+00	2025-01-14 18:16:42.612216	2025-01-14 18:16:42.612216	\N	5	\N	\N	\N	1	1	358
-402	2025011400000478	4	2025-01-14 18:18:58.697+00	2025-01-14 18:18:58.701948	2025-01-14 18:18:58.701948	\N	5	\N	\N	\N	1	1	359
-403	41406779	4	2025-01-14 18:20:03.649+00	2025-01-14 18:20:03.652706	2025-01-14 18:20:43.481696	\N	6	\N	\N	\N	1	1	360
-404	2025011600000481	2	2025-01-16 13:36:28.424+00	2025-01-16 13:36:28.429503	2025-01-16 13:36:28.429503	\N	5	\N	\N	\N	1	1	361
-405	2025011600000482	2	2025-01-16 13:36:55.432+00	2025-01-16 13:36:55.437232	2025-01-16 13:36:55.437232	\N	5	\N	\N	\N	1	1	362
-406	2025011600000483	2	2025-01-16 13:42:10.735+00	2025-01-16 13:42:10.739915	2025-01-16 13:42:10.739915	\N	5	\N	\N	\N	1	1	363
-407	2025011600000484	2	2025-01-16 13:42:49.94+00	2025-01-16 13:42:49.944478	2025-01-16 13:42:49.944478	\N	5	\N	\N	\N	1	1	364
-408	2025011600000485	2	2025-01-16 13:43:27.193+00	2025-01-16 13:43:27.197155	2025-01-16 13:43:27.197155	\N	5	\N	\N	\N	1	1	365
-409	2025011600000486	2	2025-01-16 13:46:16.433+00	2025-01-16 13:46:16.437503	2025-01-16 13:46:16.437503	\N	5	\N	\N	\N	1	1	366
-410	2025011600000487	2	2025-01-16 13:46:46.98+00	2025-01-16 13:46:46.984364	2025-01-16 13:46:46.984364	\N	5	\N	\N	\N	1	1	367
-411	2025011600000488	2	2025-01-16 13:46:55.487+00	2025-01-16 13:46:55.490462	2025-01-16 13:46:55.490462	\N	5	\N	\N	\N	1	1	368
-412	2025011600000489	2	2025-01-16 13:47:48.553+00	2025-01-16 13:47:48.557265	2025-01-16 13:47:48.557265	\N	5	\N	\N	\N	1	1	369
-413	2025011600000490	2	2025-01-16 13:52:58.893+00	2025-01-16 13:52:58.898445	2025-01-16 13:52:58.898445	\N	5	\N	\N	\N	1	1	370
-414	2025011600000491	2	2025-01-16 13:55:34.717+00	2025-01-16 13:55:34.720472	2025-01-16 13:55:34.720472	\N	5	\N	\N	\N	1	1	371
-415	2025011600000492	2	2025-01-16 13:55:41.531+00	2025-01-16 13:55:41.534703	2025-01-16 13:55:41.534703	\N	5	\N	\N	\N	1	1	372
-416	2025011600000493	2	2025-01-16 13:56:07.694+00	2025-01-16 13:56:07.69872	2025-01-16 13:56:07.69872	\N	5	\N	\N	\N	1	1	373
-417	2025011600000494	2	2025-01-16 13:57:14.467+00	2025-01-16 13:57:14.472036	2025-01-16 13:57:14.472036	\N	5	\N	\N	\N	1	1	374
-418	2025011600000495	2	2025-01-16 13:57:53.564+00	2025-01-16 13:57:53.568404	2025-01-16 13:57:53.568404	\N	5	\N	\N	\N	1	1	375
-419	2025011600000496	2	2025-01-16 13:59:28.987+00	2025-01-16 13:59:28.99136	2025-01-16 13:59:28.99136	\N	5	\N	\N	\N	1	1	376
-420	2025011600000497	2	2025-01-16 14:01:15.512+00	2025-01-16 14:01:15.515995	2025-01-16 14:01:15.515995	\N	5	\N	\N	\N	1	1	377
-421	2025011600000498	2	2025-01-16 14:06:27.2+00	2025-01-16 14:06:27.204054	2025-01-16 14:06:27.204054	\N	5	\N	\N	\N	1	1	378
-422	2025011600000499	2	2025-01-16 14:11:21.375+00	2025-01-16 14:11:21.380204	2025-01-16 14:11:21.380204	\N	5	\N	\N	\N	1	1	379
-423	2025011600000500	2	2025-01-16 14:20:02.159+00	2025-01-16 14:20:02.162908	2025-01-16 14:20:02.162908	\N	5	\N	\N	\N	1	1	380
-424	2025011600000501	2	2025-01-16 17:43:11.771+00	2025-01-16 17:43:11.776801	2025-01-16 17:43:11.776801	\N	5	\N	\N	\N	1	1	381
-425	2025011600000503	2	2025-01-16 17:43:24.892+00	2025-01-16 17:43:24.896752	2025-01-16 17:44:26.978623	\N	6	\N	\N	\N	1	1	382
-426	2025011600000505	2	2025-01-16 17:45:10.353+00	2025-01-16 17:45:10.356746	2025-01-16 17:45:39.09731	\N	6	\N	\N	\N	1	1	383
-427	2025011600000506	2	2025-01-16 17:49:02.827+00	2025-01-16 17:49:02.831481	2025-01-16 17:49:02.831481	\N	5	\N	\N	\N	1	1	384
-428	2025011600000507	2	2025-01-16 17:49:26.505+00	2025-01-16 17:49:26.509352	2025-01-16 17:49:26.509352	\N	5	\N	\N	\N	1	1	385
-429	2025011600000510	2	2025-01-16 17:50:17.121+00	2025-01-16 17:50:17.124539	2025-01-16 17:51:14.043454	\N	6	\N	\N	\N	1	1	386
-430	2025011600000512	2	2025-01-16 17:51:28.804+00	2025-01-16 17:51:28.808862	2025-01-16 17:53:14.349175	\N	6	\N	\N	\N	1	1	387
-431	2025011600000514	2	2025-01-16 17:53:18.619+00	2025-01-16 17:53:18.623639	2025-01-16 17:53:30.892039	\N	6	\N	\N	\N	1	1	388
-432	2025011600000516	2	2025-01-16 17:54:03.251+00	2025-01-16 17:54:03.255159	2025-01-16 17:54:52.175563	\N	6	\N	\N	\N	1	1	389
-433	2025011600000518	2	2025-01-16 17:56:31.165+00	2025-01-16 17:56:31.168798	2025-01-16 17:57:12.682762	\N	6	\N	\N	\N	1	1	390
-434	2025011600000520	2	2025-01-16 18:01:14.147+00	2025-01-16 18:01:14.151236	2025-01-16 18:01:39.058165	\N	6	\N	\N	\N	1	1	391
-435	2025011600000521	2	2025-01-16 18:01:44.717+00	2025-01-16 18:01:44.721132	2025-01-16 18:01:44.721132	\N	5	\N	\N	\N	1	1	392
-436	2025011600000522	5	2025-01-16 18:04:22.924+00	2025-01-16 18:04:22.928893	2025-01-16 18:04:22.928893	\N	5	\N	\N	\N	1	1	393
-437	2025011600000524	2	2025-01-16 18:04:36.513+00	2025-01-16 18:04:36.517642	2025-01-16 18:04:55.348419	\N	6	\N	\N	\N	1	1	394
-438	2025011600000525	2	2025-01-16 18:05:56.284+00	2025-01-16 18:05:56.28789	2025-01-16 18:05:56.28789	\N	5	\N	\N	\N	1	1	395
-439	2025011600000527	2	2025-01-16 18:06:33.694+00	2025-01-16 18:06:33.697716	2025-01-16 18:06:33.697716	\N	5	\N	\N	\N	1	1	396
-440	2025011600000528	5	2025-01-16 18:06:51.709+00	2025-01-16 18:06:51.713404	2025-01-16 18:06:51.713404	\N	5	\N	\N	\N	1	1	397
-441	2025011600000529	2	2025-01-16 18:07:42.988+00	2025-01-16 18:07:42.992655	2025-01-16 18:07:42.992655	\N	5	\N	\N	\N	1	1	398
-442	2025011600000531	2	2025-01-16 18:07:56.403+00	2025-01-16 18:07:56.405796	2025-01-16 18:07:56.405796	\N	5	\N	\N	\N	1	1	399
-443	41606839	5	2025-01-16 18:07:59.637+00	2025-01-16 18:07:59.64077	2025-01-16 18:08:34.231861	\N	6	\N	\N	\N	1	1	400
-444	41606841	2	2025-01-16 18:08:17.876+00	2025-01-16 18:08:17.87945	2025-01-16 18:14:02.911872	\N	6	\N	\N	\N	1	1	401
-445	2025011600000537	2	2025-01-16 18:50:28.384+00	2025-01-16 18:50:28.388256	2025-01-16 18:50:28.388256	\N	5	\N	\N	\N	1	1	402
-446	2025011600000539	2	2025-01-16 18:50:50.067+00	2025-01-16 18:50:50.070748	2025-01-16 18:51:50.974899	\N	6	\N	\N	\N	1	1	403
-447	2025011600000540	2	2025-01-16 18:53:33.203+00	2025-01-16 18:53:33.20805	2025-01-16 18:53:33.20805	\N	5	\N	\N	\N	1	1	404
-448	2025011600000541	2	2025-01-16 18:55:43.941+00	2025-01-16 18:55:43.944595	2025-01-16 18:55:43.944595	\N	5	\N	\N	\N	1	1	405
-449	2025011600000542	2	2025-01-16 18:55:54.706+00	2025-01-16 18:55:54.709403	2025-01-16 18:55:54.709403	\N	5	\N	\N	\N	1	1	406
-450	41606849	2	2025-01-16 18:56:04.55+00	2025-01-16 18:56:04.552995	2025-01-16 18:56:52.798238	\N	6	\N	\N	\N	1	1	407
-451	2025011600000545	2.5	2025-01-16 19:10:17.131+00	2025-01-16 19:10:17.13582	2025-01-16 19:10:17.13582	\N	5	\N	\N	\N	1	1	408
-452	2025011600000547	2.5	2025-01-16 19:12:31.796+00	2025-01-16 19:12:31.800095	2025-01-16 19:12:31.800095	\N	5	\N	\N	\N	1	1	409
-453	2025011600000548	2.5	2025-01-16 19:12:53.953+00	2025-01-16 19:12:53.956691	2025-01-16 19:12:53.956691	\N	5	\N	\N	\N	1	1	410
-454	2025011600000550	2.5	2025-01-16 19:19:30.75+00	2025-01-16 19:19:30.754337	2025-01-16 19:19:30.754337	\N	5	\N	\N	\N	1	1	411
-455	2025011600000552	2.5	2025-01-16 19:20:43.379+00	2025-01-16 19:20:43.38402	2025-01-16 19:20:43.38402	\N	5	\N	\N	\N	1	1	412
-456	2025011600000553	2.5	2025-01-16 19:20:53.63+00	2025-01-16 19:20:53.633484	2025-01-16 19:20:53.633484	\N	5	\N	\N	\N	1	1	413
-457	2025011600000554	2.5	2025-01-16 19:21:10.289+00	2025-01-16 19:21:10.292907	2025-01-16 19:21:10.292907	\N	5	\N	\N	\N	1	1	414
-458	41606854	2.5	2025-01-16 19:21:22.253+00	2025-01-16 19:21:22.256921	2025-01-16 19:21:57.588541	\N	6	\N	\N	\N	1	1	415
-459	2025011600000557	2.5	2025-01-16 19:25:24.628+00	2025-01-16 19:25:24.631763	2025-01-16 19:25:24.631763	\N	5	\N	\N	\N	1	1	416
-460	2025011600000560	2.5	2025-01-16 19:25:59.5+00	2025-01-16 19:25:59.503862	2025-01-16 19:26:18.216977	\N	6	\N	\N	\N	1	1	417
-461	2025011600000561	2.5	2025-01-16 19:27:49.624+00	2025-01-16 19:27:49.62821	2025-01-16 19:27:49.62821	\N	5	\N	\N	\N	1	1	418
-462	2025011600000562	2.5	2025-01-16 19:27:59.185+00	2025-01-16 19:27:59.188729	2025-01-16 19:27:59.188729	\N	5	\N	\N	\N	1	1	419
-463	2025011600000563	2.5	2025-01-16 19:29:48.7+00	2025-01-16 19:29:48.703896	2025-01-16 19:29:48.703896	\N	5	\N	\N	\N	1	1	420
-464	2025011600000564	2.5	2025-01-16 19:33:10.664+00	2025-01-16 19:33:10.667728	2025-01-16 19:33:10.667728	\N	5	\N	\N	\N	1	1	421
-465	2025011600000565	2.5	2025-01-16 19:33:19.827+00	2025-01-16 19:33:19.829711	2025-01-16 19:33:19.829711	\N	5	\N	\N	\N	1	1	422
-466	41606861	2.5	2025-01-16 19:33:27.826+00	2025-01-16 19:33:27.828941	2025-01-16 19:34:17.536636	\N	6	\N	\N	\N	1	1	423
-467	41606863	2	2025-01-16 19:36:20.751+00	2025-01-16 19:36:20.755275	2025-01-16 19:37:03.200639	\N	6	\N	\N	\N	1	1	424
-468	2025011600000571	2	2025-01-16 19:38:41.106+00	2025-01-16 19:38:41.109509	2025-01-16 19:38:52.107848	\N	6	\N	\N	\N	1	1	425
-469	2025011600000573	2	2025-01-16 19:39:33.865+00	2025-01-16 19:39:33.868635	2025-01-16 19:39:58.615368	\N	6	\N	\N	\N	1	1	426
-470	2025011600000574	2	2025-01-16 19:40:05.1+00	2025-01-16 19:40:05.103834	2025-01-16 19:40:05.103834	\N	5	\N	\N	\N	1	1	427
-471	41606870	1.24	2025-01-16 19:57:09.946+00	2025-01-16 19:57:09.950007	2025-01-16 19:57:33.662517	\N	6	\N	\N	\N	1	1	428
-472	42206914	1	2025-01-22 15:54:16.47+00	2025-01-22 15:54:16.47528	2025-01-22 15:55:23.32508	\N	6	\N	\N	\N	1	1	429
+283	2024121800000272	1068.8	2024-12-18 19:24:27.941-04	2024-12-18 19:24:27.95308	2024-12-18 19:24:27.95308	\N	5	\N	\N	\N	1	1	236
+284	2024121800000273	1068.8	2024-12-18 19:24:53.711-04	2024-12-18 19:24:53.723397	2024-12-18 19:24:53.723397	\N	5	\N	\N	\N	1	1	237
+285	2024121800000274	1068.8	2024-12-18 19:25:12.179-04	2024-12-18 19:25:12.189962	2024-12-18 19:25:12.189962	\N	5	\N	\N	\N	1	1	238
+286	2024121800000275	1068.8	2024-12-18 19:28:45.376-04	2024-12-18 19:28:45.385367	2024-12-18 19:28:45.385367	\N	5	\N	\N	\N	1	1	239
+287	2024121800000276	1068.8	2024-12-18 19:32:43.971-04	2024-12-18 19:32:43.98073	2024-12-18 19:32:43.98073	\N	5	\N	\N	\N	1	1	240
+288	2024121800000277	1068.8	2024-12-18 19:33:44.441-04	2024-12-18 19:33:44.450155	2024-12-18 19:33:44.450155	\N	5	\N	\N	\N	1	1	241
+289	2024121800000278	1068.8	2024-12-18 19:35:12.589-04	2024-12-18 19:35:12.59977	2024-12-18 19:35:12.59977	\N	5	\N	\N	\N	1	1	242
+290	2024121800000279	1068.8	2024-12-18 19:35:17.189-04	2024-12-18 19:35:17.206018	2024-12-18 19:35:17.206018	\N	5	\N	\N	\N	1	1	243
+291	2024121800000280	1068.8	2024-12-18 19:37:18.442-04	2024-12-18 19:37:18.454162	2024-12-18 19:37:18.454162	\N	5	\N	\N	\N	1	1	244
+292	2024121800000281	1068.8	2024-12-18 19:37:21.01-04	2024-12-18 19:37:21.028176	2024-12-18 19:37:21.028176	\N	5	\N	\N	\N	1	1	245
+293	2024121800000282	1068.8	2024-12-18 19:37:23.237-04	2024-12-18 19:37:23.253508	2024-12-18 19:37:23.253508	\N	5	\N	\N	\N	1	1	246
+294	2024121800000283	1068.8	2024-12-18 19:37:54.731-04	2024-12-18 19:37:54.747273	2024-12-18 19:37:54.747273	\N	5	\N	\N	\N	1	1	247
+295	2024121800000284	1068.8	2024-12-18 19:40:12.398-04	2024-12-18 19:40:12.408286	2024-12-18 19:40:12.408286	\N	5	\N	\N	\N	1	1	248
+296	2024121800000285	1068.8	2024-12-18 19:41:09.114-04	2024-12-18 19:41:09.125204	2024-12-18 19:41:09.125204	\N	5	\N	\N	\N	1	1	249
+253	2024121000000245	775.6365000000001	2024-12-10 21:40:22.045-04	2024-12-10 21:40:22.064279	2024-12-10 21:42:06.10905	\N	6	\N	\N	\N	1	1	197
+297	2024121800000286	1068.8	2024-12-18 19:43:13.219-04	2024-12-18 19:43:13.238253	2024-12-18 19:43:13.238253	\N	5	\N	\N	\N	1	1	250
+254	2024121000000248	258.5455	2024-12-10 21:49:03.799-04	2024-12-10 21:49:03.816955	2024-12-10 21:49:17.177882	\N	6	\N	\N	\N	1	1	198
+298	2024121800000287	1068.8	2024-12-18 19:44:42.697-04	2024-12-18 19:44:42.710435	2024-12-18 19:44:42.710435	\N	5	\N	\N	\N	1	1	251
+255	2024121000000250	258.5455	2024-12-10 21:57:27.21-04	2024-12-10 21:57:27.22872	2024-12-10 21:57:41.108276	\N	6	\N	\N	\N	1	1	199
+256	2024121000000252	258.5455	2024-12-10 22:01:52.188-04	2024-12-10 22:01:52.207446	2024-12-10 22:01:59.831208	\N	6	\N	\N	\N	1	1	200
+257	2024121000000254	258.5455	2024-12-10 22:04:45.069-04	2024-12-10 22:04:45.085813	2024-12-10 22:04:52.790431	\N	6	\N	\N	\N	1	1	201
+258	34501177	258.5455	2024-12-10 22:16:21.296-04	2024-12-10 22:16:21.317229	2024-12-10 22:16:27.850771	\N	6	\N	\N	\N	1	1	202
+259	123456987	258.5455	2024-12-10 00:00:00-04	2024-12-10 23:36:10.771396	2024-12-10 23:36:10.771396	\N	5	\N	\N	\N	2	2	203
+260	123434	258.5455	2024-12-11 00:00:00-04	2024-12-11 00:20:16.661524	2024-12-11 00:20:16.661524	\N	5	\N	\N	\N	2	2	211
+261	123434	258.5455	2024-12-11 00:00:00-04	2024-12-11 00:25:34.289194	2024-12-11 00:25:34.289194	\N	5	\N	\N	\N	2	2	212
+262	123434	258.5455	2024-12-11 00:00:00-04	2024-12-11 00:27:34.968093	2024-12-11 00:27:34.968093	\N	5	\N	\N	\N	2	2	213
+263	123434	258.5455	2024-12-11 00:00:00-04	2024-12-11 00:31:00.718884	2024-12-11 00:31:00.718884	\N	5	\N	\N	\N	2	2	214
+264	123434	258.5455	2024-12-11 00:00:00-04	2024-12-11 00:32:12.34768	2024-12-11 00:32:12.34768	\N	5	\N	\N	\N	2	2	215
+265	123434	258.5455	2024-12-11 00:00:00-04	2024-12-11 00:32:48.791252	2024-12-11 00:32:48.791252	\N	5	\N	\N	\N	2	2	216
+266	123434	258.5455	2024-12-11 00:00:00-04	2024-12-11 00:33:39.966555	2024-12-11 00:33:39.966555	\N	5	\N	\N	\N	2	2	217
+267	123434	258.5455	2024-12-11 00:00:00-04	2024-12-11 00:35:08.869367	2024-12-11 00:35:08.869367	\N	5	\N	\N	\N	2	2	218
+268	22222	517.091	2024-12-11 00:00:00-04	2024-12-11 00:36:48.534059	2024-12-11 00:36:48.534059	\N	5	\N	\N	\N	3	2	221
+269	2024121600000258	2113.28	2024-12-16 22:16:29.534-04	2024-12-16 22:16:29.551791	2024-12-16 22:16:29.551791	\N	5	\N	\N	\N	1	1	222
+270	2024121600000259	2113.28	2024-12-16 22:28:52.326-04	2024-12-16 22:28:52.346365	2024-12-16 22:28:52.346365	\N	5	\N	\N	\N	1	1	223
+271	2024121800000260	1068.8	2024-12-18 17:53:56.573-04	2024-12-18 17:53:56.596106	2024-12-18 17:53:56.596106	\N	5	\N	\N	\N	1	1	224
+272	2024121800000261	1068.8	2024-12-18 18:23:01.87-04	2024-12-18 18:23:01.894273	2024-12-18 18:23:01.894273	\N	5	\N	\N	\N	1	1	225
+273	2024121800000262	1068.8	2024-12-18 18:34:25.164-04	2024-12-18 18:34:25.184264	2024-12-18 18:34:25.184264	\N	5	\N	\N	\N	1	1	226
+274	2024121800000263	1068.8	2024-12-18 18:49:44.445-04	2024-12-18 18:49:44.470173	2024-12-18 18:49:44.470173	\N	5	\N	\N	\N	1	1	227
+275	2024121800000264	1068.8	2024-12-18 18:51:52.392-04	2024-12-18 18:51:52.410014	2024-12-18 18:51:52.410014	\N	5	\N	\N	\N	1	1	228
+276	2024121800000265	1068.8	2024-12-18 18:59:07.035-04	2024-12-18 18:59:07.046989	2024-12-18 18:59:07.046989	\N	5	\N	\N	\N	1	1	229
+277	2024121800000266	1068.8	2024-12-18 19:02:04.436-04	2024-12-18 19:02:04.454306	2024-12-18 19:02:04.454306	\N	5	\N	\N	\N	1	1	230
+278	2024121800000267	1068.8	2024-12-18 19:02:56.818-04	2024-12-18 19:02:56.851132	2024-12-18 19:02:56.851132	\N	5	\N	\N	\N	1	1	231
+279	2024121800000268	1068.8	2024-12-18 19:09:50.856-04	2024-12-18 19:09:50.875622	2024-12-18 19:09:50.875622	\N	5	\N	\N	\N	1	1	232
+280	2024121800000269	1068.8	2024-12-18 19:23:24.478-04	2024-12-18 19:23:24.491398	2024-12-18 19:23:24.491398	\N	5	\N	\N	\N	1	1	233
+281	2024121800000270	1068.8	2024-12-18 19:24:11.251-04	2024-12-18 19:24:11.267575	2024-12-18 19:24:11.267575	\N	5	\N	\N	\N	1	1	234
+282	2024121800000271	1068.8	2024-12-18 19:24:11.254-04	2024-12-18 19:24:11.271739	2024-12-18 19:24:11.271739	\N	5	\N	\N	\N	1	1	235
+299	35301257	1068.8	2024-12-18 19:47:35.424-04	2024-12-18 19:47:35.44283	2024-12-18 19:47:55.34236	\N	6	\N	\N	\N	1	1	252
+300	35301258	1068.8	2024-12-18 19:48:41.392-04	2024-12-18 19:48:41.407871	2024-12-18 19:48:49.23294	\N	6	\N	\N	\N	1	1	253
+301	35301259	1068.8	2024-12-18 19:54:38.774-04	2024-12-18 19:54:38.788054	2024-12-18 19:54:48.906514	\N	6	\N	\N	\N	1	1	254
+302	35301260	1068.8	2024-12-18 19:57:15.416-04	2024-12-18 19:57:15.430952	2024-12-18 19:57:21.406592	\N	6	\N	\N	\N	1	1	255
+303	2024121800000296	1068.8	2024-12-18 19:59:54.774-04	2024-12-18 19:59:54.790901	2024-12-18 19:59:54.790901	\N	5	\N	\N	\N	1	1	256
+304	2024121800000298	1068.8	2024-12-18 20:10:15.422-04	2024-12-18 20:10:15.433677	2024-12-18 20:10:15.433677	\N	5	\N	\N	\N	1	1	257
+305	2024121800000300	1068.8	2024-12-18 20:13:19.64-04	2024-12-18 20:13:19.661621	2024-12-18 20:13:19.661621	\N	5	\N	\N	\N	1	1	258
+306	2024121800000302	1068.8	2024-12-18 20:16:17.256-04	2024-12-18 20:16:17.269131	2024-12-18 20:16:17.269131	\N	5	\N	\N	\N	1	1	259
+307	2024121800000304	2137.6	2024-12-18 20:44:48.324-04	2024-12-18 20:44:48.342623	2024-12-18 20:44:48.342623	\N	5	\N	\N	\N	1	1	260
+308	2024121800000308	1068.8	2024-12-18 20:52:13.254-04	2024-12-18 20:52:13.274589	2024-12-18 20:52:13.274589	\N	5	\N	\N	\N	1	1	261
+309	2024121800000316	1068.8	2024-12-18 20:55:12.205-04	2024-12-18 20:55:12.218597	2024-12-18 20:55:12.218597	\N	5	\N	\N	\N	1	1	262
+310	2024121800000318	1068.8	2024-12-18 20:55:24.612-04	2024-12-18 20:55:24.627144	2024-12-18 20:55:24.627144	\N	5	\N	\N	\N	1	1	263
+311	2024121800000320	1068.8	2024-12-18 20:55:34.713-04	2024-12-18 20:55:34.731346	2024-12-18 20:55:34.731346	\N	5	\N	\N	\N	1	1	264
+312	2024121800000322	1068.8	2024-12-18 20:56:10.49-04	2024-12-18 20:56:10.514323	2024-12-18 20:56:10.514323	\N	5	\N	\N	\N	1	1	265
+313	2024121800000324	1068.8	2024-12-18 21:00:46.045-04	2024-12-18 21:00:46.070347	2024-12-18 21:00:46.070347	\N	5	\N	\N	\N	1	1	266
+314	2024121800000326	1068.8	2024-12-18 21:03:28.655-04	2024-12-18 21:03:28.672688	2024-12-18 21:03:28.672688	\N	5	\N	\N	\N	1	1	267
+315	2024121800000327	1068.8	2024-12-18 21:07:07.253-04	2024-12-18 21:07:07.267472	2024-12-18 21:07:07.267472	\N	5	\N	\N	\N	1	1	268
+316	2024121800000328	1068.8	2024-12-18 21:09:00.226-04	2024-12-18 21:09:00.245095	2024-12-18 21:09:00.245095	\N	5	\N	\N	\N	1	1	269
+317	2024121800000329	1068.8	2024-12-18 21:15:10.707-04	2024-12-18 21:15:10.726398	2024-12-18 21:15:10.726398	\N	5	\N	\N	\N	1	1	270
+318	35301261	12825.62	2024-12-18 21:17:46.613-04	2024-12-18 21:17:46.629779	2024-12-18 21:17:54.352188	\N	6	\N	\N	\N	1	1	271
+319	2024121800000332	2137.6	2024-12-18 21:18:59.886-04	2024-12-18 21:18:59.90529	2024-12-18 21:18:59.90529	\N	5	\N	\N	\N	1	1	272
+320	2024121800000334	2137.6	2024-12-18 21:19:26.696-04	2024-12-18 21:19:26.71171	2024-12-18 21:19:26.71171	\N	5	\N	\N	\N	1	1	273
+321	35301262	1068.8	2024-12-18 21:22:08.016-04	2024-12-18 21:22:08.037581	2024-12-18 21:22:14.693951	\N	6	\N	\N	\N	1	1	274
+322	35301263	1068.8	2024-12-18 21:22:51.553-04	2024-12-18 21:22:51.56959	2024-12-18 21:22:59.314	\N	6	\N	\N	\N	1	1	275
+323	35301264	1068.8	2024-12-18 21:24:14.922-04	2024-12-18 21:24:14.94107	2024-12-18 21:24:22.385998	\N	6	\N	\N	\N	1	1	276
+324	2024121800000342	1068.8	2024-12-18 21:25:35.373-04	2024-12-18 21:25:35.398264	2024-12-18 21:25:35.398264	\N	5	\N	\N	\N	1	1	277
+325	35301265	1068.8	2024-12-18 21:32:58-04	2024-12-18 21:32:58.023428	2024-12-18 21:33:14.728091	\N	6	\N	\N	\N	1	1	278
+326	35301267	1068.8	2024-12-18 21:34:14.573-04	2024-12-18 21:34:14.590744	2024-12-18 21:36:04.374986	\N	6	\N	\N	\N	1	1	279
+327	35301268	1068.8	2024-12-18 21:36:09.958-04	2024-12-18 21:36:09.976864	2024-12-18 21:36:16.112899	\N	6	\N	\N	\N	1	1	280
+328	35301269	1068.8	2024-12-18 21:36:51.569-04	2024-12-18 21:36:51.580255	2024-12-18 21:36:56.604357	\N	6	\N	\N	\N	1	1	281
+329	35301270	1068.8	2024-12-18 21:37:35.446-04	2024-12-18 21:37:35.466331	2024-12-18 21:37:41.118068	\N	6	\N	\N	\N	1	1	282
+330	35301271	1068.8	2024-12-18 21:39:09.624-04	2024-12-18 21:39:09.634357	2024-12-18 21:39:14.466063	\N	6	\N	\N	\N	1	1	283
+331	35301272	1068.8	2024-12-18 21:43:30.085-04	2024-12-18 21:43:30.108372	2024-12-18 21:43:36.214581	\N	6	\N	\N	\N	1	1	284
+332	35301273	1068.8	2024-12-18 21:44:24.934-04	2024-12-18 21:44:24.954181	2024-12-18 21:44:33.339133	\N	6	\N	\N	\N	1	1	285
+333	35301274	1068.8	2024-12-18 21:44:46.43-04	2024-12-18 21:44:46.441812	2024-12-18 21:44:50.929783	\N	6	\N	\N	\N	1	1	286
+334	35301275	1	2024-12-18 22:12:14.121-04	2024-12-18 22:12:14.141154	2024-12-18 22:12:34.647027	\N	6	\N	\N	\N	1	1	287
+335	35301276	2	2024-12-18 22:16:01.889-04	2024-12-18 22:16:01.903662	2024-12-18 22:16:11.021961	\N	6	\N	\N	\N	1	1	288
+336	35301277	2	2024-12-18 22:16:40.686-04	2024-12-18 22:16:40.698513	2024-12-18 22:16:50.465618	\N	6	\N	\N	\N	1	1	289
+337	35301278	2	2024-12-18 22:17:29.263-04	2024-12-18 22:17:29.282565	2024-12-18 22:17:39.12457	\N	6	\N	\N	\N	1	1	290
+338	1234	270.53	2024-12-29 00:00:00-04	2024-12-29 14:42:12.974707	2024-12-29 14:42:12.974707	\N	6	\N	\N	\N	2	2	295
+339	4125	270.53	2024-12-29 00:00:00-04	2024-12-29 15:48:16.749781	2024-12-29 15:48:16.749781	\N	6	\N	\N	\N	2	2	296
+340	2025010700000370	1.25	2025-01-07 12:55:01.228-04	2025-01-07 16:55:01.23374	2025-01-07 16:55:01.23374	\N	5	\N	\N	\N	1	1	297
+341	2025010700000373	1.25	2025-01-07 13:00:49.605-04	2025-01-07 17:00:49.609087	2025-01-07 17:00:49.609087	\N	5	\N	\N	\N	1	1	298
+342	2025010700000379	1.25	2025-01-07 15:21:46.461-04	2025-01-07 19:21:46.464955	2025-01-07 19:21:46.464955	\N	5	\N	\N	\N	1	1	299
+343	2025010700000382	1.25	2025-01-07 15:54:42.05-04	2025-01-07 19:54:42.055133	2025-01-07 19:54:42.055133	\N	5	\N	\N	\N	1	1	300
+344	2025010700000383	1.25	2025-01-07 15:55:25.4-04	2025-01-07 19:55:25.403995	2025-01-07 19:55:25.403995	\N	5	\N	\N	\N	1	1	301
+345	2025010800000386	1.25	2025-01-08 10:29:25.362-04	2025-01-08 14:29:25.366877	2025-01-08 14:29:25.366877	\N	5	\N	\N	\N	1	1	302
+346	2025010800000388	1.25	2025-01-08 10:35:47.036-04	2025-01-08 14:35:47.040029	2025-01-08 14:35:47.040029	\N	5	\N	\N	\N	1	1	303
+347	2025010800000390	1.25	2025-01-08 10:38:30.873-04	2025-01-08 14:38:30.877651	2025-01-08 14:39:21.030445	\N	6	\N	\N	\N	1	1	304
+348	2025010800000392	1.25	2025-01-08 10:39:58.105-04	2025-01-08 14:39:58.108328	2025-01-08 14:40:18.767146	\N	6	\N	\N	\N	1	1	305
+349	2025010800000394	1.25	2025-01-08 10:42:21.118-04	2025-01-08 14:42:21.121814	2025-01-08 14:42:45.976167	\N	6	\N	\N	\N	1	1	306
+350	2025010800000395	1.25	2025-01-08 10:46:04.573-04	2025-01-08 14:46:04.576711	2025-01-08 14:46:04.576711	\N	5	\N	\N	\N	1	1	307
+351	40806609	1.25	2025-01-08 10:53:00.384-04	2025-01-08 14:53:00.38811	2025-01-08 14:53:30.989657	\N	6	\N	\N	\N	1	1	308
+352	40806612	1	2025-01-08 10:56:52.337-04	2025-01-08 14:56:52.340546	2025-01-08 15:02:22.321294	\N	6	\N	\N	\N	1	1	309
+353	2025010800000402	1	2025-01-08 11:04:08.423-04	2025-01-08 15:04:08.426624	2025-01-08 15:04:08.426624	\N	5	\N	\N	\N	1	1	310
+354	2025010800000403	1	2025-01-08 11:05:46.402-04	2025-01-08 15:05:46.405925	2025-01-08 15:05:46.405925	\N	5	\N	\N	\N	1	1	311
+355	2025010800000405	1	2025-01-08 11:15:29.189-04	2025-01-08 15:15:29.193236	2025-01-08 15:15:29.193236	\N	5	\N	\N	\N	1	1	312
+356	2025010800000406	1	2025-01-08 11:20:42.38-04	2025-01-08 15:20:42.383788	2025-01-08 15:20:42.383788	\N	5	\N	\N	\N	1	1	313
+357	2025010800000407	1	2025-01-08 11:22:39.769-04	2025-01-08 15:22:39.773507	2025-01-08 15:22:39.773507	\N	5	\N	\N	\N	1	1	314
+358	2025010800000408	1	2025-01-08 11:29:31.075-04	2025-01-08 15:29:31.079232	2025-01-08 15:29:31.079232	\N	5	\N	\N	\N	1	1	315
+359	2025010800000409	1	2025-01-08 11:33:14.735-04	2025-01-08 15:33:14.738821	2025-01-08 15:33:14.738821	\N	5	\N	\N	\N	1	1	316
+360	40806622	1	2025-01-08 11:36:14.111-04	2025-01-08 15:36:14.115943	2025-01-08 15:37:42.683742	\N	6	\N	\N	\N	1	1	317
+361	2025010800000412	1	2025-01-08 11:43:24.233-04	2025-01-08 15:43:24.23758	2025-01-08 15:43:24.23758	\N	5	\N	\N	\N	1	1	318
+362	2025010800000414	1	2025-01-08 13:18:35.187-04	2025-01-08 17:18:35.192046	2025-01-08 17:18:35.192046	\N	5	\N	\N	\N	1	1	319
+363	2025010800000415	1	2025-01-08 13:31:54.319-04	2025-01-08 17:31:54.323325	2025-01-08 17:31:54.323325	\N	5	\N	\N	\N	1	1	320
+364	40806627	1	2025-01-08 13:33:13.314-04	2025-01-08 17:33:13.318588	2025-01-08 17:34:15.201166	\N	6	\N	\N	\N	1	1	321
+365	2025010800000418	1	2025-01-08 13:36:56.835-04	2025-01-08 17:36:56.838526	2025-01-08 17:36:56.838526	\N	5	\N	\N	\N	1	1	322
+366	2025010800000419	1	2025-01-08 13:41:01.639-04	2025-01-08 17:41:01.643048	2025-01-08 17:41:01.643048	\N	5	\N	\N	\N	1	1	323
+367	2025010800000420	255	2025-01-08 14:02:19.041-04	2025-01-08 18:02:19.04482	2025-01-08 18:02:19.04482	\N	5	\N	\N	\N	1	1	324
+368	2025010800000422	255	2025-01-08 14:04:36.183-04	2025-01-08 18:04:36.187189	2025-01-08 18:05:08.504651	\N	6	\N	\N	\N	1	1	325
+369	2025010800000423	250	2025-01-08 14:14:47.007-04	2025-01-08 18:14:47.011604	2025-01-08 18:14:47.011604	\N	5	\N	\N	\N	1	1	326
+370	2025010800000424	250	2025-01-08 14:24:10.108-04	2025-01-08 18:24:10.112516	2025-01-08 18:24:10.112516	\N	5	\N	\N	\N	1	1	327
+371	2025010800000426	250	2025-01-08 14:25:55.453-04	2025-01-08 18:25:55.457543	2025-01-08 18:26:16.240066	\N	6	\N	\N	\N	1	1	328
+372	2025010800000428	250	2025-01-08 14:29:18.379-04	2025-01-08 18:29:18.384218	2025-01-08 18:30:42.237071	\N	6	\N	\N	\N	1	1	329
+373	40806640	1	2025-01-08 14:32:59.71-04	2025-01-08 18:32:59.713997	2025-01-08 18:36:56.532124	\N	6	\N	\N	\N	1	1	330
+374	2025011300000431	1.25	2025-01-13 10:01:59.296-04	2025-01-13 14:01:59.302603	2025-01-13 14:01:59.302603	\N	5	\N	\N	\N	1	1	331
+375	41306707	1.25	2025-01-13 10:04:47.292-04	2025-01-13 14:04:47.297421	2025-01-13 14:05:18.57792	\N	6	\N	\N	\N	1	1	332
+376	2025011300000434	1.25	2025-01-13 11:53:09.393-04	2025-01-13 15:53:09.397796	2025-01-13 15:53:09.397796	\N	5	\N	\N	\N	1	1	333
+377	2025011300000435	1.25	2025-01-13 11:56:18.656-04	2025-01-13 15:56:18.660142	2025-01-13 15:56:18.660142	\N	5	\N	\N	\N	1	1	334
+378	2025011300000437	1.25	2025-01-13 11:56:49.192-04	2025-01-13 15:56:49.196071	2025-01-13 15:57:15.668329	\N	6	\N	\N	\N	1	1	335
+379	2025011300000439	1.25	2025-01-13 11:58:51.176-04	2025-01-13 15:58:51.181399	2025-01-13 15:59:00.407491	\N	6	\N	\N	\N	1	1	336
+380	2025011300000440	1.25	2025-01-13 12:01:29.15-04	2025-01-13 16:01:29.154598	2025-01-13 16:01:29.154598	\N	5	\N	\N	\N	1	1	337
+381	2025011300000442	1.25	2025-01-13 12:01:57.311-04	2025-01-13 16:01:57.315195	2025-01-13 16:02:08.868989	\N	6	\N	\N	\N	1	1	338
+382	2025011300000444	12.5	2025-01-13 15:26:08.13-04	2025-01-13 19:26:08.134489	2025-01-13 19:27:26.943417	\N	6	\N	\N	\N	1	1	339
+383	2025011300000445	12.5	2025-01-13 15:47:55.832-04	2025-01-13 19:47:55.835909	2025-01-13 19:47:55.835909	\N	5	\N	\N	\N	1	1	340
+384	41406730	2	2025-01-14 09:46:30.287-04	2025-01-14 13:46:30.292091	2025-01-14 13:48:13.207192	\N	6	\N	\N	\N	1	1	341
+385	2025011400000450	2	2025-01-14 09:52:21.165-04	2025-01-14 13:52:21.168719	2025-01-14 13:52:53.600645	\N	6	\N	\N	\N	1	1	342
+386	2025011400000452	2	2025-01-14 09:54:15.888-04	2025-01-14 13:54:15.892856	2025-01-14 13:54:32.791705	\N	6	\N	\N	\N	1	1	343
+387	2025011400000453	2	2025-01-14 09:56:05.305-04	2025-01-14 13:56:05.309744	2025-01-14 13:56:05.309744	\N	5	\N	\N	\N	1	1	344
+388	41406737	2	2025-01-14 10:01:46.24-04	2025-01-14 14:01:46.24426	2025-01-14 14:02:13.566736	\N	6	\N	\N	\N	1	1	345
+389	2025011400000456	2	2025-01-14 10:23:46.424-04	2025-01-14 14:23:46.428267	2025-01-14 14:23:46.428267	\N	5	\N	\N	\N	1	1	346
+390	2025011400000457	2	2025-01-14 10:26:50.426-04	2025-01-14 14:26:50.429786	2025-01-14 14:26:50.429786	\N	5	\N	\N	\N	1	1	347
+391	2025011400000458	2	2025-01-14 10:29:36.547-04	2025-01-14 14:29:36.551098	2025-01-14 14:29:36.551098	\N	5	\N	\N	\N	1	1	348
+392	2025011400000459	2	2025-01-14 10:34:07.704-04	2025-01-14 14:34:07.708822	2025-01-14 14:34:07.708822	\N	5	\N	\N	\N	1	1	349
+393	2025011400000461	2	2025-01-14 10:34:49.714-04	2025-01-14 14:34:49.718149	2025-01-14 14:34:59.646865	\N	6	\N	\N	\N	1	1	350
+394	2025011400000462	2	2025-01-14 10:51:38.234-04	2025-01-14 14:51:38.237988	2025-01-14 14:51:38.237988	\N	5	\N	\N	\N	1	1	351
+395	41406755	2	2025-01-14 10:52:02.337-04	2025-01-14 14:52:02.340325	2025-01-14 14:52:27.074605	\N	6	\N	\N	\N	1	1	352
+396	2025011400000466	2	2025-01-14 10:55:31.386-04	2025-01-14 14:55:31.389955	2025-01-14 14:55:31.389955	\N	5	\N	\N	\N	1	1	353
+397	2025011400000469	2	2025-01-14 13:26:20.053-04	2025-01-14 17:26:20.057227	2025-01-14 17:26:20.057227	\N	5	\N	\N	\N	1	1	354
+398	41406771	2	2025-01-14 14:04:01.337-04	2025-01-14 18:04:01.341597	2025-01-14 18:04:28.640807	\N	6	\N	\N	\N	1	1	355
+399	2025011400000473	2	2025-01-14 14:06:54.898-04	2025-01-14 18:06:54.902182	2025-01-14 18:07:04.598448	\N	6	\N	\N	\N	1	1	356
+400	2025011400000474	4	2025-01-14 14:16:14.083-04	2025-01-14 18:16:14.089534	2025-01-14 18:16:14.089534	\N	5	\N	\N	\N	1	1	357
+401	2025011400000476	4	2025-01-14 14:16:42.608-04	2025-01-14 18:16:42.612216	2025-01-14 18:16:42.612216	\N	5	\N	\N	\N	1	1	358
+402	2025011400000478	4	2025-01-14 14:18:58.697-04	2025-01-14 18:18:58.701948	2025-01-14 18:18:58.701948	\N	5	\N	\N	\N	1	1	359
+403	41406779	4	2025-01-14 14:20:03.649-04	2025-01-14 18:20:03.652706	2025-01-14 18:20:43.481696	\N	6	\N	\N	\N	1	1	360
+404	2025011600000481	2	2025-01-16 09:36:28.424-04	2025-01-16 13:36:28.429503	2025-01-16 13:36:28.429503	\N	5	\N	\N	\N	1	1	361
+405	2025011600000482	2	2025-01-16 09:36:55.432-04	2025-01-16 13:36:55.437232	2025-01-16 13:36:55.437232	\N	5	\N	\N	\N	1	1	362
+406	2025011600000483	2	2025-01-16 09:42:10.735-04	2025-01-16 13:42:10.739915	2025-01-16 13:42:10.739915	\N	5	\N	\N	\N	1	1	363
+407	2025011600000484	2	2025-01-16 09:42:49.94-04	2025-01-16 13:42:49.944478	2025-01-16 13:42:49.944478	\N	5	\N	\N	\N	1	1	364
+408	2025011600000485	2	2025-01-16 09:43:27.193-04	2025-01-16 13:43:27.197155	2025-01-16 13:43:27.197155	\N	5	\N	\N	\N	1	1	365
+409	2025011600000486	2	2025-01-16 09:46:16.433-04	2025-01-16 13:46:16.437503	2025-01-16 13:46:16.437503	\N	5	\N	\N	\N	1	1	366
+410	2025011600000487	2	2025-01-16 09:46:46.98-04	2025-01-16 13:46:46.984364	2025-01-16 13:46:46.984364	\N	5	\N	\N	\N	1	1	367
+411	2025011600000488	2	2025-01-16 09:46:55.487-04	2025-01-16 13:46:55.490462	2025-01-16 13:46:55.490462	\N	5	\N	\N	\N	1	1	368
+412	2025011600000489	2	2025-01-16 09:47:48.553-04	2025-01-16 13:47:48.557265	2025-01-16 13:47:48.557265	\N	5	\N	\N	\N	1	1	369
+413	2025011600000490	2	2025-01-16 09:52:58.893-04	2025-01-16 13:52:58.898445	2025-01-16 13:52:58.898445	\N	5	\N	\N	\N	1	1	370
+414	2025011600000491	2	2025-01-16 09:55:34.717-04	2025-01-16 13:55:34.720472	2025-01-16 13:55:34.720472	\N	5	\N	\N	\N	1	1	371
+415	2025011600000492	2	2025-01-16 09:55:41.531-04	2025-01-16 13:55:41.534703	2025-01-16 13:55:41.534703	\N	5	\N	\N	\N	1	1	372
+416	2025011600000493	2	2025-01-16 09:56:07.694-04	2025-01-16 13:56:07.69872	2025-01-16 13:56:07.69872	\N	5	\N	\N	\N	1	1	373
+417	2025011600000494	2	2025-01-16 09:57:14.467-04	2025-01-16 13:57:14.472036	2025-01-16 13:57:14.472036	\N	5	\N	\N	\N	1	1	374
+418	2025011600000495	2	2025-01-16 09:57:53.564-04	2025-01-16 13:57:53.568404	2025-01-16 13:57:53.568404	\N	5	\N	\N	\N	1	1	375
+419	2025011600000496	2	2025-01-16 09:59:28.987-04	2025-01-16 13:59:28.99136	2025-01-16 13:59:28.99136	\N	5	\N	\N	\N	1	1	376
+420	2025011600000497	2	2025-01-16 10:01:15.512-04	2025-01-16 14:01:15.515995	2025-01-16 14:01:15.515995	\N	5	\N	\N	\N	1	1	377
+421	2025011600000498	2	2025-01-16 10:06:27.2-04	2025-01-16 14:06:27.204054	2025-01-16 14:06:27.204054	\N	5	\N	\N	\N	1	1	378
+422	2025011600000499	2	2025-01-16 10:11:21.375-04	2025-01-16 14:11:21.380204	2025-01-16 14:11:21.380204	\N	5	\N	\N	\N	1	1	379
+423	2025011600000500	2	2025-01-16 10:20:02.159-04	2025-01-16 14:20:02.162908	2025-01-16 14:20:02.162908	\N	5	\N	\N	\N	1	1	380
+424	2025011600000501	2	2025-01-16 13:43:11.771-04	2025-01-16 17:43:11.776801	2025-01-16 17:43:11.776801	\N	5	\N	\N	\N	1	1	381
+425	2025011600000503	2	2025-01-16 13:43:24.892-04	2025-01-16 17:43:24.896752	2025-01-16 17:44:26.978623	\N	6	\N	\N	\N	1	1	382
+426	2025011600000505	2	2025-01-16 13:45:10.353-04	2025-01-16 17:45:10.356746	2025-01-16 17:45:39.09731	\N	6	\N	\N	\N	1	1	383
+427	2025011600000506	2	2025-01-16 13:49:02.827-04	2025-01-16 17:49:02.831481	2025-01-16 17:49:02.831481	\N	5	\N	\N	\N	1	1	384
+428	2025011600000507	2	2025-01-16 13:49:26.505-04	2025-01-16 17:49:26.509352	2025-01-16 17:49:26.509352	\N	5	\N	\N	\N	1	1	385
+429	2025011600000510	2	2025-01-16 13:50:17.121-04	2025-01-16 17:50:17.124539	2025-01-16 17:51:14.043454	\N	6	\N	\N	\N	1	1	386
+430	2025011600000512	2	2025-01-16 13:51:28.804-04	2025-01-16 17:51:28.808862	2025-01-16 17:53:14.349175	\N	6	\N	\N	\N	1	1	387
+431	2025011600000514	2	2025-01-16 13:53:18.619-04	2025-01-16 17:53:18.623639	2025-01-16 17:53:30.892039	\N	6	\N	\N	\N	1	1	388
+432	2025011600000516	2	2025-01-16 13:54:03.251-04	2025-01-16 17:54:03.255159	2025-01-16 17:54:52.175563	\N	6	\N	\N	\N	1	1	389
+433	2025011600000518	2	2025-01-16 13:56:31.165-04	2025-01-16 17:56:31.168798	2025-01-16 17:57:12.682762	\N	6	\N	\N	\N	1	1	390
+434	2025011600000520	2	2025-01-16 14:01:14.147-04	2025-01-16 18:01:14.151236	2025-01-16 18:01:39.058165	\N	6	\N	\N	\N	1	1	391
+435	2025011600000521	2	2025-01-16 14:01:44.717-04	2025-01-16 18:01:44.721132	2025-01-16 18:01:44.721132	\N	5	\N	\N	\N	1	1	392
+436	2025011600000522	5	2025-01-16 14:04:22.924-04	2025-01-16 18:04:22.928893	2025-01-16 18:04:22.928893	\N	5	\N	\N	\N	1	1	393
+437	2025011600000524	2	2025-01-16 14:04:36.513-04	2025-01-16 18:04:36.517642	2025-01-16 18:04:55.348419	\N	6	\N	\N	\N	1	1	394
+438	2025011600000525	2	2025-01-16 14:05:56.284-04	2025-01-16 18:05:56.28789	2025-01-16 18:05:56.28789	\N	5	\N	\N	\N	1	1	395
+439	2025011600000527	2	2025-01-16 14:06:33.694-04	2025-01-16 18:06:33.697716	2025-01-16 18:06:33.697716	\N	5	\N	\N	\N	1	1	396
+440	2025011600000528	5	2025-01-16 14:06:51.709-04	2025-01-16 18:06:51.713404	2025-01-16 18:06:51.713404	\N	5	\N	\N	\N	1	1	397
+441	2025011600000529	2	2025-01-16 14:07:42.988-04	2025-01-16 18:07:42.992655	2025-01-16 18:07:42.992655	\N	5	\N	\N	\N	1	1	398
+442	2025011600000531	2	2025-01-16 14:07:56.403-04	2025-01-16 18:07:56.405796	2025-01-16 18:07:56.405796	\N	5	\N	\N	\N	1	1	399
+443	41606839	5	2025-01-16 14:07:59.637-04	2025-01-16 18:07:59.64077	2025-01-16 18:08:34.231861	\N	6	\N	\N	\N	1	1	400
+444	41606841	2	2025-01-16 14:08:17.876-04	2025-01-16 18:08:17.87945	2025-01-16 18:14:02.911872	\N	6	\N	\N	\N	1	1	401
+445	2025011600000537	2	2025-01-16 14:50:28.384-04	2025-01-16 18:50:28.388256	2025-01-16 18:50:28.388256	\N	5	\N	\N	\N	1	1	402
+446	2025011600000539	2	2025-01-16 14:50:50.067-04	2025-01-16 18:50:50.070748	2025-01-16 18:51:50.974899	\N	6	\N	\N	\N	1	1	403
+447	2025011600000540	2	2025-01-16 14:53:33.203-04	2025-01-16 18:53:33.20805	2025-01-16 18:53:33.20805	\N	5	\N	\N	\N	1	1	404
+448	2025011600000541	2	2025-01-16 14:55:43.941-04	2025-01-16 18:55:43.944595	2025-01-16 18:55:43.944595	\N	5	\N	\N	\N	1	1	405
+449	2025011600000542	2	2025-01-16 14:55:54.706-04	2025-01-16 18:55:54.709403	2025-01-16 18:55:54.709403	\N	5	\N	\N	\N	1	1	406
+450	41606849	2	2025-01-16 14:56:04.55-04	2025-01-16 18:56:04.552995	2025-01-16 18:56:52.798238	\N	6	\N	\N	\N	1	1	407
+451	2025011600000545	2.5	2025-01-16 15:10:17.131-04	2025-01-16 19:10:17.13582	2025-01-16 19:10:17.13582	\N	5	\N	\N	\N	1	1	408
+452	2025011600000547	2.5	2025-01-16 15:12:31.796-04	2025-01-16 19:12:31.800095	2025-01-16 19:12:31.800095	\N	5	\N	\N	\N	1	1	409
+453	2025011600000548	2.5	2025-01-16 15:12:53.953-04	2025-01-16 19:12:53.956691	2025-01-16 19:12:53.956691	\N	5	\N	\N	\N	1	1	410
+454	2025011600000550	2.5	2025-01-16 15:19:30.75-04	2025-01-16 19:19:30.754337	2025-01-16 19:19:30.754337	\N	5	\N	\N	\N	1	1	411
+455	2025011600000552	2.5	2025-01-16 15:20:43.379-04	2025-01-16 19:20:43.38402	2025-01-16 19:20:43.38402	\N	5	\N	\N	\N	1	1	412
+456	2025011600000553	2.5	2025-01-16 15:20:53.63-04	2025-01-16 19:20:53.633484	2025-01-16 19:20:53.633484	\N	5	\N	\N	\N	1	1	413
+457	2025011600000554	2.5	2025-01-16 15:21:10.289-04	2025-01-16 19:21:10.292907	2025-01-16 19:21:10.292907	\N	5	\N	\N	\N	1	1	414
+458	41606854	2.5	2025-01-16 15:21:22.253-04	2025-01-16 19:21:22.256921	2025-01-16 19:21:57.588541	\N	6	\N	\N	\N	1	1	415
+459	2025011600000557	2.5	2025-01-16 15:25:24.628-04	2025-01-16 19:25:24.631763	2025-01-16 19:25:24.631763	\N	5	\N	\N	\N	1	1	416
+460	2025011600000560	2.5	2025-01-16 15:25:59.5-04	2025-01-16 19:25:59.503862	2025-01-16 19:26:18.216977	\N	6	\N	\N	\N	1	1	417
+461	2025011600000561	2.5	2025-01-16 15:27:49.624-04	2025-01-16 19:27:49.62821	2025-01-16 19:27:49.62821	\N	5	\N	\N	\N	1	1	418
+462	2025011600000562	2.5	2025-01-16 15:27:59.185-04	2025-01-16 19:27:59.188729	2025-01-16 19:27:59.188729	\N	5	\N	\N	\N	1	1	419
+463	2025011600000563	2.5	2025-01-16 15:29:48.7-04	2025-01-16 19:29:48.703896	2025-01-16 19:29:48.703896	\N	5	\N	\N	\N	1	1	420
+464	2025011600000564	2.5	2025-01-16 15:33:10.664-04	2025-01-16 19:33:10.667728	2025-01-16 19:33:10.667728	\N	5	\N	\N	\N	1	1	421
+465	2025011600000565	2.5	2025-01-16 15:33:19.827-04	2025-01-16 19:33:19.829711	2025-01-16 19:33:19.829711	\N	5	\N	\N	\N	1	1	422
+466	41606861	2.5	2025-01-16 15:33:27.826-04	2025-01-16 19:33:27.828941	2025-01-16 19:34:17.536636	\N	6	\N	\N	\N	1	1	423
+467	41606863	2	2025-01-16 15:36:20.751-04	2025-01-16 19:36:20.755275	2025-01-16 19:37:03.200639	\N	6	\N	\N	\N	1	1	424
+468	2025011600000571	2	2025-01-16 15:38:41.106-04	2025-01-16 19:38:41.109509	2025-01-16 19:38:52.107848	\N	6	\N	\N	\N	1	1	425
+469	2025011600000573	2	2025-01-16 15:39:33.865-04	2025-01-16 19:39:33.868635	2025-01-16 19:39:58.615368	\N	6	\N	\N	\N	1	1	426
+470	2025011600000574	2	2025-01-16 15:40:05.1-04	2025-01-16 19:40:05.103834	2025-01-16 19:40:05.103834	\N	5	\N	\N	\N	1	1	427
+471	41606870	1.24	2025-01-16 15:57:09.946-04	2025-01-16 19:57:09.950007	2025-01-16 19:57:33.662517	\N	6	\N	\N	\N	1	1	428
+472	42206914	1	2025-01-22 11:54:16.47-04	2025-01-22 15:54:16.47528	2025-01-22 15:55:23.32508	\N	6	\N	\N	\N	1	1	429
 \.
 
 
@@ -5773,14 +5809,15 @@ COPY public.types_external_request (id, code, description, created_at, updated_a
 --
 
 COPY public.users (id, email, password, identity_document_letter, identity_document, birthdate, constitution_date, address, phone_number, last_connection, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "roleId", "contributorTypeId", "parishId", fullname, "refreshToken", contributor_exempt, gender) FROM stdin;
-11	ljml69@gmail.com	$2a$10$nMX0Lc0X4M7lZD0kxYAYrei34eQRgOz9ErhfU.qKvwrXvToW1KlVW	V	8612413	1996-01-19	\N	El refugio	+58 424 4431006	\N	2024-12-18 22:05:24.607124	2024-12-18 22:07:42.866688	\N	1	\N	\N	\N	3	1	274	Lisbeth Martinez	$argon2id$v=19$m=65536,t=3,p=4$pMSTFOApWRSl3uFNKt9gag$X5KcbNQuVGXvoEy84HrUpe/GkkyS4lgk5hF5INpEwW8	f	F
 1	shyf.infosiartec@gmail.com	$2a$10$nXtUPsWyqglYlPp0ehUOQu.hrUCB0CIv/K51AW21ZDLcBUxsnZwTS	G	20000152-6	\N	1900-01-01	Av. Michelena a 100 Mts. del elevado La Quizanda detrás de las oficinas del IVEC Sede Sec. Hacienda y Finanzas – Valencia - Edo. Carabobo.	+58 241 8743470	\N	2024-06-25 21:49:14.69	2024-11-23 21:02:53.729682	\N	1	1	1	\N	1	6	285	SUPER ADMIN		f	O
-3	jennyaray98@gmail.com	$2a$10$OQsz9Gj2Xw4J.hsWbUo2gOtcA.FdXXHtPMgyYp1cCA9gjSiYFKxN.	V	26306715	1965-02-02	\N	San Judas Tadeo I	+58 424 4571298	\N	2024-10-17 19:17:42.11	2024-10-17 19:17:42.11	\N	1	1	1	\N	4	1	285	Jennyreth Cristina Aray Andrade		t	F
 5	sebastian.gamboalima@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465204	1953-12-15	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085731	\N	2024-10-14 14:54:09.9	2025-01-20 20:42:10.985768	\N	1	1	1	\N	3	2	285	Carlos Arnaldo Cárdenas Sosa	$argon2id$v=19$m=65536,t=3,p=4$g8au477HCUryHs0MAbW4Uw$ro3sNGV3J0qPVeg+vx6ETVjS6ZIQEbleRRDFok2c98E	f	M
-12	evigonzalez17@gmail.com	$2a$10$mufsqlPGyXG6cRBbam471eHhiVtNgadE3x5sa0JWuS17OcCLcVddS	J	28063607	2000-07-04	\N	Urb rafael urdaneta av   guigue sector L 12	+58 414 5944030	\N	2025-01-07 14:37:36.843822	2025-01-22 16:37:12.694186	\N	1	\N	\N	\N	3	2	285	Evimar Desiree Gonzalez Jimenez	$argon2id$v=19$m=65536,t=3,p=4$Q4Ob4/1mE7deN13gnUwueA$cC2XkI3RrQkCtwrB6/dhNyt1QpRE6gGtPwTjY2tjmBs	f	F
-4	broook.hum04@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465203	1964-02-02	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085730	\N	2024-10-14 14:54:09.9	2025-01-22 16:38:17.337427	\N	1	1	1	\N	2	1	285	Carlos Arnaldo Cárdenas Sosa	$argon2id$v=19$m=65536,t=3,p=4$88M7SMUPQfMSPGpzpEL4sA$Nk+uaaVrnG55BpnuhcklGV7dI88FnyZKxwec3coD9TE	f	M
-2	nelmerayala@gmail.com	$2a$10$wpHmJMkJYYAOWQ/OkaY02.A4BupEFscr.OosU59uwd/xqw/6BAetC	V	24297146	1965-02-02	\N	Los tamarindos	+58 414 4196316	\N	2024-06-26 23:02:27.391	2025-01-22 16:47:09.329243	\N	1	1	1	\N	2	2	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$jVH3Da3ZbarLepuwswhRFw$B17I4HL4QQCYaDBJRN7YtcYkAP5FUt/Eyvmm6cp7dtE	f	M
-13	jrligas@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	J	7208763	1962-09-29	\N	Flor  Amarillo	+58 412 4935130	\N	2025-01-22 15:31:46.185439	2025-01-24 01:10:53.780265	\N	1	\N	\N	\N	3	2	282	José Rodolfo Ligas Chacón	$argon2id$v=19$m=65536,t=3,p=4$YYDg60vOZVvBucqm0QmjTw$GLYoDXAr+/iOx8KWvQ6drx3n5lZD8/JXYo+a8PtZNFo	t	M
+7	evigonzalez17@gmail.com	$2a$10$mufsqlPGyXG6cRBbam471eHhiVtNgadE3x5sa0JWuS17OcCLcVddS	J	28063607	2000-07-04	\N	Urb rafael urdaneta av   guigue sector L 12	+58 414 5944030	\N	2025-01-07 14:37:36.843822	2025-01-29 14:24:51.913511	\N	1	\N	\N	\N	3	2	285	Evimar Desiree Gonzalez Jimenez	$argon2id$v=19$m=65536,t=3,p=4$BuMA6Zrd4y7V9uUGOwT14w$B0kMZj8GvX9Hdx8nxuBl4NEMGPFwmFc3uJfP32sduqc	f	F
+4	broook.hum04@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465203	1964-02-02	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085730	\N	2024-10-14 14:54:09.9	2025-01-28 19:18:26.914648	\N	1	1	1	\N	2	1	285	Carlos Arnaldo Cárdenas Sosa	$argon2id$v=19$m=65536,t=3,p=4$vO+dekX42ONmA2OylJnizQ$6MOpl9sdLgz/QeFVUymJxs1nW2Kyl0yEfU8uqfZmnew	t	M
+3	jennyaray98@gmail.com	$2a$10$OQsz9Gj2Xw4J.hsWbUo2gOtcA.FdXXHtPMgyYp1cCA9gjSiYFKxN.	V	26306715	1965-02-02	\N	San Judas Tadeo I	+58 424 4571298	\N	2024-10-17 19:17:42.11	2024-10-17 19:17:42.11	\N	1	1	1	\N	4	1	285	Jennyreth Cristina Aray Andrade		t	F
+6	jrligas@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	7208763	1962-09-29	\N	Flor  Amarillo	+58 412 4935130	\N	2025-01-22 15:31:46.185439	2025-01-29 19:34:35.489747	\N	1	\N	\N	\N	3	1	282	José Rodolfo Ligas Chacón	$argon2id$v=19$m=65536,t=3,p=4$9pgD3v004hUtC76W1trPtQ$dFrQzgAkVv7XGJa8JruqJ9S2oUury5vB/eY4cnQPGMk	t	M
+9	ljml691@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	8612413	1969-01-19	\N	San Joaquin	+58 424 4441007	\N	2025-01-28 20:47:45.228011	2025-01-29 19:26:56.231079	\N	1	\N	\N	\N	3	1	274	Lisbeth	$argon2id$v=19$m=65536,t=3,p=4$SvT4ehniPsqTo/zalyfXGA$A5jMx7Dzz69O0jtEd3LqOANIkragWlR6MFh7ti+93g0	t	F
+8	ljml69@gmail.com	$2a$10$nMX0Lc0X4M7lZD0kxYAYrei34eQRgOz9ErhfU.qKvwrXvToW1KlVW	V	8612413	1996-01-19	\N	El refugio	+58 424 4431006	\N	2024-12-18 22:05:24.607124	2024-12-18 22:07:42.866688	\N	1	\N	\N	\N	3	1	274	Lisbeth Martinez	$argon2id$v=19$m=65536,t=3,p=4$pMSTFOApWRSl3uFNKt9gag$X5KcbNQuVGXvoEy84HrUpe/GkkyS4lgk5hF5INpEwW8	f	F
+2	nelmerayala@gmail.com	$2a$10$wpHmJMkJYYAOWQ/OkaY02.A4BupEFscr.OosU59uwd/xqw/6BAetC	V	24297146	1965-02-02	\N	Los tamarindos	+58 414 4196316	\N	2024-06-26 23:02:27.391	2025-01-29 21:43:44.105765	\N	1	1	1	\N	1	2	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$ztOWzwPEgl+crST0JU9Aiw$qmRcmURkOYQJddx+b2ZO7eMn9MhqY2z6YnadhahRK2w	f	M
 \.
 
 
@@ -5788,7 +5825,7 @@ COPY public.users (id, email, password, identity_document_letter, identity_docum
 -- Name: annual_correlative_tax_stamps; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.annual_correlative_tax_stamps', 518, true);
+SELECT pg_catalog.setval('public.annual_correlative_tax_stamps', 522, true);
 
 
 --
@@ -5837,7 +5874,7 @@ SELECT pg_catalog.setval('public.branch_id_seq', 1, true);
 -- Name: calculation_factor_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.calculation_factor_id_seq', 89, true);
+SELECT pg_catalog.setval('public.calculation_factor_id_seq', 91, true);
 
 
 --
@@ -5865,7 +5902,7 @@ SELECT pg_catalog.setval('public.country_id_seq', 240, true);
 -- Name: daily_correlative_request_bank; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.daily_correlative_request_bank', 578, true);
+SELECT pg_catalog.setval('public.daily_correlative_request_bank', 580, true);
 
 
 --
@@ -5879,14 +5916,14 @@ SELECT pg_catalog.setval('public.daily_correlative_tax_stamps', 13, true);
 -- Name: document_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.document_id_seq', 25, false);
+SELECT pg_catalog.setval('public.document_id_seq', 8, true);
 
 
 --
 -- Name: entities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.entities_id_seq', 4, true);
+SELECT pg_catalog.setval('public.entities_id_seq', 8, true);
 
 
 --
@@ -5956,14 +5993,14 @@ SELECT pg_catalog.setval('public.point_of_sale_id_seq', 1, true);
 -- Name: privilege_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.privilege_id_seq', 11, true);
+SELECT pg_catalog.setval('public.privilege_id_seq', 19, true);
 
 
 --
 -- Name: procedure_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.procedure_id_seq', 1, false);
+SELECT pg_catalog.setval('public.procedure_id_seq', 374, false);
 
 
 --
@@ -5977,7 +6014,7 @@ SELECT pg_catalog.setval('public.role_id_seq', 7, true);
 -- Name: roles_privilege_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.roles_privilege_id_seq', 41, true);
+SELECT pg_catalog.setval('public.roles_privilege_id_seq', 55, true);
 
 
 --
@@ -5998,14 +6035,14 @@ SELECT pg_catalog.setval('public.status_id_seq', 14, true);
 -- Name: subentity_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.subentity_id_seq', 29, true);
+SELECT pg_catalog.setval('public.subentity_id_seq', 38, true);
 
 
 --
 -- Name: tax_stamp_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tax_stamp_id_seq', 970, true);
+SELECT pg_catalog.setval('public.tax_stamp_id_seq', 972, true);
 
 
 --
@@ -6040,7 +6077,7 @@ SELECT pg_catalog.setval('public.types_external_request_id_seq', 1, true);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 13, true);
+SELECT pg_catalog.setval('public.users_id_seq', 10, false);
 
 
 --
