@@ -63,10 +63,10 @@ ALTER TYPE public.users_gender_enum OWNER TO postgres;
 
 CREATE FUNCTION public.reset_sequence(sequence_name text) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-BEGIN
-  EXECUTE format('ALTER SEQUENCE %I RESTART WITH 1;', sequence_name);
-END;
+    AS $$
+BEGIN
+  EXECUTE format('ALTER SEQUENCE %I RESTART WITH 1;', sequence_name);
+END;
 $$;
 
 
@@ -78,31 +78,31 @@ ALTER FUNCTION public.reset_sequence(sequence_name text) OWNER TO postgres;
 
 CREATE FUNCTION public.verification_contributors_exempts() RETURNS void
     LANGUAGE plpgsql
-    AS $$
-BEGIN
-	/*
-	* Actualizar usuarios como exentos 
-	*/
-  	UPDATE users
-	SET contributor_exempt=true
-	WHERE 
-	(date_part('year', age(birthdate)) >=CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and gender='F') or
-	(date_part('year', age(birthdate)) >=CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and gender='M')
-	-- or (date_part('year', age(birthdate)) <=CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
-	and contributor_exempt = false
-	and "contributorTypeId" = (SELECT id FROM contributors_type WHERE code='NATURAL');
-
-	/*
-	* Actualizar usuarios como NO exentos 
-	*/
-  	UPDATE users
-	SET contributor_exempt=false
-	WHERE 
-	((date_part('year', age(birthdate)) <CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and gender='F') or
-	(date_part('year', age(birthdate)) <CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and gender='M'))
-	-- and (date_part('year', age(birthdate)) >CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
-	and "contributorTypeId" = (SELECT id FROM contributors_type WHERE code='NATURAL');
-END;
+    AS $$
+BEGIN
+	/*
+	* Actualizar usuarios como exentos 
+	*/
+  	UPDATE users
+	SET contributor_exempt=true
+	WHERE 
+	(date_part('year', age(birthdate)) >=CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and gender='F') or
+	(date_part('year', age(birthdate)) >=CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and gender='M')
+	-- or (date_part('year', age(birthdate)) <=CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
+	and contributor_exempt = false
+	and "contributorTypeId" = (SELECT id FROM contributors_type WHERE code='NATURAL');
+
+	/*
+	* Actualizar usuarios como NO exentos 
+	*/
+  	UPDATE users
+	SET contributor_exempt=false
+	WHERE 
+	((date_part('year', age(birthdate)) <CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and gender='F') or
+	(date_part('year', age(birthdate)) <CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and gender='M'))
+	-- and (date_part('year', age(birthdate)) >CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
+	and "contributorTypeId" = (SELECT id FROM contributors_type WHERE code='NATURAL');
+END;
 $$;
 
 
@@ -114,23 +114,23 @@ ALTER FUNCTION public.verification_contributors_exempts() OWNER TO postgres;
 
 CREATE FUNCTION public.verification_contributors_exempts(sequence_name text) RETURNS void
     LANGUAGE plpgsql
-    AS $$
-BEGIN
-  	UPDATE users
-	SET contributor_exempt=true
-	WHERE 
-	(date_part('year', age(u.birthdate)) >=CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and u.gender='F') or
-	(date_part('year', age(u.birthdate)) >=CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and u.gender='M') or
-	(date_part('year', age(u.birthdate)) <=CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
-	and u.contributor_exempt = false;
-
-  	UPDATE users
-	SET contributor_exempt=false
-	WHERE 
-	((date_part('year', age(u.birthdate)) <CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and u.gender='F') or
-	(date_part('year', age(u.birthdate)) <CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and u.gender='M')) and
-	(date_part('year', age(u.birthdate)) >CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER));
-END;
+    AS $$
+BEGIN
+  	UPDATE users
+	SET contributor_exempt=true
+	WHERE 
+	(date_part('year', age(u.birthdate)) >=CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and u.gender='F') or
+	(date_part('year', age(u.birthdate)) >=CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and u.gender='M') or
+	(date_part('year', age(u.birthdate)) <=CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER))
+	and u.contributor_exempt = false;
+
+  	UPDATE users
+	SET contributor_exempt=false
+	WHERE 
+	((date_part('year', age(u.birthdate)) <CAST((SELECT value FROM parameter WHERE code='FEMALE_AGE' AND "statusId"=1) AS INTEGER) and u.gender='F') or
+	(date_part('year', age(u.birthdate)) <CAST((SELECT value FROM parameter WHERE code='MALE_AGE' AND "statusId"=1)AS INTEGER) and u.gender='M')) and
+	(date_part('year', age(u.birthdate)) >CAST((SELECT value FROM parameter WHERE code='MINORS_AGE' AND "statusId"=1)AS INTEGER));
+END;
 $$;
 
 
@@ -1416,8 +1416,8 @@ CREATE TABLE public.tax_stamp (
     "calculationFactorId" integer,
     number_folios integer NOT NULL,
     year character varying(4) NOT NULL,
-    generation_date date DEFAULT '2025-01-29'::date NOT NULL,
-    expiration_date date DEFAULT '2025-02-03'::date NOT NULL
+    generation_date date DEFAULT '2025-02-03'::date NOT NULL,
+    expiration_date date DEFAULT '2025-02-06'::date NOT NULL
 );
 
 
@@ -1942,39 +1942,39 @@ COPY public.audits_detail (id, "recordId", at_table, at_column, old_value, new_v
 --
 
 COPY public.bank (id, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", code, description, code_bank, description_bank) FROM stdin;
-4	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0108	BANCO PROVINCIAL BBVA	108	PROVINCIAL
-5	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0114	BANCO DEL CARIBE C.A.	114	BANCARIBE
+4	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0108	BANCO PROVINCIAL BBVA	108	PROVINCIAL
+5	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0114	BANCO DEL CARIBE C.A.	114	BANCARIBE
 1	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0102	BANCO DE VENEZUELA S.A.I.C.A.	102	VENEZUELA
-3	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0105	BANCO MERCANTIL C.A.	105	MERCANTIL
-6	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0115	BANCO EXTERIOR C.A.	115	EXTERIOR
-7	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0128	BANCO CARONI, C.A. BANCO UNIVERSAL	128	CARONI
-8	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0134	Banesco Banco Universal	134	BANESCO
-9	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0137	SOFITASA	137	SOFITASA
-10	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0138	BANCO PLAZA	138	PLAZA
-11	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0151	FONDO COMUN	151	BFC BANCO FONDO COMUN
+3	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0105	BANCO MERCANTIL C.A.	105	MERCANTIL
+6	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0115	BANCO EXTERIOR C.A.	115	EXTERIOR
+7	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0128	BANCO CARONI, C.A. BANCO UNIVERSAL	128	CARONI
+8	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0134	Banesco Banco Universal	134	BANESCO
+9	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0137	SOFITASA	137	SOFITASA
+10	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0138	BANCO PLAZA	138	PLAZA
+11	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0151	FONDO COMUN	151	BFC BANCO FONDO COMUN
 12	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0156	100%BANCO	156	100% BANCO, BANCO UNIVERSAL
-13	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0157	DELSUR BANCO UNIVERSAL	157	DEL SUR
-14	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0163	BANCO DEL TESORO	163	BANCO DEL TESORO
-15	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0166	BANCO AGRICOLA	166	AGRICOLA DE VENEZUELA
+13	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0157	DELSUR BANCO UNIVERSAL	157	DEL SUR
+14	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0163	BANCO DEL TESORO	163	BANCO DEL TESORO
+15	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0166	BANCO AGRICOLA	166	AGRICOLA DE VENEZUELA
 16	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0168	BANCRECER S.A. BANCO DE DESARROLLO	168	BANCRECER
-17	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0169	MIBANCO BANCO DE DESARROLLO, C.A.	169	MI BANCO
-2	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0104	BANCO VENEZOLANO DE CREDITO S.A.	104	VZLANO DE CREDITO
-19	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0172	BANCAMIGA BANCO MICROFINANCIERO, C.A.	172	BANCAMIGA
-20	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0174	BANPLUS BANCO COMERCIAL C.A	174	BANPLUS BANCO COMERCIAL
-21	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0175	BANCO BICENTENARIO	175	BICENTENARIO
-22	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0177	BANFANB	177	BANCO FUERZA ARMADA NACIONAL
+17	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0169	MIBANCO BANCO DE DESARROLLO, C.A.	169	MI BANCO
+2	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0104	BANCO VENEZOLANO DE CREDITO S.A.	104	VZLANO DE CREDITO
+19	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0172	BANCAMIGA BANCO MICROFINANCIERO, C.A.	172	BANCAMIGA
+20	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0174	BANPLUS BANCO COMERCIAL C.A	174	BANPLUS BANCO COMERCIAL
+21	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0175	BANCO BICENTENARIO	175	BICENTENARIO
+22	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0177	BANFANB	177	BANCO FUERZA ARMADA NACIONAL
 23	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0191	BANCO NACIONAL DE CREDITO	191	BANCO NACIONAL CREDITO
-24	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0196	ABN AMRO BANK	\N	\N
-25	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0001	BANCO CENTRAL DE VENEZUELA.	\N	\N
-26	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0116	BANCO OCCIDENTAL DE DESCUENTO.	\N	\N
-27	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0146	BANGENTE	\N	\N
-28	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0149	BANCO DEL PUEBLO SOBERANO C.A.	\N	\N
-29	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0164	BANCO DE DESARROLLO DEL MICROEMPRESARIO	\N	\N
-30	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0173	BANCO INTERNACIONAL DE DESARROLLO, C.A.	\N	\N
-31	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0176	BANCO ESPIRITO SANTO, S.A.	\N	\N
-32	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0190	CITIBANK.	\N	\N
-33	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0601	INSTITUTO MUNICIPAL DE CRÉDITO POPULAR	\N	\N
-18	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	1	1	1	\N	0171	BANCO ACTIVO BANCO COMERCIAL, C.A.	171	ACTIVO BANCO UNIVERSAL
+24	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0196	ABN AMRO BANK	\N	\N
+25	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0001	BANCO CENTRAL DE VENEZUELA.	\N	\N
+26	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0116	BANCO OCCIDENTAL DE DESCUENTO.	\N	\N
+27	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0146	BANGENTE	\N	\N
+28	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0149	BANCO DEL PUEBLO SOBERANO C.A.	\N	\N
+29	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0164	BANCO DE DESARROLLO DEL MICROEMPRESARIO	\N	\N
+30	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0173	BANCO INTERNACIONAL DE DESARROLLO, C.A.	\N	\N
+31	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0176	BANCO ESPIRITO SANTO, S.A.	\N	\N
+32	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0190	CITIBANK.	\N	\N
+33	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0601	INSTITUTO MUNICIPAL DE CRÉDITO POPULAR	\N	\N
+18	2024-10-15 14:08:35.472587	2024-10-15 14:08:35.472587	\N	2	1	1	\N	0171	BANCO ACTIVO BANCO COMERCIAL, C.A.	171	ACTIVO BANCO UNIVERSAL
 \.
 
 
@@ -1983,8 +1983,11 @@ COPY public.bank (id, created_at, updated_at, deleted_at, "statusId", "createdBy
 --
 
 COPY public.bank_account (id, code, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "bankId", account_number) FROM stdin;
-1	01561234	2024-11-06 22:57:43.089708	2024-11-06 22:57:43.089708	\N	1	1	1	\N	12	01560000000000001234
-2	01021234	2024-11-20 22:57:34.465125	2024-11-20 22:57:34.465125	\N	1	1	1	\N	1	01020000000000001234
+1	00001	2024-11-06 22:57:43.089708	2024-11-06 22:57:43.089708	\N	1	1	1	\N	1	01020310410002600521
+2	00002	2024-11-20 22:57:34.465125	2024-11-20 22:57:34.465125	\N	1	1	1	\N	16	01680052025101491433
+3	00003	2025-02-03 11:20:49.61703	2025-02-03 11:20:49.61703	\N	1	1	1	\N	23	01910127462100105904
+4	00004	2025-02-03 11:20:49.626691	2025-02-03 11:20:49.626691	\N	1	1	1	\N	12	01560012890100027481
+5	00005	2025-02-03 15:02:00.722707	2025-02-03 15:02:00.722707	\N	1	1	1	\N	8	01340467444673043203
 \.
 
 
@@ -1993,7 +1996,10 @@ COPY public.bank_account (id, code, created_at, updated_at, deleted_at, "statusI
 --
 
 COPY public.branch (id, code, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById") FROM stdin;
-1	0001	SUCURSAL QUIZANSA	2024-11-21 23:24:37.38114	2024-11-21 23:24:37.38114	\N	1	1	1	\N
+2	0002	SUCURSAL CENTRO	2025-02-03 11:03:42.814241	2025-02-03 11:03:42.814241	\N	1	1	1	\N
+3	0003	SUCURSAL COSTA	2025-02-03 11:04:41.014901	2025-02-03 11:04:41.014901	\N	1	1	1	\N
+4	0004	SUCURSAL BEJUMA	2025-02-03 11:05:04.100473	2025-02-03 11:05:04.100473	\N	1	1	1	\N
+1	0001	SUCURSAL QUIZANDA	2024-11-21 23:24:37.38114	2024-11-21 23:24:37.38114	\N	1	1	1	\N
 \.
 
 
@@ -2022,6 +2028,8 @@ COPY public.calculation_factor (id, created_at, updated_at, deleted_at, "statusI
 89	2025-01-22 13:48:23.039263	2025-01-22 13:48:23.039263	\N	\N	\N	\N	\N	3	0.2	2025-01-22
 90	2025-01-28 13:08:53.210434	2025-01-28 13:08:53.210434	\N	\N	\N	\N	\N	3	59.6689	2025-01-28
 91	2025-01-29 14:25:59.385507	2025-01-29 14:25:59.385507	\N	\N	\N	\N	\N	3	59.7956	2025-01-29
+92	2025-01-30 19:07:36.724934	2025-01-30 19:07:36.724934	\N	\N	\N	\N	\N	3	0.2	2025-01-30
+93	2025-02-03 17:57:59.924185	2025-02-03 17:57:59.924185	\N	\N	\N	\N	\N	3	60.6295	2025-02-03
 \.
 
 
@@ -2668,6 +2676,8 @@ COPY public.external_request (id, code, description, created_at, updated_at, del
 600	2025011600000576	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-16 19:57:29.817321	2025-01-16 19:57:29.817321	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025011600000576","sTrxType":"202","sCurrency":"VES","sBankId":"191","sDocumentId":"V15620907","sPhoneNumber":"584242753491","nAmount":1.24,"sAuthKey":"26056790","sReferenceNo":"0","sTerminalId":"ingresos"}		471
 601	2025012200000577	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-22 15:54:16.486399	2025-01-22 15:54:16.486399	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025012200000577","sTrxType":"502","sCurrency":"VES","sBankId":"108","sDocumentId":"V7208763","sPhoneNumber":"584124935130","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		472
 602	2025012200000578	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-22 15:55:20.765115	2025-01-22 15:55:20.765115	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025012200000578","sTrxType":"202","sCurrency":"VES","sBankId":"108","sDocumentId":"V7208763","sPhoneNumber":"584124935130","nAmount":1,"sAuthKey":"93246606","sReferenceNo":"0","sTerminalId":"ingresos"}		472
+603	2025013000000581	External Request - Solicitud de Clave DBI (Método de pago: Teléfono)	2025-01-30 19:38:16.914259	2025-01-30 19:38:16.914259	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025013000000581","sTrxType":"502","sCurrency":"VES","sBankId":"105","sDocumentId":"V26917191","sPhoneNumber":"584145835873","nAmount":1,"sAuthKey":"0","sReferenceNo":"0","sTerminalId":"ingresos"}		473
+604	2025013000000582	External Request - Cobro DBI (Método de pago: Teléfono)	2025-01-30 19:38:46.507682	2025-01-30 19:38:46.507682	\N	7	\N	\N	\N	1	https://www8.100x100banco.com/100p2p/api/v1/PagoDBI	{"sMerchantId":"36564","sTrxId":"2025013000000582","sTrxType":"202","sCurrency":"VES","sBankId":"105","sDocumentId":"V26917191","sPhoneNumber":"584145835873","nAmount":1,"sAuthKey":"87336197","sReferenceNo":"0","sTerminalId":"ingresos"}		473
 \.
 
 
@@ -2676,7 +2686,12 @@ COPY public.external_request (id, code, description, created_at, updated_at, del
 --
 
 COPY public.locker (id, code, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "branchId", "userId") FROM stdin;
-1	001	Taquilla 1 - Quizanda	2024-11-24 11:22:58.689296	2024-11-24 11:22:58.689296	\N	1	1	1	\N	1	2
+1	001	Taquilla 1 - Quizanda	2024-11-24 11:22:58.689296	2024-11-24 11:22:58.689296	\N	1	1	1	\N	1	4
+2	002	Taquilla 1 - Centro	2025-02-03 11:12:18.33277	2025-02-03 11:12:18.33277	\N	1	1	1	\N	2	9
+4	004	Taquilla 3 - Centro	2025-02-03 15:53:00.930409	2025-02-03 15:53:00.930409	\N	1	1	1	\N	2	\N
+3	003	Taquilla 2 - Centro	2025-02-03 11:49:22.779721	2025-02-03 11:49:22.779721	\N	1	1	1	\N	2	3
+5	005	Taquilla 1 - Bejuma	2025-02-03 15:53:59.730504	2025-02-03 15:53:59.730504	\N	1	1	1	\N	3	\N
+6	006	Taquilla 1 - Costa	2025-02-03 15:54:52.04568	2025-02-03 15:54:52.04568	\N	1	1	1	\N	4	\N
 \.
 
 
@@ -2685,6 +2700,12 @@ COPY public.locker (id, code, description, created_at, updated_at, deleted_at, "
 --
 
 COPY public.lockers_point_of_sale (id, code, description, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "lockerId", "pointOfSaleId") FROM stdin;
+1	00001	Punto de Venta 1 - Sede Quizanda	2025-02-03 11:47:13.234733	2025-02-03 11:47:13.234733	\N	1	4	\N	\N	1	1
+2	00002	Punto de Venta 1 - Sede Centro	2025-02-03 11:47:13.245521	2025-02-03 11:47:13.245521	\N	1	4	\N	\N	2	2
+3	00003	Punto de Venta 2 - Sede Centro	2025-02-03 11:52:10.217347	2025-02-03 11:52:10.217347	\N	1	4	\N	\N	3	3
+4	00004	Punto de Venta 3 - Sede Centro	2025-02-03 15:55:40.443155	2025-02-03 15:55:40.443155	\N	1	4	\N	\N	4	4
+5	00005	Punto de Venta 1 - Sede Bejuma	2025-02-03 15:56:37.903891	2025-02-03 15:56:37.903891	\N	1	4	\N	\N	5	5
+6	00006	Punto de Venta 1 - Sede Costa	2025-02-03 15:57:37.687439	2025-02-03 15:57:37.687439	\N	1	4	\N	\N	6	6
 \.
 
 
@@ -4419,6 +4440,14 @@ COPY public.payment (id, amount, created_at, updated_at, deleted_at, "statusId",
 427	2	2025-01-16 19:40:05.095665	2025-01-16 19:40:05.095665	\N	3	\N	\N	\N	\N	1
 428	1.24	2025-01-16 19:57:09.941117	2025-01-16 19:57:33.657163	\N	4	\N	\N	\N	\N	1
 429	1	2025-01-22 15:54:16.464579	2025-01-22 15:55:23.322999	\N	4	\N	\N	\N	\N	1
+430	1	2025-01-30 19:38:16.891244	2025-01-30 19:38:48.094546	\N	4	\N	\N	\N	\N	1
+431	5	2025-01-30 20:04:50.966068	2025-01-30 20:04:50.966068	\N	3	\N	\N	\N	1	2
+432	1	2025-01-30 20:05:04.802783	2025-01-30 20:05:04.802783	\N	3	\N	\N	\N	1	2
+433	4	2025-01-30 20:05:20.394246	2025-01-30 20:05:20.394246	\N	3	\N	\N	\N	1	2
+434	4	2025-01-30 20:05:23.87808	2025-01-30 20:05:23.87808	\N	3	\N	\N	\N	1	2
+435	4	2025-01-30 20:09:23.160071	2025-01-30 20:09:23.186129	\N	4	\N	\N	\N	1	2
+436	2425.18	2025-02-03 17:59:37.989848	2025-02-03 17:59:37.989848	\N	3	\N	\N	\N	1	2
+437	1212.59	2025-02-03 18:03:53.768448	2025-02-03 18:03:53.789304	\N	4	\N	\N	\N	1	2
 \.
 
 
@@ -4437,7 +4466,12 @@ COPY public.payments_type (id, code, description, created_at, updated_at, delete
 --
 
 COPY public.point_of_sale (id, code, description, serial, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "bankAccountId") FROM stdin;
-1	0001	Punto de Venta 1 - Sede Quizanda	123456	2024-11-20 22:59:47.154098	2024-11-20 22:59:47.154098	\N	1	1	1	\N	1
+1	0001	Punto de Venta 1 - Sede Quizanda	123456	2024-11-20 22:59:47.154098	2024-11-20 22:59:47.154098	\N	1	1	1	\N	2
+2	0002	Punto de Venta 1 - Sede Centro	123456	2025-02-03 11:39:33.160325	2025-02-03 11:39:33.160325	\N	1	1	1	\N	3
+3	0003	Punto de Venta 2 - Sede Centro	123456	2025-02-03 11:38:19.270821	2025-02-03 11:38:19.270821	\N	1	1	1	\N	3
+5	0005	Punto de Venta 1 - Sede Bejuma	123456	2025-02-03 11:42:25.451266	2025-02-03 11:42:25.451266	\N	1	1	1	\N	3
+6	0006	Punto de Venta 1 - Sede Costa	123456	2025-02-03 11:42:25.460278	2025-02-03 11:42:25.460278	\N	1	1	1	\N	3
+4	0004	Punto de Venta 3 - Sede Centro	123456	2025-02-03 11:40:52.107719	2025-02-03 11:40:52.107719	\N	1	1	1	\N	5
 \.
 
 
@@ -5154,8 +5188,6 @@ COPY public.tax_stamp (id, code, amount, created_at, updated_at, deleted_at, "st
 814	40029007820240000362	1068.802	2024-12-18 21:25:35.335027	2024-12-18 21:25:35.335027	\N	11	\N	\N	\N	2	360	\N	1	2024	2025-01-29	2025-02-03
 835	40028007620250000383	1.25	2025-01-07 19:21:46.452161	2025-01-07 19:21:46.452161	\N	10	\N	\N	\N	5	358	\N	1	2025	2025-01-29	2025-02-03
 834	20024005320250000382	1.25	2025-01-07 17:00:49.593759	2025-01-07 17:00:49.593759	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
-836	40029007820250000384	1.25	2025-01-07 19:54:42.039277	2025-01-07 19:54:42.039277	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
-837	20024005320250000385	1.25	2025-01-07 19:55:25.384796	2025-01-07 19:55:25.384796	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
 838	40029007820250000386	1.25	2025-01-08 14:29:25.353154	2025-01-08 14:29:25.353154	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
 839	20024005420250000387	1.25	2025-01-08 14:35:47.026019	2025-01-08 14:35:47.026019	\N	10	\N	\N	\N	7	336	\N	1	2025	2025-01-29	2025-02-03
 840	20024005320250000388	1.25	2025-01-08 14:38:30.863986	2025-01-08 14:38:30.863986	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
@@ -5166,6 +5198,7 @@ COPY public.tax_stamp (id, code, amount, created_at, updated_at, deleted_at, "st
 846	20024005320250000394	1	2025-01-08 15:04:08.413183	2025-01-08 15:04:08.413183	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
 847	20024005320250000395	1	2025-01-08 15:05:46.392149	2025-01-08 15:05:46.392149	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
 848	30026006520250000396	1	2025-01-08 15:15:29.179649	2025-01-08 15:15:29.179649	\N	10	\N	\N	\N	7	347	\N	1	2025	2025-01-29	2025-02-03
+837	20024005320250000385	1212.59	2025-01-07 19:55:25.384	2025-01-07 19:55:25.384	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
 849	20024005320250000397	1	2025-01-08 15:20:42.370608	2025-01-08 15:20:42.370608	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
 850	20024005320250000398	1	2025-01-08 15:22:39.758721	2025-01-08 15:22:39.758721	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
 851	20024005320250000399	1	2025-01-08 15:29:31.065444	2025-01-08 15:29:31.065444	\N	10	\N	\N	\N	7	335	\N	1	2025	2025-01-29	2025-02-03
@@ -5297,6 +5330,24 @@ COPY public.tax_stamp (id, code, amount, created_at, updated_at, deleted_at, "st
 943	40029007820250000491	2.5	2025-01-16 19:20:43.364335	2025-01-16 19:20:43.364335	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
 944	40029007820250000492	2.5	2025-01-16 19:20:53.621429	2025-01-16 19:20:53.621429	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
 945	40029007820250000493	2.5	2025-01-16 19:21:10.281602	2025-01-16 19:21:10.281602	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+975	40029007820250000525	1	2025-01-30 19:38:16.885421	2025-01-30 19:38:48.088526	\N	11	\N	\N	\N	10	360	\N	1	2025	2025-01-30	2025-02-04
+974	10001001120250000524	4	2025-01-30 19:33:06.144	2025-01-30 19:33:06.144	\N	10	\N	\N	\N	10	11	92	1	2025	2025-01-30	2025-02-04
+977	10013004620250000527	1	2025-01-30 20:08:05.017	2025-01-30 20:08:05.017	\N	11	\N	\N	\N	10	178	92	1	2025	2025-01-30	2025-02-04
+978	10013004620250000528	1	2025-01-30 20:08:05.02	2025-01-30 20:08:05.02	\N	11	\N	\N	\N	10	178	92	1	2025	2025-01-30	2025-02-04
+976	10013004620250000526	1	2025-01-30 20:08:05.012	2025-01-30 20:08:05.012	\N	11	\N	\N	\N	10	178	92	1	2025	2025-01-30	2025-02-04
+973	10010002820250000523	1	2025-01-30 19:33:06.141	2025-01-30 19:33:06.141	\N	11	\N	\N	\N	10	140	92	1	2025	2025-01-30	2025-02-04
+836	40029007820250000384	1212.59	2025-01-07 19:54:42.039	2025-01-07 19:54:42.039	\N	10	\N	\N	\N	7	360	\N	1	2025	2025-01-29	2025-02-03
+979	40029007820250000529	1212.59	2025-02-03 18:00:38.767874	2025-02-03 18:00:38.767874	\N	10	\N	\N	\N	7	360	93	1	2025	2025-02-03	2025-02-06
+980	40029007820250000530	1212.59	2025-02-03 18:00:38.772063	2025-02-03 18:00:38.772063	\N	10	\N	\N	\N	7	360	93	1	2025	2025-02-03	2025-02-06
+981	40029007820250000531	1212.59	2025-02-03 18:00:38.774467	2025-02-03 18:00:38.774467	\N	10	\N	\N	\N	7	360	93	1	2025	2025-02-03	2025-02-06
+982	40029007820250000532	1212.59	2025-02-03 18:00:38.777013	2025-02-03 18:00:38.777013	\N	10	\N	\N	\N	7	360	93	1	2025	2025-02-03	2025-02-06
+983	40029007820250000533	1212.59	2025-02-03 18:00:38.77947	2025-02-03 18:00:38.77947	\N	10	\N	\N	\N	7	360	93	1	2025	2025-02-03	2025-02-06
+984	40029007820250000534	1212.59	2025-02-03 18:00:38.782005	2025-02-03 18:00:38.782005	\N	10	\N	\N	\N	7	360	93	1	2025	2025-02-03	2025-02-06
+985	40029007820250000535	1212.59	2025-02-03 18:00:38.784189	2025-02-03 18:00:38.784189	\N	10	\N	\N	\N	7	360	93	1	2025	2025-02-03	2025-02-06
+986	40029007820250000536	1212.59	2025-02-03 18:00:38.786254	2025-02-03 18:00:38.786254	\N	10	\N	\N	\N	7	360	93	1	2025	2025-02-03	2025-02-06
+987	40029007820250000537	1212.59	2025-02-03 18:00:38.788627	2025-02-03 18:00:38.788627	\N	10	\N	\N	\N	7	360	93	1	2025	2025-02-03	2025-02-06
+988	40029007820250000538	1212.59	2025-02-03 18:00:38.790624	2025-02-03 18:00:38.790624	\N	10	\N	\N	\N	7	360	93	1	2025	2025-02-03	2025-02-06
+989	40029007820250000539	1212.59	2025-02-03 18:00:38.792	2025-02-03 18:00:38.792	\N	11	\N	\N	\N	7	360	93	1	2025	2025-02-03	2025-02-06
 \.
 
 
@@ -5552,6 +5603,19 @@ COPY public.tax_stamps_payment (id, created_at, updated_at, deleted_at, "statusI
 821	2025-01-16 19:40:05.098608	2025-01-16 19:40:05.098608	\N	1	\N	\N	\N	958	427
 822	2025-01-16 19:57:09.944189	2025-01-16 19:57:09.944189	\N	1	\N	\N	\N	959	428
 823	2025-01-22 15:54:16.468071	2025-01-22 15:54:16.468071	\N	1	\N	\N	\N	961	429
+824	2025-01-30 19:38:16.895394	2025-01-30 19:38:16.895394	\N	1	\N	\N	\N	975	430
+825	2025-01-30 20:04:50.971807	2025-01-30 20:04:50.971807	\N	1	\N	\N	\N	973	431
+826	2025-01-30 20:04:50.971897	2025-01-30 20:04:50.971897	\N	1	\N	\N	\N	974	431
+827	2025-01-30 20:05:04.805179	2025-01-30 20:05:04.805179	\N	1	\N	\N	\N	973	432
+828	2025-01-30 20:05:20.397087	2025-01-30 20:05:20.397087	\N	1	\N	\N	\N	974	433
+829	2025-01-30 20:05:23.880718	2025-01-30 20:05:23.880718	\N	1	\N	\N	\N	974	434
+830	2025-01-30 20:09:23.163285	2025-01-30 20:09:23.163285	\N	1	\N	\N	\N	976	435
+831	2025-01-30 20:09:23.163362	2025-01-30 20:09:23.163362	\N	1	\N	\N	\N	973	435
+832	2025-01-30 20:09:23.163425	2025-01-30 20:09:23.163425	\N	1	\N	\N	\N	977	435
+833	2025-01-30 20:09:23.163486	2025-01-30 20:09:23.163486	\N	1	\N	\N	\N	978	435
+834	2025-02-03 17:59:37.993252	2025-02-03 17:59:37.993252	\N	1	\N	\N	\N	836	436
+835	2025-02-03 17:59:37.993352	2025-02-03 17:59:37.993352	\N	1	\N	\N	\N	837	436
+836	2025-02-03 18:03:53.77128	2025-02-03 18:03:53.77128	\N	1	\N	\N	\N	989	437
 \.
 
 
@@ -5780,6 +5844,9 @@ COPY public.transaction (id, reference, amount, date, created_at, updated_at, de
 470	2025011600000574	2	2025-01-16 15:40:05.1-04	2025-01-16 19:40:05.103834	2025-01-16 19:40:05.103834	\N	5	\N	\N	\N	1	1	427
 471	41606870	1.24	2025-01-16 15:57:09.946-04	2025-01-16 19:57:09.950007	2025-01-16 19:57:33.662517	\N	6	\N	\N	\N	1	1	428
 472	42206914	1	2025-01-22 11:54:16.47-04	2025-01-22 15:54:16.47528	2025-01-22 15:55:23.32508	\N	6	\N	\N	\N	1	1	429
+473	43007054	1	2025-01-30 15:38:16.897-04	2025-01-30 19:38:16.902883	2025-01-30 19:38:48.103095	\N	6	\N	\N	\N	1	1	430
+474	28465204	4	2025-01-29 20:00:00-04	2025-01-30 20:09:23.172521	2025-01-30 20:09:23.172521	\N	6	\N	\N	\N	2	2	435
+475	4787555	1212.59	2025-02-02 20:00:00-04	2025-02-03 18:03:53.778741	2025-02-03 18:03:53.778741	\N	6	\N	\N	\N	2	2	437
 \.
 
 
@@ -5811,13 +5878,14 @@ COPY public.types_external_request (id, code, description, created_at, updated_a
 COPY public.users (id, email, password, identity_document_letter, identity_document, birthdate, constitution_date, address, phone_number, last_connection, created_at, updated_at, deleted_at, "statusId", "createdById", "updatedById", "deletedById", "roleId", "contributorTypeId", "parishId", fullname, "refreshToken", contributor_exempt, gender) FROM stdin;
 1	shyf.infosiartec@gmail.com	$2a$10$nXtUPsWyqglYlPp0ehUOQu.hrUCB0CIv/K51AW21ZDLcBUxsnZwTS	G	20000152-6	\N	1900-01-01	Av. Michelena a 100 Mts. del elevado La Quizanda detrás de las oficinas del IVEC Sede Sec. Hacienda y Finanzas – Valencia - Edo. Carabobo.	+58 241 8743470	\N	2024-06-25 21:49:14.69	2024-11-23 21:02:53.729682	\N	1	1	1	\N	1	6	285	SUPER ADMIN		f	O
 5	sebastian.gamboalima@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465204	1953-12-15	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085731	\N	2024-10-14 14:54:09.9	2025-01-20 20:42:10.985768	\N	1	1	1	\N	3	2	285	Carlos Arnaldo Cárdenas Sosa	$argon2id$v=19$m=65536,t=3,p=4$g8au477HCUryHs0MAbW4Uw$ro3sNGV3J0qPVeg+vx6ETVjS6ZIQEbleRRDFok2c98E	f	M
-7	evigonzalez17@gmail.com	$2a$10$mufsqlPGyXG6cRBbam471eHhiVtNgadE3x5sa0JWuS17OcCLcVddS	J	28063607	2000-07-04	\N	Urb rafael urdaneta av   guigue sector L 12	+58 414 5944030	\N	2025-01-07 14:37:36.843822	2025-01-29 14:24:51.913511	\N	1	\N	\N	\N	3	2	285	Evimar Desiree Gonzalez Jimenez	$argon2id$v=19$m=65536,t=3,p=4$BuMA6Zrd4y7V9uUGOwT14w$B0kMZj8GvX9Hdx8nxuBl4NEMGPFwmFc3uJfP32sduqc	f	F
-4	broook.hum04@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465203	1964-02-02	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085730	\N	2024-10-14 14:54:09.9	2025-01-28 19:18:26.914648	\N	1	1	1	\N	2	1	285	Carlos Arnaldo Cárdenas Sosa	$argon2id$v=19$m=65536,t=3,p=4$vO+dekX42ONmA2OylJnizQ$6MOpl9sdLgz/QeFVUymJxs1nW2Kyl0yEfU8uqfZmnew	t	M
 3	jennyaray98@gmail.com	$2a$10$OQsz9Gj2Xw4J.hsWbUo2gOtcA.FdXXHtPMgyYp1cCA9gjSiYFKxN.	V	26306715	1965-02-02	\N	San Judas Tadeo I	+58 424 4571298	\N	2024-10-17 19:17:42.11	2024-10-17 19:17:42.11	\N	1	1	1	\N	4	1	285	Jennyreth Cristina Aray Andrade		t	F
-6	jrligas@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	7208763	1962-09-29	\N	Flor  Amarillo	+58 412 4935130	\N	2025-01-22 15:31:46.185439	2025-01-29 19:34:35.489747	\N	1	\N	\N	\N	3	1	282	José Rodolfo Ligas Chacón	$argon2id$v=19$m=65536,t=3,p=4$9pgD3v004hUtC76W1trPtQ$dFrQzgAkVv7XGJa8JruqJ9S2oUury5vB/eY4cnQPGMk	t	M
 9	ljml691@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	8612413	1969-01-19	\N	San Joaquin	+58 424 4441007	\N	2025-01-28 20:47:45.228011	2025-01-29 19:26:56.231079	\N	1	\N	\N	\N	3	1	274	Lisbeth	$argon2id$v=19$m=65536,t=3,p=4$SvT4ehniPsqTo/zalyfXGA$A5jMx7Dzz69O0jtEd3LqOANIkragWlR6MFh7ti+93g0	t	F
 8	ljml69@gmail.com	$2a$10$nMX0Lc0X4M7lZD0kxYAYrei34eQRgOz9ErhfU.qKvwrXvToW1KlVW	V	8612413	1996-01-19	\N	El refugio	+58 424 4431006	\N	2024-12-18 22:05:24.607124	2024-12-18 22:07:42.866688	\N	1	\N	\N	\N	3	1	274	Lisbeth Martinez	$argon2id$v=19$m=65536,t=3,p=4$pMSTFOApWRSl3uFNKt9gag$X5KcbNQuVGXvoEy84HrUpe/GkkyS4lgk5hF5INpEwW8	f	F
-2	nelmerayala@gmail.com	$2a$10$wpHmJMkJYYAOWQ/OkaY02.A4BupEFscr.OosU59uwd/xqw/6BAetC	V	24297146	1965-02-02	\N	Los tamarindos	+58 414 4196316	\N	2024-06-26 23:02:27.391	2025-01-29 21:43:44.105765	\N	1	1	1	\N	1	2	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$ztOWzwPEgl+crST0JU9Aiw$qmRcmURkOYQJddx+b2ZO7eMn9MhqY2z6YnadhahRK2w	f	M
+4	broook.hum04@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	28465203	1964-02-02	\N	Guigue, barrio Rosendo Torres 2, casa nro. 41, calle del cementerio	+58 414 4085730	\N	2024-10-14 14:54:09.9	2025-02-03 19:06:20.683623	\N	1	1	1	\N	8	1	285	Carlos Arnaldo Cárdenas Sosa	$argon2id$v=19$m=65536,t=3,p=4$WLtb8DY4vniZVXDVWrJrfA$FM+ALq5vlz8jXFU+nyBWjupJ5Mw+mRrsdtK8tXAqrAM	t	M
+6	jrligas@gmail.com	$2a$10$eWZ/hA/9iz/V0wnymAiyoub4x5XfpDxZ6k1WSdxatl.n1/ov5.7dm	V	7208763	1962-09-29	\N	Flor  Amarillo	+58 412 4935130	\N	2025-01-22 15:31:46.185439	2025-01-30 11:23:01.130709	\N	1	\N	\N	\N	3	1	282	José Rodolfo Ligas Chacón	$argon2id$v=19$m=65536,t=3,p=4$EK0pw7MUtlqTW1fRUYrslQ$PPXMVtS2P3eHpeN7+hOZkzQg689xGNIXJXU5BwnX2EQ	t	M
+10	jenndrysborges@gmail.com	$2a$10$QfMSdhq6DPDp4q3OKR6M4u5N4T7P2nnJBGK0GOXOp655hDlNYgkie	V	26917191	1998-09-16	\N	centro	+58 414 5835873	\N	2025-01-30 19:19:14.530689	2025-01-30 20:09:51.943483	\N	1	\N	\N	\N	3	1	277	Jenndrys borges	$argon2id$v=19$m=65536,t=3,p=4$7aG3cG6Yx9M7HiQn6wExmg$cakBv4a54BWoTMGwtt2FQsydRlHag++Na1UoqGFNrSc	f	F
+2	nelmerayala@gmail.com	$2a$10$wpHmJMkJYYAOWQ/OkaY02.A4BupEFscr.OosU59uwd/xqw/6BAetC	V	24297146	1965-02-02	\N	Los tamarindos	+58 414 4196316	\N	2024-06-26 23:02:27.391	2025-02-03 17:57:38.32587	\N	1	1	1	\N	1	2	269	Ayala Seijas Nelmer Alexander	$argon2id$v=19$m=65536,t=3,p=4$Frd8RLQmtnp4zc/SyYjJZw$JVojfeWiiJ3nhWXQI7QLZ2ChFbHve1/dmG0HUQv7w60	f	M
+7	evigonzalez17@gmail.com	$2a$10$mufsqlPGyXG6cRBbam471eHhiVtNgadE3x5sa0JWuS17OcCLcVddS	J	28063607	2000-07-04	\N	Urb rafael urdaneta av   guigue sector L 12	+58 414 5944030	\N	2025-01-07 14:37:36.843822	2025-02-03 19:05:21.473199	\N	1	\N	\N	\N	3	2	285	Evimar Desiree Gonzalez Jimenez	$argon2id$v=19$m=65536,t=3,p=4$LzLm/i3TcFbTS86ofJEIKA$XCjAUwHE2panpl050KoyRcaC1YnqYRfEwmpAke3IbNg	f	F
 \.
 
 
@@ -5825,7 +5893,7 @@ COPY public.users (id, email, password, identity_document_letter, identity_docum
 -- Name: annual_correlative_tax_stamps; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.annual_correlative_tax_stamps', 522, true);
+SELECT pg_catalog.setval('public.annual_correlative_tax_stamps', 539, true);
 
 
 --
@@ -5853,7 +5921,7 @@ SELECT pg_catalog.setval('public.audits_detail_id_seq', 1, false);
 -- Name: bank_account_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.bank_account_id_seq', 2, true);
+SELECT pg_catalog.setval('public.bank_account_id_seq', 5, true);
 
 
 --
@@ -5867,14 +5935,14 @@ SELECT pg_catalog.setval('public.bank_id_seq', 33, true);
 -- Name: branch_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.branch_id_seq', 1, true);
+SELECT pg_catalog.setval('public.branch_id_seq', 4, true);
 
 
 --
 -- Name: calculation_factor_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.calculation_factor_id_seq', 91, true);
+SELECT pg_catalog.setval('public.calculation_factor_id_seq', 93, true);
 
 
 --
@@ -5902,7 +5970,7 @@ SELECT pg_catalog.setval('public.country_id_seq', 240, true);
 -- Name: daily_correlative_request_bank; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.daily_correlative_request_bank', 580, true);
+SELECT pg_catalog.setval('public.daily_correlative_request_bank', 582, true);
 
 
 --
@@ -5930,21 +5998,21 @@ SELECT pg_catalog.setval('public.entities_id_seq', 8, true);
 -- Name: external_request_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.external_request_id_seq', 602, true);
+SELECT pg_catalog.setval('public.external_request_id_seq', 604, true);
 
 
 --
 -- Name: locker_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.locker_id_seq', 1, true);
+SELECT pg_catalog.setval('public.locker_id_seq', 7, true);
 
 
 --
 -- Name: lockers_point_of_sale_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.lockers_point_of_sale_id_seq', 1, false);
+SELECT pg_catalog.setval('public.lockers_point_of_sale_id_seq', 7, true);
 
 
 --
@@ -5972,7 +6040,7 @@ SELECT pg_catalog.setval('public.parishes_id_seq', 1134, true);
 -- Name: payment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.payment_id_seq', 429, true);
+SELECT pg_catalog.setval('public.payment_id_seq', 437, true);
 
 
 --
@@ -5986,7 +6054,7 @@ SELECT pg_catalog.setval('public.payments_type_id_seq', 3, true);
 -- Name: point_of_sale_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.point_of_sale_id_seq', 1, true);
+SELECT pg_catalog.setval('public.point_of_sale_id_seq', 6, true);
 
 
 --
@@ -6042,21 +6110,21 @@ SELECT pg_catalog.setval('public.subentity_id_seq', 38, true);
 -- Name: tax_stamp_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tax_stamp_id_seq', 972, true);
+SELECT pg_catalog.setval('public.tax_stamp_id_seq', 989, true);
 
 
 --
 -- Name: tax_stamps_payment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tax_stamps_payment_id_seq', 823, true);
+SELECT pg_catalog.setval('public.tax_stamps_payment_id_seq', 836, true);
 
 
 --
 -- Name: transaction_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.transaction_id_seq', 472, true);
+SELECT pg_catalog.setval('public.transaction_id_seq', 475, true);
 
 
 --
@@ -6077,7 +6145,7 @@ SELECT pg_catalog.setval('public.types_external_request_id_seq', 1, true);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 10, false);
+SELECT pg_catalog.setval('public.users_id_seq', 10, true);
 
 
 --
