@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Define el URL del endpoint
-API_URL_AUTH="http://192.168.0.120:8020/auth/sign-in"
-API_URL_SYNC="http://192.168.0.120:8020/calculation-factor/synchronize"
+API_URL_AUTH="https://siarteccarabobo.gob.ve/api-back/auth/sign-in"
+API_URL_SYNC="https://siarteccarabobo.gob.ve/api-back/calculation-factor/synchronize"
 
 EMAIL="shyf.infosiartec@gmail.com"
 PASSWORD="Tigger32xl@"

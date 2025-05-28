@@ -43,7 +43,7 @@ services:
       # - /usr/src/app/node_modules
     tty: true
     ports:
-      - "3020:3010"
+     - "3020:3010"
     command: sh -c "npm run build && npm run start"
     # command: sh -c "npm run dev"
 
