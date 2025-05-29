@@ -16,7 +16,8 @@
 -- PASOS LUEGO DE CREAR .SH DE RESET NECESARIOS 
   COMANDOS: 
     chmod +x /home/siartec/siartec-docker/cron_jobs/run_calculation_factor.sh
-
+  PErmisos a la carpeta de los logs
+    sudo chmod -R 777 /logs/endpoints/calculation_factor/
 
   CONFIGURAR EL CRON JOB:
 
